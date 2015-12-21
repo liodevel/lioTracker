@@ -1,7 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- "Mark Favorite", should appear as action button if possible -->
     <item
         android:id="@+id/map_action_center_map"
         android:icon="@drawable/abc_btn_radio_to_on_mtrl_015"
@@ -15,7 +14,9 @@
         android:title="Track" />
 
 
-    <!-- Settings, should always be in the overflow -->
+    <item android:id="@+id/map_action_my_tracks"
+        app:showAsAction="never"
+        android:title="My tracks" />
     <item android:id="@+id/map_action_profile"
         app:showAsAction="never"
         android:title="Profile" />

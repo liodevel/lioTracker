@@ -1,4 +1,4 @@
-package com.liodevel.lioapp_1;
+package com.liodevel.lioapp_1.Activities;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -25,6 +25,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.liodevel.lioapp_1.Objects.TrackPoint;
+import com.liodevel.lioapp_1.R;
+import com.liodevel.lioapp_1.Utils.Server;
 import com.parse.GetCallback;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
@@ -191,6 +193,9 @@ public class MapActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Inicializar Mapa
+     */
     public void initMap() {
         if (mMap == null) {
             mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
@@ -387,19 +392,12 @@ public class MapActivity extends AppCompatActivity {
         Log.i("SEND", "sendLocation()");
 
         if (lastLocation != null) {
-            ParseObject dataObject = new ParseObject("trackPoint");
-            dataObject.put("position", new ParseGeoPoint(lastLocation.getLatitude(), lastLocation.getLongitude()));
-            dataObject.put("date", new Date(System.currentTimeMillis()));
-            dataObject.put("track", activeTrack);
-            dataObject.saveInBackground(new SaveCallback() {
-                @Override
-                public void done(com.parse.ParseException e) {
-                    if (e == null)
-                        Log.i("SAVE", "OK");
-                    else
-                        Log.i("SAVE", "ERROR: " + e.toString());
-                }
-            });
+            TrackPoint tr = new TrackPoint();
+            tr.setDate(new Date(System.currentTimeMillis()));
+            tr.setPosition(new ParseGeoPoint(lastLocation.getLatitude(), lastLocation.getLongitude()));
+            tr.setTrack(activeTrack);
+            Server.sendTrackPoint(tr);
+
             if (prevLocation != null){
                 drawTrackPoint(
                         new LatLng(prevLocation.getLatitude(), prevLocation.getLongitude()),

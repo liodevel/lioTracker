@@ -32,7 +32,7 @@
             android:value="zLlTJ9GNR7U8EK7tArFpMrB1sIE7dpqTUPFCY8WS" />
 
         <activity
-            android:name=".LoginActivity"
+            android:name=".Activities.LoginActivity"
             android:label="@string/title_activity_map">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -41,7 +41,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MapActivity"
+            android:name=".Activities.MapActivity"
             android:label="@string/title_activity_login"></activity>
     </application>
 
