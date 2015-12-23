@@ -1,6 +1,7 @@
 package com.liodevel.lioapp_1.Activities;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
@@ -157,11 +158,17 @@ public class MapActivity extends AppCompatActivity {
                 }
                 return true;
 
-            case R.id.map_action_settings:
-
+            case R.id.map_action_my_tracks:
+                Intent launchNextActivity;
+                launchNextActivity = new Intent(MapActivity.this, MyTracksActivity.class);
+                startActivity(launchNextActivity);
                 return true;
 
             case R.id.map_action_logout:
+
+                return true;
+
+            case R.id.map_action_settings:
 
                 return true;
 
