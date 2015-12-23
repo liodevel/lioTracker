@@ -106,6 +106,11 @@ public class MapActivity extends AppCompatActivity {
             startTrackButton.setBackgroundColor(Color.argb(100, 175, 20, 20));
             startTrackButton.setText("Tracking...");
         }
+        try {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+        } catch (Exception e){
+
+        }
     }
 
     @Override
@@ -122,6 +127,11 @@ public class MapActivity extends AppCompatActivity {
         if (tracking){
             startTrackButton.setBackgroundColor(Color.argb(100, 175, 20, 20));
             startTrackButton.setText("Tracking...");
+        }
+        try {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+        } catch (Exception e){
+
         }
     }
 
@@ -161,6 +171,11 @@ public class MapActivity extends AppCompatActivity {
             case R.id.map_action_my_tracks:
                 Intent launchNextActivity;
                 launchNextActivity = new Intent(MapActivity.this, MyTracksActivity.class);
+                try {
+                    locationManager.removeUpdates(locationListener);
+                } catch (Exception e){
+
+                }
                 startActivity(launchNextActivity);
                 return true;
 
@@ -247,7 +262,7 @@ public class MapActivity extends AppCompatActivity {
             public void onProviderDisabled(String provider) {}
         };
 
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+        //locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
 
     }
@@ -415,7 +430,5 @@ public class MapActivity extends AppCompatActivity {
             Log.i("SEND", "NULL Location");
         }
     }
-
-
 
 }

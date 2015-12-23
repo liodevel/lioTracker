@@ -61,11 +61,11 @@ public class TrackActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_map);
+        setContentView(R.layout.activity_track);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         context = this;
 
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.map_toolbar);
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.track_toolbar);
         setSupportActionBar(myToolbar);
 
         //progressDialog.show(this, "Track", "Downloading track", true);
@@ -76,32 +76,18 @@ public class TrackActivity extends AppCompatActivity {
             trackObjectId = extras.getString("objectId");
             Log.i("LIOTRACKS", "ObjectId Track: " + trackObjectId);
         }
-        getTrackByObjectId(trackObjectId);
 
-        try {
-            // Loading map
-            initMap();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-
-
-
-    /**
-     * Inicializar Mapa
-     */
-    public void initMap() {
         if (mMap == null) {
-            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
+            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapTrack)).getMap();
             if (mMap == null) {
                 Toast.makeText(getApplicationContext(),"Sorry! unable to create maps", Toast.LENGTH_SHORT).show();
             }
         };
 
+
+        getTrackByObjectId(trackObjectId);
     }
+
 
 
     /**
@@ -121,30 +107,49 @@ public class TrackActivity extends AppCompatActivity {
         boolean ret = false;
         LatLng prevPos = null;
         LatLng actualPos = null;
-        ParseObject track = ParseObject.create("track");
-        track.put("objectId", objectId);
+        ParseObject trackObject = null;
 
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("trackPoints");
-        query.whereEqualTo("track", track);
+        ParseQuery<ParseObject> queryTrackObject = ParseQuery.getQuery("track");
+        queryTrackObject.whereEqualTo("objectId", objectId);
         try {
-            List <ParseObject> parseQueries = query.find();
-            for (ParseObject parseObject : parseQueries) {
-                Log.i("LIOTRACK", "-----");
-                TrackPoint trackPoint = new TrackPoint();
-                trackPoint.setObjectId(parseObject.getObjectId());
-                trackPoint.setDate((Date) parseObject.get("date"));
-                trackPoint.setPosition((ParseGeoPoint) parseObject.get("position"));
-                trackPoints.add(trackPoint);
-                actualPos = new LatLng(trackPoint.getPosition().getLatitude(), trackPoint.getPosition().getLongitude());
-                if (prevPos != null) {
-                    drawTrackPoint(prevPos, actualPos);
-                }
-                prevPos = actualPos;
-            }
+            List <ParseObject> parseQueriesTrackObject = queryTrackObject.find();
+            trackObject = parseQueriesTrackObject.get(0);
+            Log.i("LIOTRACK", "Track ID: " + trackObject.getObjectId());
             ret = true;
         } catch (ParseException e) {
             Log.i("LIOTRACK", "Error: " + e.toString());
             ret = false;
+        }
+
+        if (ret == true) {
+            ParseQuery<ParseObject> query = ParseQuery.getQuery("trackPoint");
+            query.whereEqualTo("track", trackObject);
+            query.setLimit(1000);
+            int cont = 0;
+            try {
+                List<ParseObject> parseQueries = query.find();
+                for (ParseObject parseObject : parseQueries) {
+                    cont++;
+                    TrackPoint trackPoint = new TrackPoint();
+                    trackPoint.setObjectId(parseObject.getObjectId());
+                    trackPoint.setDate((Date) parseObject.get("date"));
+                    trackPoint.setPosition((ParseGeoPoint) parseObject.get("position"));
+                    //trackPoints.add(trackPoint);
+                    actualPos = new LatLng(trackPoint.getPosition().getLatitude(), trackPoint.getPosition().getLongitude());
+                    if (prevPos != null) {
+                        drawTrackPoint(prevPos, actualPos);
+                    } else {
+                        // Centrar en primera localización
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(actualPos, 16));
+                    }
+                    prevPos = actualPos;
+                }
+                Log.i("LIOTRACK", "TOTAL TrackPoints: " + cont);
+                ret = true;
+            } catch (ParseException e) {
+                Log.i("LIOTRACK", "Error: " + e.toString());
+                ret = false;
+            }
         }
        // progressDialog.hide();
         return ret;
