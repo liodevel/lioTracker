@@ -29,6 +29,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Pantalla My tracks
+ * Con la lista de tracks guardadas
+ */
 public class MyTracksActivity extends AppCompatActivity {
 
     static ArrayList<Track> tracks;
@@ -41,11 +45,14 @@ public class MyTracksActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_tracks);
-
         context = this;
+        tracks = new ArrayList<>();
+
+        // Toolbar
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_tracks_toolbar);
         setSupportActionBar(myToolbar);
-        tracks = new ArrayList<>();
+
+        // Lista de tracks
         tracksList = (ListView) findViewById(R.id.tracks_list);
         tracksList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -61,7 +68,13 @@ public class MyTracksActivity extends AppCompatActivity {
         });
         adapter = new MyTracksListAdapter(this, tracks);
         tracksList.setAdapter(adapter);
+        getTracksByCurrentUser();
+    }
 
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        adapter.clear();
         getTracksByCurrentUser();
     }
 
@@ -73,14 +86,13 @@ public class MyTracksActivity extends AppCompatActivity {
     }
 
 
-    public static ArrayList<Track> getTracksByCurrentUser(){
+    public static void getTracksByCurrentUser(){
         Log.i("LIOTRACK", "getTracksByUser()");
-
-        ArrayList<Track> ret = new ArrayList<>();
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery("track");
         ParseUser user = ParseUser.getCurrentUser();
         query.whereEqualTo("user", user);
+        query.orderByDescending("date");
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> objects, com.parse.ParseException e) {
@@ -91,19 +103,14 @@ public class MyTracksActivity extends AppCompatActivity {
                         track.setDate((Date) parseObject.get("date"));
                         track.setDateEnd((Date) parseObject.get("dateEnd"));
                         Log.i("LIOTRACK", "Track: " + track.getDate());
-                        tracks.add(track);
+                        adapter.add(track);
                     }
-                    adapter.addAll(tracks);
-
                 } else {
                     // Something went wrong.
                     Log.i("LIOTRACK", "Error: " + e.toString());
                 }
             }
         });
-
-        return ret;
-
     }
 
 

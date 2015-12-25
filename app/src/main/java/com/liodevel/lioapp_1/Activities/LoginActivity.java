@@ -50,7 +50,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     protected void onCreate(Bundle savedInstanceState) {
 
         try {
-            Parse.enableLocalDatastore(this);
             Parse.initialize(this);
 
         } catch (Exception e){
@@ -61,15 +60,17 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             @Override
             public void done(ParseSession object, ParseException e) {
                 if (e == null){
-                    Log.i("LIOTRACK", "Session: " + object.getSessionToken());
-                    Log.i("LIOTRACK", "Session: " + ParseUser.getCurrentUser().getUsername());
-                    Toast.makeText(LoginActivity.this, "Hi, " + ParseUser.getCurrentUser().getUsername() + "!", Toast.LENGTH_LONG).show();
-                    Intent launchNextActivity;
-                    launchNextActivity = new Intent(LoginActivity.this, MapActivity.class);
-                    launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                    startActivity(launchNextActivity);
+//                    Log.i("LIOTRACK", "Session: " + object.getSessionToken());
+//                    Log.i("LIOTRACK", "Session: " + ParseUser.getCurrentUser().getUsername());
+                    if (ParseUser.getCurrentUser() != null) {
+                        Toast.makeText(LoginActivity.this, "Hi, " + ParseUser.getCurrentUser().getUsername() + "!", Toast.LENGTH_LONG).show();
+                        Intent launchNextActivity;
+                        launchNextActivity = new Intent(LoginActivity.this, MapActivity.class);
+                        launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                        startActivity(launchNextActivity);
+                    }
                 } else {
                     Log.i("LIOTRACK", "Session: " + "No session");
                 }

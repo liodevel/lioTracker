@@ -1,6 +1,7 @@
 package com.liodevel.lioapp_1.Activities;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
@@ -8,6 +9,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Handler;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -45,6 +47,7 @@ public class MapActivity extends AppCompatActivity {
     private GoogleMap mMap;
     Button startTrackButton;
     Menu actionBarMenu;
+    MenuItem startTrackButtonMenu;
     Marker marker;
     MarkerOptions markerOptions;
 
@@ -75,7 +78,6 @@ public class MapActivity extends AppCompatActivity {
         Toolbar myToolbar = (Toolbar) findViewById(R.id.map_toolbar);
         setSupportActionBar(myToolbar);
 
-
         try {
             // Loading map
             initMap();
@@ -98,13 +100,24 @@ public class MapActivity extends AppCompatActivity {
             startTrackButton = (Button) findViewById(R.id.buttonStart);
             startTrackButton.setBackgroundColor(Color.argb(100, 20, 175, 20));
             startTrackButton.setText("Getting Location...");
+            if (actionBarMenu != null){
+                actionBarMenu.findItem(R.id.map_action_start_track).setEnabled(false);
+                actionBarMenu.findItem(R.id.map_action_center_map).setEnabled(false);
+            }
+
         } else {
             startTrackButton.setBackgroundColor(Color.argb(255, 20, 175, 20));
             startTrackButton.setText("Ready");
+            if (actionBarMenu != null){
+                actionBarMenu.findItem(R.id.map_action_start_track).setEnabled(true);
+                actionBarMenu.findItem(R.id.map_action_center_map).setEnabled(true);
+            }
         }
         if (tracking){
             startTrackButton.setBackgroundColor(Color.argb(100, 175, 20, 20));
             startTrackButton.setText("Tracking...");
+            actionBarMenu.findItem(R.id.map_action_start_track).setEnabled(true);
+            actionBarMenu.findItem(R.id.map_action_center_map).setEnabled(true);
         }
         try {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
@@ -120,13 +133,24 @@ public class MapActivity extends AppCompatActivity {
             startTrackButton = (Button) findViewById(R.id.buttonStart);
             startTrackButton.setBackgroundColor(Color.argb(100, 20, 175, 20));
             startTrackButton.setText("Getting Location...");
+            if (actionBarMenu != null) {
+                actionBarMenu.findItem(R.id.map_action_start_track).setVisible(false);
+                actionBarMenu.findItem(R.id.map_action_center_map).setVisible(false);
+            }
+
         } else {
             startTrackButton.setBackgroundColor(Color.argb(255, 20, 175, 20));
             startTrackButton.setText("Ready");
+            if (actionBarMenu != null) {
+                actionBarMenu.findItem(R.id.map_action_start_track).setEnabled(true);
+                actionBarMenu.findItem(R.id.map_action_center_map).setEnabled(true);
+            }
         }
         if (tracking){
             startTrackButton.setBackgroundColor(Color.argb(100, 175, 20, 20));
             startTrackButton.setText("Tracking...");
+            actionBarMenu.findItem(R.id.map_action_start_track).setEnabled(true);
+            actionBarMenu.findItem(R.id.map_action_center_map).setEnabled(true);
         }
         try {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
@@ -180,6 +204,23 @@ public class MapActivity extends AppCompatActivity {
                 return true;
 
             case R.id.map_action_logout:
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder
+                        .setMessage("Confirm Logout")
+                        .setPositiveButton("Yes",  new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+                                ParseUser.getCurrentUser().logOut();
+                                finish();
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog,int id) {
+                                dialog.cancel();
+                            }
+                        })
+                        .show();
 
                 return true;
 
@@ -196,6 +237,8 @@ public class MapActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         actionBarMenu = menu;
         getMenuInflater().inflate(R.menu.menu_actionbar_map, menu);
+        actionBarMenu.findItem(R.id.map_action_start_track).setVisible(false);
+        actionBarMenu.findItem(R.id.map_action_center_map).setVisible(false);
         return true;
     }
     @Override
@@ -233,6 +276,8 @@ public class MapActivity extends AppCompatActivity {
 
                 if (lastLocation != null) {
                     trackerReady = true;
+                    actionBarMenu.findItem(R.id.map_action_start_track).setVisible(true);
+                    actionBarMenu.findItem(R.id.map_action_center_map).setVisible(true);
                     if (marker == null) {
                         markerOptions = new MarkerOptions()
                                 .position(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()))
@@ -291,6 +336,7 @@ public class MapActivity extends AppCompatActivity {
             startTrackButton.setText("Ready");
             tracking = false;
             actionBarMenu.findItem(R.id.map_action_start_track).setIcon(R.drawable.ic_play_light);
+
         }
     }
 
@@ -312,27 +358,8 @@ public class MapActivity extends AppCompatActivity {
     private void drawTrackPoint(LatLng start, LatLng end){
         PolylineOptions line =
                 new PolylineOptions().add(start, end)
-                        .width(8).color(Color.RED);
+                        .width(10).color(Color.BLACK);
         mMap.addPolyline(line);
-    }
-
-    /**
-     * Gets the Object of the current tracking
-     * @param id
-     */
-    void getActiveTrackById(String id) {
-        Log.i("getActiveTrackById", "id: " + id);
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("track");
-        query.getInBackground(id, new GetCallback<ParseObject>() {
-            @Override
-            public void done(ParseObject object, com.parse.ParseException e) {
-                if (e == null) {
-                    activeTrack = object;
-                } else {
-
-                }
-            }
-        });
     }
 
     // TIMERTRACK

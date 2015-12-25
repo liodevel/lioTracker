@@ -2,6 +2,7 @@ package com.liodevel.lioapp_1.Activities;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
@@ -9,6 +10,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -98,9 +100,48 @@ public class TrackActivity extends AppCompatActivity {
     public void drawTrackPoint(LatLng start, LatLng end){
         PolylineOptions line =
                 new PolylineOptions().add(start, end)
-                        .width(8).color(Color.RED);
+                        .width(10).color(Color.BLACK);
         mMap.addPolyline(line);
     }
+
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        actionBarMenu = menu;
+        getMenuInflater().inflate(R.menu.menu_actionbar_track, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.map_action_delete_track:
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder
+                        .setMessage("Delete track")
+                        .setPositiveButton("Yes",  new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+                                deleteTrackByObjectId(trackObjectId);
+                                finish();
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog,int id) {
+                                dialog.cancel();
+                            }
+                        })
+                        .show();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+
+        }
+    }
+
 
     public boolean getTrackByObjectId(String objectId){
         Log.i("LIOTRACK", "getTrackByObjectId()");
@@ -151,8 +192,26 @@ public class TrackActivity extends AppCompatActivity {
                 ret = false;
             }
         }
-       // progressDialog.hide();
+        // progressDialog.hide();
         return ret;
+    }
+
+    public void deleteTrackByObjectId(String objectId){
+        Log.i("LIOTRACK", "deleteTrackByObjectId()");
+        ParseObject trackObject = null;
+
+        ParseQuery<ParseObject> queryTrackObject = ParseQuery.getQuery("track");
+        queryTrackObject.whereEqualTo("objectId", objectId);
+        try {
+            List <ParseObject> parseQueriesTrackObject = queryTrackObject.find();
+            trackObject = parseQueriesTrackObject.get(0);
+            trackObject.delete();
+            trackObject.saveInBackground();
+            Log.i("LIOTRACK", "Track ID: " + trackObject.getObjectId());
+
+        } catch (ParseException e) {
+            Log.i("LIOTRACK", "Error deleting: " + e.toString());
+        }
     }
 
 }

@@ -18,6 +18,7 @@ public class Track {
     Date date;
     Date dateEnd;
     long distance;
+    long duration;
     ArrayList<TrackPoint> trackPoints;
 
     public Track() {
@@ -75,5 +76,13 @@ public class Track {
 
     public void setTrackPoints(ArrayList<TrackPoint> trackPoints) {
         this.trackPoints = trackPoints;
+    }
+
+    public long getDuration() {
+        return duration;
+    }
+
+    public void setDuration(long duration) {
+        this.duration = duration;
     }
 }
