@@ -17,8 +17,11 @@ public class Track {
     ParseUser user;
     Date date;
     Date dateEnd;
-    long distance;
-    long duration;
+    long distance;      // en metros
+    long duration;      // en segundos
+    int vehicle;        // 1-Coche; 2-Transporte público; 3-Bici; 4-Andando;
+    String info;
+
     ArrayList<TrackPoint> trackPoints;
 
     public Track() {
@@ -78,11 +81,27 @@ public class Track {
         this.trackPoints = trackPoints;
     }
 
+    public int getVehicle() {
+        return vehicle;
+    }
+
+    public void setVehicle(int vehicle) {
+        this.vehicle = vehicle;
+    }
+
     public long getDuration() {
         return duration;
     }
 
     public void setDuration(long duration) {
         this.duration = duration;
+    }
+
+    public String getInfo() {
+        return info;
+    }
+
+    public void setInfo(String info) {
+        this.info = info;
     }
 }

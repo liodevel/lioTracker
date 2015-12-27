@@ -1,0 +1,4 @@
+<resources>
+    <drawable name="item">#eeeeee</drawable>
+    <drawable name="item_selected">#dddddd</drawable>
+</resources>

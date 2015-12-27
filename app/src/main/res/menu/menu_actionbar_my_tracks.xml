@@ -1,18 +1,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!--
-    <item android:id="@+id/map_action_my_tracks"
-        app:showAsAction="never"
-        android:title="My tracks" />
-    <item android:id="@+id/map_action_profile"
-        app:showAsAction="never"
-        android:title="Profile" />
-    <item android:id="@+id/map_action_settings"
-        app:showAsAction="never"
-        android:title="Settings" />
-    <item android:id="@+id/map_action_logout"
-        app:showAsAction="never"
-        android:title="Logout" />
--->
+    <item
+        android:id="@+id/map_action_delete_my_tracks"
+        android:icon="@drawable/ic_delete_black_36dp"
+        app:showAsAction="always"
+        android:title="Delete"
+        android:visible="false"/>
+
 </menu>

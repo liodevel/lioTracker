@@ -2,13 +2,18 @@ package com.liodevel.lioapp_1.Activities;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -20,6 +25,7 @@ import com.liodevel.lioapp_1.R;
 import com.liodevel.lioapp_1.Utils.Server;
 import com.liodevel.lioapp_1.adapters.MyTracksListAdapter;
 import com.parse.FindCallback;
+import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -40,6 +46,8 @@ public class MyTracksActivity extends AppCompatActivity {
     ListView tracksList;
     static MyTracksListAdapter adapter;
     Context context;
+    String selectedTrackObjectId = "";
+    int selectedPosition = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +62,7 @@ public class MyTracksActivity extends AppCompatActivity {
 
         // Lista de tracks
         tracksList = (ListView) findViewById(R.id.tracks_list);
+
         tracksList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -63,9 +72,41 @@ public class MyTracksActivity extends AppCompatActivity {
                 launchNextActivity.putExtra("objectId", tracks.get(position).getObjectId());
 
                 startActivity(launchNextActivity);
-
             }
         });
+        tracksList.setLongClickable(true);
+        tracksList.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+
+        tracksList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                for (int cont = 0; cont < tracksList.getCount(); cont++){
+                    Log.i("LIOTRACK", "LISTCOUNT: " + cont);
+                    tracksList.getChildAt(cont).setBackground(getResources().getDrawable(R.drawable.item));
+                }
+
+                if (!tracksList.isItemChecked(position)){
+                    Log.i("LIOTRACK", "NO SELECTED");
+                    tracksList.setSelection(position);
+                    tracksList.setItemChecked(position, true);
+                    view.setBackground(getResources().getDrawable(R.drawable.item_selected));
+                    actionBarMenu.findItem(R.id.map_action_delete_my_tracks).setVisible(true);
+                    selectedTrackObjectId = tracks.get(position).getObjectId();
+                    selectedPosition = position;
+                } else {
+                    Log.i("LIOTRACK", "SELECTED");
+                    tracksList.setSelection(position);
+                    tracksList.setItemChecked(position, false);
+                    view.setBackground(getResources().getDrawable(R.drawable.item));
+                    actionBarMenu.findItem(R.id.map_action_delete_my_tracks).setVisible(false);
+                    selectedTrackObjectId = "";
+                    selectedPosition = -1;
+                }
+                Log.i("LIOTRACK", "LONG CLICK: ObjectID: " + tracks.get(position).getObjectId());
+                return true;
+            }
+        });
+
         adapter = new MyTracksListAdapter(this, tracks);
         tracksList.setAdapter(adapter);
         getTracksByCurrentUser();
@@ -111,6 +152,55 @@ public class MyTracksActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.map_action_delete_my_tracks:
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder
+                        .setMessage("Delete selected track")
+                        .setPositiveButton("Yes",  new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+                                actionBarMenu.findItem(R.id.map_action_delete_my_tracks).setVisible(false);
+                                deleteTrackByObjectId(selectedTrackObjectId);
+                                adapter.clear();
+                                getTracksByCurrentUser();
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog,int id) {
+                                dialog.cancel();
+                            }
+                        })
+                        .show();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+
+        }
+    }
+
+    public void deleteTrackByObjectId(String objectId){
+        Log.i("LIOTRACK", "deleteTrackByObjectId()");
+        ParseObject trackObject = null;
+        ParseQuery<ParseObject> queryTrackObject = ParseQuery.getQuery("track");
+        queryTrackObject.whereEqualTo("objectId", objectId);
+        try {
+            List <ParseObject> parseQueriesTrackObject = queryTrackObject.find();
+            trackObject = parseQueriesTrackObject.get(0);
+            trackObject.delete();
+            trackObject.save();
+            Log.i("LIOTRACK", "Track ID: " + trackObject.getObjectId());
+
+        } catch (ParseException e) {
+            Log.i("LIOTRACK", "Error deleting: " + e.toString());
+        }
     }
 
 

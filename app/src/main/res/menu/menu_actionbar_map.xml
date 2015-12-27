@@ -5,13 +5,15 @@
         android:id="@+id/map_action_center_map"
         android:icon="@drawable/abc_btn_radio_to_on_mtrl_015"
         app:showAsAction="always"
-        android:title="Center" />
+        android:title="Center"
+        android:visible="false"/>
 
     <item
         android:id="@+id/map_action_start_track"
         android:icon="@drawable/ic_play_light"
         app:showAsAction="always"
-        android:title="Track" />
+        android:title="Track"
+        android:visible="false"/>
 
 
     <item android:id="@+id/map_action_my_tracks"
