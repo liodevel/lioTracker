@@ -1,4 +1,4 @@
-package com.liodevel.lioapp_1.adapters;
+package com.liodevel.lioapp_1.Adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;

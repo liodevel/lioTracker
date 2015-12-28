@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.liodevel.lioapp_1.Activities.SplashActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="lioTracks"
+        android:textSize="50sp"
+        android:gravity="center"
+        android:id="@+id/TituloSplash"
+        android:layout_below="@+id/logoLioTracksSplash"
+        android:layout_alignRight="@+id/logoLioTracksSplash"
+        android:layout_alignEnd="@+id/logoLioTracksSplash"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+    <ImageView
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:id="@+id/logoLioTracksSplash"
+        android:background="@drawable/logo_app"
+        android:scaleType="matrix"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/pieSplash"
+        android:layout_alignEnd="@+id/pieSplash" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="lioTracks 1.0 - liodevel 2016"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:id="@+id/pieSplash"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:id="@+id/logoLiodevelSplash"
+        android:background="@drawable/liodevel_logo"
+        android:scaleType="matrix"
+        android:layout_above="@+id/pieSplash"
+        android:layout_centerHorizontal="true" />
+</RelativeLayout>

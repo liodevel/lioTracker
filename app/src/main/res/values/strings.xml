@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">lioTracker</string>
-    <string name="title_activity_map">lioTracker</string>
-    <string name="title_activity_login">lioTracker</string>
+    <string name="app_name">lioTracks</string>
+    <string name="title_activity_map">lioTracks</string>
+    <string name="title_activity_login">lioTracks</string>
     <string name="open">Open</string>
     <string name="close">Close</string>
 
