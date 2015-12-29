@@ -53,6 +53,8 @@ public class MyTracksActivity extends AppCompatActivity {
         context = this;
         tracks = new ArrayList<>();
 
+
+
         // Toolbar
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_tracks_toolbar);
         setSupportActionBar(myToolbar);
@@ -81,10 +83,16 @@ public class MyTracksActivity extends AppCompatActivity {
         tracksList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+
+                /*
                 for (int cont = 0; cont < tracksList.getCount(); cont++) {
                     Log.i("LIOTRACK", "LISTCOUNT: " + cont);
+                    Log.i("LIOTRACK", "LISTTOTAL: " + tracksList.getCount());
                     tracksList.getChildAt(cont).setBackground(getResources().getDrawable(R.drawable.item));
                 }
+                */
+
+                // REFRESCAR CONTENIDO LISTA
 
                 if (!tracksList.isItemChecked(position)) {
                     Log.i("LIOTRACK", "NO SELECTED");
@@ -110,8 +118,7 @@ public class MyTracksActivity extends AppCompatActivity {
 
         adapter = new MyTracksListAdapter(this, tracks);
         tracksList.setAdapter(adapter);
-
-
+        adapter.clear();
         getTracksByCurrentUser();
     }
 
@@ -127,17 +134,6 @@ public class MyTracksActivity extends AppCompatActivity {
         getTracksByCurrentUser();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        adapter.clear();
-        try {
-            progress.dismiss();
-        } catch (Exception e){
-
-        }
-        getTracksByCurrentUser();
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -203,6 +199,7 @@ public class MyTracksActivity extends AppCompatActivity {
                         track.setDateEnd((Date) parseObject.get("dateEnd"));
                         track.setDistance((float)parseObject.getDouble("distance"));
                         Log.i("LIOTRACK", "Track: " + track.getDate());
+                        tracks.add(track);
                         adapter.add(track);
                     }
                     progress.dismiss();
