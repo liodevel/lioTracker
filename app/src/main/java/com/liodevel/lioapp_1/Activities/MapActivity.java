@@ -13,11 +13,15 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
-import android.widget.Toast;
+import android.widget.ImageView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -30,10 +34,9 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.liodevel.lioapp_1.Objects.TrackPoint;
 import com.liodevel.lioapp_1.R;
 import com.liodevel.lioapp_1.Utils.Server;
-import com.parse.GetCallback;
+import com.liodevel.lioapp_1.Utils.Utils;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
@@ -47,7 +50,6 @@ public class MapActivity extends AppCompatActivity {
     private GoogleMap mMap;
     Button startTrackButton;
     Menu actionBarMenu;
-    MenuItem startTrackButtonMenu;
     Marker marker;
     MarkerOptions markerOptions;
 
@@ -55,9 +57,13 @@ public class MapActivity extends AppCompatActivity {
     private boolean trackerReady = false;
     private boolean centerMap = true;
     private Boolean exit = false;
+    private String currentTrackObjectId = "";
+    ParseObject currentTrack = null;
+
 
     Location prevLocation;
     Location lastLocation;
+    float currentTrackDistance = 0;
 
     LocationManager locationManager;
     LocationListener locationListener;
@@ -65,9 +71,7 @@ public class MapActivity extends AppCompatActivity {
     Timer timer;
     TimerTask timerTask;
     final Handler handler = new Handler();
-    ParseObject activeTrack = null;
 
-    ArrayList<TrackPoint> trackPoints;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +83,7 @@ public class MapActivity extends AppCompatActivity {
         setSupportActionBar(myToolbar);
 
         try {
-            // Loading map
+            // Inicializar mapa
             initMap();
 
         } catch (Exception e) {
@@ -89,7 +93,6 @@ public class MapActivity extends AppCompatActivity {
         startTrackButton = (Button) findViewById(R.id.buttonStart);
         startTrackButton.setBackgroundColor(Color.argb(100, 20, 175, 20));
         startTrackButton.setText("Getting Location...");
-
 
     }
 
@@ -101,23 +104,23 @@ public class MapActivity extends AppCompatActivity {
             startTrackButton.setBackgroundColor(Color.argb(100, 20, 175, 20));
             startTrackButton.setText("Getting Location...");
             if (actionBarMenu != null){
-                actionBarMenu.findItem(R.id.map_action_start_track).setEnabled(false);
-                actionBarMenu.findItem(R.id.map_action_center_map).setEnabled(false);
+                actionBarMenu.findItem(R.id.map_action_start_track).setVisible(false);
+                actionBarMenu.findItem(R.id.map_action_center_map).setVisible(false);
             }
 
         } else {
             startTrackButton.setBackgroundColor(Color.argb(255, 20, 175, 20));
             startTrackButton.setText("Ready");
             if (actionBarMenu != null){
-                actionBarMenu.findItem(R.id.map_action_start_track).setEnabled(true);
-                actionBarMenu.findItem(R.id.map_action_center_map).setEnabled(true);
+                actionBarMenu.findItem(R.id.map_action_start_track).setVisible(true);
+                actionBarMenu.findItem(R.id.map_action_center_map).setVisible(true);
             }
         }
         if (tracking){
             startTrackButton.setBackgroundColor(Color.argb(100, 175, 20, 20));
             startTrackButton.setText("Tracking...");
-            actionBarMenu.findItem(R.id.map_action_start_track).setEnabled(true);
-            actionBarMenu.findItem(R.id.map_action_center_map).setEnabled(true);
+            actionBarMenu.findItem(R.id.map_action_start_track).setVisible(true);
+            actionBarMenu.findItem(R.id.map_action_center_map).setVisible(true);
         }
         try {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
@@ -142,15 +145,15 @@ public class MapActivity extends AppCompatActivity {
             startTrackButton.setBackgroundColor(Color.argb(255, 20, 175, 20));
             startTrackButton.setText("Ready");
             if (actionBarMenu != null) {
-                actionBarMenu.findItem(R.id.map_action_start_track).setEnabled(true);
-                actionBarMenu.findItem(R.id.map_action_center_map).setEnabled(true);
+                actionBarMenu.findItem(R.id.map_action_start_track).setVisible(true);
+                actionBarMenu.findItem(R.id.map_action_center_map).setVisible(true);
             }
         }
         if (tracking){
             startTrackButton.setBackgroundColor(Color.argb(100, 175, 20, 20));
             startTrackButton.setText("Tracking...");
-            actionBarMenu.findItem(R.id.map_action_start_track).setEnabled(true);
-            actionBarMenu.findItem(R.id.map_action_center_map).setEnabled(true);
+            actionBarMenu.findItem(R.id.map_action_start_track).setVisible(true);
+            actionBarMenu.findItem(R.id.map_action_center_map).setVisible(true);
         }
         try {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
@@ -177,21 +180,25 @@ public class MapActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+
+            // START/STOP TRACKING
             case R.id.map_action_start_track:
-                clickStart();
+                clickStart(null);
                 return true;
 
+            // CENTRAR MAPA
             case R.id.map_action_center_map:
                 if (centerMap){
                     centerMap = false;
                     actionBarMenu.findItem(R.id.map_action_center_map).setIcon(R.drawable.abc_btn_radio_to_on_mtrl_000);
                 } else {
-                    centerMap = true;
                     centerMap();
+                    centerMap = true;
                     actionBarMenu.findItem(R.id.map_action_center_map).setIcon(R.drawable.abc_btn_radio_to_on_mtrl_015);
                 }
                 return true;
 
+            // MY TRACKS
             case R.id.map_action_my_tracks:
                 Intent launchNextActivity;
                 launchNextActivity = new Intent(MapActivity.this, MyTracksActivity.class);
@@ -203,6 +210,7 @@ public class MapActivity extends AppCompatActivity {
                 startActivity(launchNextActivity);
                 return true;
 
+            // LOGOUT
             case R.id.map_action_logout:
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder
@@ -224,10 +232,11 @@ public class MapActivity extends AppCompatActivity {
 
                 return true;
 
-            case R.id.map_action_settings:
+            // SETTINS
+            /*case R.id.map_action_settings:
 
                 return true;
-
+*/
             default:
                 return super.onOptionsItemSelected(item);
 
@@ -239,6 +248,9 @@ public class MapActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_actionbar_map, menu);
         actionBarMenu.findItem(R.id.map_action_start_track).setVisible(false);
         actionBarMenu.findItem(R.id.map_action_center_map).setVisible(false);
+        actionBarMenu.findItem(R.id.map_action_profile_name).setTitle(ParseUser.getCurrentUser().getUsername());
+        //actionBarMenu.findItem(R.id.map_action_profile_name).getActionView().setBackgroundColor(getResources().getColor(R.color.dark_grey));
+
         return true;
     }
     @Override
@@ -246,8 +258,7 @@ public class MapActivity extends AppCompatActivity {
         if (exit) {
             finish(); // finish activity
         } else {
-            Toast.makeText(this, "Press Back again to Exit.",
-                    Toast.LENGTH_SHORT).show();
+            Utils.showMessage(this, "Press Back again to Exit");
             exit = true;
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -258,6 +269,7 @@ public class MapActivity extends AppCompatActivity {
         }
     }
 
+
     /**
      * Inicializar Mapa
      */
@@ -265,7 +277,7 @@ public class MapActivity extends AppCompatActivity {
         if (mMap == null) {
             mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
             if (mMap == null) {
-                Toast.makeText(getApplicationContext(),"Sorry! unable to create maps", Toast.LENGTH_SHORT).show();
+                Utils.showMessage(getApplicationContext(), "Sorry! unable to create maps");
             }
         };
 
@@ -297,7 +309,9 @@ public class MapActivity extends AppCompatActivity {
                     }
 
                     if (centerMap) {
-                        centerMap();
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                            new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()), 16)
+                        );
                     }
                 }
             }
@@ -307,38 +321,66 @@ public class MapActivity extends AppCompatActivity {
             public void onProviderDisabled(String provider) {}
         };
 
-        //locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
 
     }
 
     /**
      * Start Button
-     *
      */
-    public void clickStart() {
+    public void clickStart(View view) {
         Log.i("CLICK", "clickStart");
         if (!tracking) {
             // START TRACKING
             if (startTrack() == 0) {
-                // SUCCESSFUL START
+                // Start track correcto
                 startTrackButton.setBackgroundColor(Color.argb(100, 175, 20, 20));
                 startTrackButton.setText("Tracking...");
                 tracking = true;
-                actionBarMenu.findItem(R.id.map_action_start_track).setIcon(R.drawable.ic_pause_light);
+                currentTrackDistance = 0;
+
+                // Animacion
+                LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                ImageView iv = (ImageView) inflater.inflate(R.layout.start_track_image, null);
+                Animation rotation = AnimationUtils.loadAnimation(this, R.anim.tracking_animation);
+                rotation.setRepeatCount(Animation.INFINITE);
+                iv.startAnimation(rotation);
+                actionBarMenu.findItem(R.id.map_action_start_track).setActionView(iv);
+
             } else {
-                // NO START
+                // NO Start track
             }
         } else {
             // STOP TRACKING
             stopTimerTrack();
+
+            currentTrack.put("dateEnd", new Date(System.currentTimeMillis()));
+            currentTrack.put("distance", currentTrackDistance);
+            currentTrack.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(com.parse.ParseException e) {
+                    if (e == null) {
+                        Log.i("SAVE startTrack", "OK");
+                    } else {
+                        Log.i("SAVE startTrack", "ERROR: " + e.toString());
+                    }
+                }
+            });
+
             startTrackButton.setBackgroundColor(Color.argb(255, 20, 175, 20));
             startTrackButton.setText("Ready");
             tracking = false;
-            actionBarMenu.findItem(R.id.map_action_start_track).setIcon(R.drawable.ic_play_light);
+
+            actionBarMenu.findItem(R.id.map_action_start_track).getActionView().clearAnimation();
+            actionBarMenu.findItem(R.id.map_action_start_track).setActionView(null);
 
         }
     }
+
+
+
+
 
     /**
      * Centrar Mapa
@@ -422,8 +464,10 @@ public class MapActivity extends AppCompatActivity {
             public void done(com.parse.ParseException e) {
                 if (e == null) {
                     Log.i("SAVE startTrack", "OK");
-                    activeTrack = dataObject;
+                    currentTrack = dataObject;
+                    currentTrackObjectId = dataObject.getObjectId();
                     startTimerTrack();
+
                 } else {
                     Log.i("SAVE startTrack", "ERROR: " + e.toString());
                 }
@@ -444,10 +488,12 @@ public class MapActivity extends AppCompatActivity {
             TrackPoint tr = new TrackPoint();
             tr.setDate(new Date(System.currentTimeMillis()));
             tr.setPosition(new ParseGeoPoint(lastLocation.getLatitude(), lastLocation.getLongitude()));
-            tr.setTrack(activeTrack);
+            tr.setAccuracy(lastLocation.getAccuracy());
+            tr.setTrack(currentTrack);
             Server.sendTrackPoint(tr);
 
             if (prevLocation != null){
+                currentTrackDistance = currentTrackDistance + prevLocation.distanceTo(lastLocation);
                 drawTrackPoint(
                         new LatLng(prevLocation.getLatitude(), prevLocation.getLongitude()),
                         new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()));

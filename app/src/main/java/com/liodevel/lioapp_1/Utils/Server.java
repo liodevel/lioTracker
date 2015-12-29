@@ -30,6 +30,7 @@ public class Server {
         ParseObject dataObject = new ParseObject("trackPoint");
         dataObject.put("position", tp.getPosition());
         dataObject.put("date", tp.getDate());
+        dataObject.put("accuracy", tp.getAccuracy());
         dataObject.put("track", tp.getTrack());
         dataObject.saveInBackground(new SaveCallback() {
             @Override

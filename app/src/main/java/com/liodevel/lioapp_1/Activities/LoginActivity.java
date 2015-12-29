@@ -24,9 +24,9 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.liodevel.lioapp_1.R;
+import com.liodevel.lioapp_1.Utils.Utils;
 import com.parse.GetCallback;
 import com.parse.LogInCallback;
 import com.parse.Parse;
@@ -154,7 +154,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         startActivity(launchNextActivity);
                     } else {
                         showProgress(false);
-                        Toast.makeText(LoginActivity.this, "Incorrect eMail or password", Toast.LENGTH_LONG).show();
+                        Utils.showMessage(LoginActivity.this, "Incorrect eMail or password");
                     }
                 }
             });
@@ -214,7 +214,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 public void done(ParseException e) {
                     if (e == null) {
                         Log.i("LIOTRACK", "Register: OK: " + email);
-                        Toast.makeText(LoginActivity.this, "Hi, " + email + "!", Toast.LENGTH_LONG).show();
+                        Utils.showMessage(LoginActivity.this, "Hi, " + email + "!");
                         parseUser.logInInBackground(email, password, new LogInCallback() {
                             @Override
                             public void done(ParseUser user, ParseException e) {
@@ -229,7 +229,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                 } else {
                                     showProgress(false);
                                     Log.i("LIOTRACK", "LOGIN ERROR: " + e.toString());
-                                    Toast.makeText(LoginActivity.this, "Login error, retry please.", Toast.LENGTH_LONG).show();
+                                    Utils.showMessage(LoginActivity.this, "Login error, retry please");
+
                                 }
                             }
                         });
@@ -240,9 +241,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         showProgress(false);
                         Log.i("LIOTRACK", "Register: ERROR: " + e.toString());
                         if (e.toString().contains("username") && e.toString().contains("taken")){
-                            Toast.makeText(LoginActivity.this, "Username " + email + " already taken!", Toast.LENGTH_LONG).show();
+                            Utils.showMessage(LoginActivity.this, "Username " + email + " already taken!");
                         } else {
-                            Toast.makeText(LoginActivity.this, "Error, please retry...", Toast.LENGTH_LONG).show();
+                            Utils.showMessage(LoginActivity.this, "Error, please retry...");
                         }
                     }
                 }

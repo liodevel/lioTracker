@@ -1,5 +1,6 @@
 package com.liodevel.lioapp_1.Activities;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -37,14 +38,18 @@ public class MyTracksActivity extends AppCompatActivity {
     Menu actionBarMenu;
     ListView tracksList;
     static MyTracksListAdapter adapter;
-    Context context;
+    static Context context;
     String selectedTrackObjectId = "";
     int selectedPosition = -1;
 
+    static ProgressDialog progress;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_tracks);
+
         context = this;
         tracks = new ArrayList<>();
 
@@ -59,6 +64,10 @@ public class MyTracksActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.i("LIOTRACKS", "Track selected: " + tracks.get(position).getObjectId());
+                progress = new ProgressDialog(context);
+                progress.setMessage("Loading track");
+                progress.show();
+
                 Intent launchNextActivity;
                 launchNextActivity = new Intent(MyTracksActivity.this, TrackActivity.class);
                 launchNextActivity.putExtra("objectId", tracks.get(position).getObjectId());
@@ -72,12 +81,12 @@ public class MyTracksActivity extends AppCompatActivity {
         tracksList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                for (int cont = 0; cont < tracksList.getCount(); cont++){
+                for (int cont = 0; cont < tracksList.getCount(); cont++) {
                     Log.i("LIOTRACK", "LISTCOUNT: " + cont);
                     tracksList.getChildAt(cont).setBackground(getResources().getDrawable(R.drawable.item));
                 }
 
-                if (!tracksList.isItemChecked(position)){
+                if (!tracksList.isItemChecked(position)) {
                     Log.i("LIOTRACK", "NO SELECTED");
                     tracksList.setSelection(position);
                     tracksList.setItemChecked(position, true);
@@ -101,6 +110,8 @@ public class MyTracksActivity extends AppCompatActivity {
 
         adapter = new MyTracksListAdapter(this, tracks);
         tracksList.setAdapter(adapter);
+
+
         getTracksByCurrentUser();
     }
 
@@ -108,6 +119,23 @@ public class MyTracksActivity extends AppCompatActivity {
     protected void onRestart() {
         super.onRestart();
         adapter.clear();
+        try {
+            progress.dismiss();
+        } catch (Exception e){
+
+        }
+        getTracksByCurrentUser();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        adapter.clear();
+        try {
+            progress.dismiss();
+        } catch (Exception e){
+
+        }
         getTracksByCurrentUser();
     }
 
@@ -117,35 +145,6 @@ public class MyTracksActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_actionbar_my_tracks, menu);
         return true;
     }
-
-
-    public static void getTracksByCurrentUser(){
-        Log.i("LIOTRACK", "getTracksByUser()");
-
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("track");
-        ParseUser user = ParseUser.getCurrentUser();
-        query.whereEqualTo("user", user);
-        query.orderByDescending("date");
-        query.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, com.parse.ParseException e) {
-                if (e == null) {
-                    for (ParseObject parseObject : objects) {
-                        Track track = new Track();
-                        track.setObjectId(parseObject.getObjectId());
-                        track.setDate((Date) parseObject.get("date"));
-                        track.setDateEnd((Date) parseObject.get("dateEnd"));
-                        Log.i("LIOTRACK", "Track: " + track.getDate());
-                        adapter.add(track);
-                    }
-                } else {
-                    // Something went wrong.
-                    Log.i("LIOTRACK", "Error: " + e.toString());
-                }
-            }
-        });
-    }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -178,6 +177,48 @@ public class MyTracksActivity extends AppCompatActivity {
         }
     }
 
+
+
+    /**
+     * Recupera la lista de Tracks
+     */
+    public static void getTracksByCurrentUser(){
+        Log.i("LIOTRACK", "getTracksByUser()");
+        progress = new ProgressDialog(context);
+        progress.setMessage("Loading your tracks");
+        progress.show();
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("track");
+        ParseUser user = ParseUser.getCurrentUser();
+        query.whereEqualTo("user", user);
+        query.orderByDescending("date");
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, com.parse.ParseException e) {
+                if (e == null) {
+                    for (ParseObject parseObject : objects) {
+                        Track track = new Track();
+                        track.setObjectId(parseObject.getObjectId());
+                        track.setDate((Date) parseObject.get("date"));
+                        track.setDateEnd((Date) parseObject.get("dateEnd"));
+                        track.setDistance((float)parseObject.getDouble("distance"));
+                        Log.i("LIOTRACK", "Track: " + track.getDate());
+                        adapter.add(track);
+                    }
+                    progress.dismiss();
+                } else {
+                    // Something went wrong.
+                    Log.i("LIOTRACK", "Error: " + e.toString());
+                }
+            }
+        });
+    }
+
+
+    /**
+     * Borra un Track
+     * @param objectId
+     */
     public void deleteTrackByObjectId(String objectId){
         Log.i("LIOTRACK", "deleteTrackByObjectId()");
         ParseObject trackObject = null;

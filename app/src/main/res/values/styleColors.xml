@@ -1,4 +1,9 @@
 <resources>
     <drawable name="item">#eeeeee</drawable>
     <drawable name="item_selected">#dddddd</drawable>
+
+    <color name="dark_grey">#777777</color>
+    <color name="grey">#aaaaaa</color>
+    <color name="light_grey">#eeeeee</color>
+
 </resources>

@@ -15,6 +15,7 @@ public class TrackPoint {
     ParseObject track;
     ParseGeoPoint position;
     Date date;
+    float accuracy;
 
     public TrackPoint() {
         objectId = "";
@@ -52,5 +53,13 @@ public class TrackPoint {
 
     public void setTrack(ParseObject track) {
         this.track = track;
+    }
+
+    public float getAccuracy() {
+        return accuracy;
+    }
+
+    public void setAccuracy(float accuracy) {
+        this.accuracy = accuracy;
     }
 }

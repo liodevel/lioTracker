@@ -5,9 +5,9 @@ import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.liodevel.lioapp_1.R;
+import com.liodevel.lioapp_1.Utils.Utils;
 import com.parse.GetCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
@@ -38,7 +38,7 @@ public class SplashActivity extends Activity {
 //                    Log.i("LIOTRACK", "Session: " + object.getSessionToken());
 //                    Log.i("LIOTRACK", "Session: " + ParseUser.getCurrentUser().getUsername());
                     if (ParseUser.getCurrentUser() != null) {
-                        Toast.makeText(SplashActivity.this, "Hi, " + ParseUser.getCurrentUser().getUsername() + "!", Toast.LENGTH_LONG).show();
+                        Utils.showMessage(SplashActivity.this, "Hi, " + ParseUser.getCurrentUser().getUsername() + "!");
                         Intent launchNextActivity;
                         launchNextActivity = new Intent(SplashActivity.this, MapActivity.class);
                         launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

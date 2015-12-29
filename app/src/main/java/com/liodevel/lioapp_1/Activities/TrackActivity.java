@@ -3,13 +3,8 @@ package com.liodevel.lioapp_1.Activities;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -17,13 +12,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -31,22 +24,19 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.liodevel.lioapp_1.Objects.Track;
 import com.liodevel.lioapp_1.Objects.TrackPoint;
 import com.liodevel.lioapp_1.R;
-import com.liodevel.lioapp_1.Utils.Server;
-import com.parse.FindCallback;
-import com.parse.GetCallback;
-import com.parse.Parse;
+import com.liodevel.lioapp_1.Utils.Utils;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseUser;
-import com.parse.SaveCallback;
 
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;;
 
 public class TrackActivity extends AppCompatActivity {
 
@@ -57,6 +47,11 @@ public class TrackActivity extends AppCompatActivity {
     ProgressDialog progressDialog;
     public static Context context;
     String trackObjectId = "";
+    Track currentTrack = new Track();
+    static ProgressDialog progress;
+
+    Toolbar myToolbar;
+    TextView durationInfo, distanceInfo;
 
     static ArrayList<TrackPoint> trackPoints;
 
@@ -67,8 +62,10 @@ public class TrackActivity extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         context = this;
 
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.track_toolbar);
+        myToolbar = (Toolbar) findViewById(R.id.track_toolbar);
         setSupportActionBar(myToolbar);
+        durationInfo = (TextView)findViewById(R.id.text_track_duration_track_info);
+        distanceInfo = (TextView)findViewById(R.id.text_track_distance_track_info);
 
         //progressDialog.show(this, "Track", "Downloading track", true);
         Bundle extras = getIntent().getExtras();
@@ -82,12 +79,17 @@ public class TrackActivity extends AppCompatActivity {
         if (mMap == null) {
             mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapTrack)).getMap();
             if (mMap == null) {
-                Toast.makeText(getApplicationContext(),"Sorry! unable to create maps", Toast.LENGTH_SHORT).show();
+                Utils.showMessage(getApplicationContext(),"Sorry! unable to create maps");
             }
         };
 
 
         getTrackByObjectId(trackObjectId);
+        updateTrackInfo();
+
+
+
+
     }
 
 
@@ -110,6 +112,7 @@ public class TrackActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         actionBarMenu = menu;
         getMenuInflater().inflate(R.menu.menu_actionbar_track, menu);
+
         return true;
     }
 
@@ -145,6 +148,11 @@ public class TrackActivity extends AppCompatActivity {
 
     public boolean getTrackByObjectId(String objectId){
         Log.i("LIOTRACK", "getTrackByObjectId()");
+
+        progress = new ProgressDialog(context);
+        progress.setMessage("Loading track");
+        progress.show();
+
         boolean ret = false;
         LatLng prevPos = null;
         LatLng actualPos = null;
@@ -155,6 +163,10 @@ public class TrackActivity extends AppCompatActivity {
         try {
             List <ParseObject> parseQueriesTrackObject = queryTrackObject.find();
             trackObject = parseQueriesTrackObject.get(0);
+            currentTrack.setObjectId(parseQueriesTrackObject.get(0).getObjectId());
+            currentTrack.setDate((Date) parseQueriesTrackObject.get(0).get("date"));
+            currentTrack.setDateEnd((Date) parseQueriesTrackObject.get(0).get("dateEnd"));
+            currentTrack.setDistance((float)parseQueriesTrackObject.get(0).getDouble("distance"));
             Log.i("LIOTRACK", "Track ID: " + trackObject.getObjectId());
             ret = true;
         } catch (ParseException e) {
@@ -192,7 +204,7 @@ public class TrackActivity extends AppCompatActivity {
                 ret = false;
             }
         }
-        // progressDialog.hide();
+        progress.dismiss();
         return ret;
     }
 
@@ -212,6 +224,53 @@ public class TrackActivity extends AppCompatActivity {
         } catch (ParseException e) {
             Log.i("LIOTRACK", "Error deleting: " + e.toString());
         }
+    }
+
+    void updateTrackInfo(){
+        Date currentDate = new Date();
+        Calendar c = Calendar.getInstance();
+        c.setTime(currentTrack.getDate());
+
+        if (currentDate.getTime() - currentTrack.getDate().getTime() < TimeUnit.MILLISECONDS.convert(6, TimeUnit.DAYS)){
+            String weekDay = "";
+            if (c.get(Calendar.DAY_OF_WEEK) == 1){weekDay = Utils.SATURDAY;}
+            else if (c.get(Calendar.DAY_OF_WEEK) == 2){weekDay = Utils.MONDAY;}
+            else if (c.get(Calendar.DAY_OF_WEEK) == 3){weekDay = Utils.TUESDAY;}
+            else if (c.get(Calendar.DAY_OF_WEEK) == 4){weekDay = Utils.WEDNESDAY;}
+            else if (c.get(Calendar.DAY_OF_WEEK) == 5){weekDay = Utils.THURSDAY;}
+            else if (c.get(Calendar.DAY_OF_WEEK) == 6){weekDay = Utils.FRIDAY;}
+            else if (c.get(Calendar.DAY_OF_WEEK) == 7){weekDay = Utils.SATURDAY;}
+
+            myToolbar.setTitle(new SimpleDateFormat("HH:mm").format(currentTrack.getDate()) + "   " + weekDay);
+        } else {
+            myToolbar.setTitle(new SimpleDateFormat("HH:mm").format(currentTrack.getDate()) + "   " + new SimpleDateFormat("MM-dd-yyyy").format(currentTrack.getDate()));
+        }
+
+        // Distancia
+        DecimalFormat df = new DecimalFormat();
+        df.setMaximumFractionDigits(2);
+        if (currentTrack.getDistance() < 1000) {
+            distanceInfo.setText(df.format(currentTrack.getDistance()) + " m");
+        } else {
+            distanceInfo.setText(df.format((currentTrack.getDistance() / 1000)) + " km");
+        }
+
+        // Duration
+        if (currentTrack.getDateEnd() != null) {
+            Long durationLong = currentTrack.getDateEnd().getTime() - currentTrack.getDate().getTime();
+            // duracion en minutos;
+            durationLong = durationLong / 1000 / 60;
+
+            if (durationLong < 60) {
+                durationInfo.setText(durationLong + " Min");
+            } else {
+                float hours = durationLong / 60;
+                durationInfo.setText(hours + " Hours");
+            }
+        } else {
+            durationInfo.setText("");
+        }
+
     }
 
 }

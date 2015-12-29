@@ -9,14 +9,57 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
-        android:elevation="4dp"
         app:title="Track"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_below="@+id/track_toolbar"
+        android:id="@+id/linearLayout"
+        android:layout_alignParentLeft="true"
+        android:elevation="4dp"
+        android:layout_alignParentStart="true"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar">
+
+        <TextView
+            android:id="@+id/text_track_distance_track_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignWithParentIfMissing="true"
+            android:text="DISTANCE TRACK"
+            android:gravity="center_vertical|left"
+            android:textColor="@android:color/black"
+            android:textSize="16sp"
+            android:paddingLeft="16dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/text_track_date_item" />
+
+        <TextView
+            android:id="@+id/text_track_duration_track_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignWithParentIfMissing="true"
+            android:text="DURATION TRACK"
+            android:gravity="center_vertical|right"
+            android:textColor="@android:color/black"
+            android:textSize="16sp"
+            android:paddingRight="16dp"
+            android:layout_alignBottom="@+id/text_track_distance_item"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignTop="@+id/text_track_distance_item" />
+
+
+    </RelativeLayout>
 
     <fragment
         android:id="@+id/mapTrack"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:layout_below="@+id/linearLayout" />
 
 </RelativeLayout>

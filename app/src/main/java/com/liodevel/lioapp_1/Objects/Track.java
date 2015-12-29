@@ -17,10 +17,12 @@ public class Track {
     ParseUser user;
     Date date;
     Date dateEnd;
-    long distance;      // en metros
+    float distance;      // en metros
     long duration;      // en segundos
     int vehicle;        // 1-Coche; 2-Transporte público; 3-Bici; 4-Andando;
     String info;
+    ParseGeoPoint fromLocation;
+    ParseGeoPoint toLocation;
 
     ArrayList<TrackPoint> trackPoints;
 
@@ -30,6 +32,9 @@ public class Track {
         date = new Date();
         dateEnd = new Date();
         distance = 0;
+        fromLocation = new ParseGeoPoint();
+        toLocation = new ParseGeoPoint();
+
         trackPoints = new ArrayList<>();
     }
 
@@ -65,11 +70,11 @@ public class Track {
         this.dateEnd = dateEnd;
     }
 
-    public long getDistance() {
+    public float getDistance() {
         return distance;
     }
 
-    public void setDistance(long distance) {
+    public void setDistance(float distance) {
         this.distance = distance;
     }
 
@@ -103,5 +108,21 @@ public class Track {
 
     public void setInfo(String info) {
         this.info = info;
+    }
+
+    public ParseGeoPoint getFromLocation() {
+        return fromLocation;
+    }
+
+    public void setFromLocation(ParseGeoPoint fromLocation) {
+        this.fromLocation = fromLocation;
+    }
+
+    public ParseGeoPoint getToLocation() {
+        return toLocation;
+    }
+
+    public void setToLocation(ParseGeoPoint toLocation) {
+        this.toLocation = toLocation;
     }
 }

@@ -7,16 +7,60 @@
     >
     <TextView
         android:id="@+id/text_track_date_item"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
         android:layout_alignWithParentIfMissing="true"
+        android:text="DATE TRACK"
         android:gravity="center_vertical"
-        android:text="Example application"
         android:textColor="@android:color/black"
         android:textSize="16sp"
-        android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:padding="12dp"/>
+        android:paddingLeft="12dp"/>
+    <TextView
+        android:id="@+id/text_track_distance_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignWithParentIfMissing="true"
+        android:text="DISTANCE TRACK"
+        android:gravity="center_vertical|left"
+        android:textColor="@android:color/black"
+        android:textSize="12sp"
+        android:paddingLeft="16dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/text_track_date_item" />
+
+    <TextView
+        android:id="@+id/text_track_duration_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignWithParentIfMissing="true"
+        android:text="DURATION TRACK"
+        android:gravity="center_vertical|right"
+        android:textColor="@android:color/black"
+        android:textSize="12sp"
+        android:paddingRight="16dp"
+        android:layout_alignBottom="@+id/text_track_distance_item"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/text_track_distance_item" />
+
+    <TextView
+        android:id="@+id/text_track_from_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignWithParentIfMissing="true"
+        android:text=""
+        android:gravity="center_vertical|right"
+        android:textColor="@android:color/black"
+        android:textSize="12sp"
+        android:paddingRight="16dp"
+        android:layout_alignBaseline="@+id/text_track_date_item"
+        android:layout_alignBottom="@+id/text_track_date_item"
+        android:layout_alignRight="@+id/text_track_duration_item"
+        android:layout_alignEnd="@+id/text_track_duration_item" />
+
 
 </RelativeLayout>
