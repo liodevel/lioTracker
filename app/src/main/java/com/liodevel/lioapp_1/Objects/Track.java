@@ -23,6 +23,7 @@ public class Track {
     String info;
     ParseGeoPoint fromLocation;
     ParseGeoPoint toLocation;
+    boolean favorite;
 
     boolean isChecked;
 
@@ -36,6 +37,7 @@ public class Track {
         distance = 0;
         fromLocation = new ParseGeoPoint();
         toLocation = new ParseGeoPoint();
+        favorite = false;
 
         isChecked = false;
         trackPoints = new ArrayList<>();
@@ -135,5 +137,13 @@ public class Track {
 
     public void setIsChecked(boolean isChecked) {
         this.isChecked = isChecked;
+    }
+
+    public boolean isFavorite() {
+        return favorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        this.favorite = favorite;
     }
 }

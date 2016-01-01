@@ -1,0 +1,20 @@
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="example_switch"
+        android:summary="@string/pref_description_social_recommendations"
+        android:title="@string/pref_title_social_recommendations" />
+
+    <header
+        android:fragment="com.liodevel.lioapp_1.Activities.SettingsActivity$GeneralPreferenceFragment"
+        android:icon="@drawable/ic_info_black_36dp"
+        android:title="@string/pref_header_general" />
+
+    <!--
+    <header
+        android:fragment="com.liodevel.lioapp_1.Activities.SettingsActivity$NotificationPreferenceFragment"
+        android:icon="@drawable/ic_account_box_black_36dp"
+        android:title="@string/pref_header_notifications" />
+    -->
+</preference-headers>
