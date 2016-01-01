@@ -40,6 +40,7 @@ import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Timer;
@@ -48,29 +49,28 @@ import java.util.TimerTask;
 public class MapActivity extends AppCompatActivity {
 
     private GoogleMap mMap;
-    Button startTrackButton;
-    Menu actionBarMenu;
-    Marker marker;
-    MarkerOptions markerOptions;
+    private Button startTrackButton;
+    private Menu actionBarMenu;
+    private Marker marker;
+    private MarkerOptions markerOptions;
 
     private boolean tracking = false;
     private boolean trackerReady = false;
     private boolean centerMap = true;
     private Boolean exit = false;
     private String currentTrackObjectId = "";
-    ParseObject currentTrack = null;
+    private ParseObject currentTrack = null;
 
+    private Location prevLocation;
+    private Location lastLocation;
+    private float currentTrackDistance = 0;
 
-    Location prevLocation;
-    Location lastLocation;
-    float currentTrackDistance = 0;
+    private LocationManager locationManager;
+    private LocationListener locationListener;
 
-    LocationManager locationManager;
-    LocationListener locationListener;
-
-    Timer timer;
-    TimerTask timerTask;
-    final Handler handler = new Handler();
+    private Timer timer;
+    private TimerTask timerTask;
+    private final Handler handler = new Handler();
 
 
     @Override
@@ -81,11 +81,13 @@ public class MapActivity extends AppCompatActivity {
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.map_toolbar);
         setSupportActionBar(myToolbar);
+        myToolbar.setLogo(R.drawable.logo_app_no_name_128);
+        myToolbar.setTitle("");
 
+
+        // Inicializar mapa
         try {
-            // Inicializar mapa
             initMap();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -101,7 +103,7 @@ public class MapActivity extends AppCompatActivity {
         super.onResume();
         if (!trackerReady){
             startTrackButton = (Button) findViewById(R.id.buttonStart);
-            startTrackButton.setBackgroundColor(Color.argb(100, 20, 175, 20));
+            startTrackButton.setBackgroundColor(getResources().getColor(R.color.liodevel_dark_green));
             startTrackButton.setText("Getting Location...");
             if (actionBarMenu != null){
                 actionBarMenu.findItem(R.id.map_action_start_track).setVisible(false);
@@ -109,7 +111,7 @@ public class MapActivity extends AppCompatActivity {
             }
 
         } else {
-            startTrackButton.setBackgroundColor(Color.argb(255, 20, 175, 20));
+            startTrackButton.setBackgroundColor(getResources().getColor(R.color.liodevel_light_green));
             startTrackButton.setText("Ready");
             if (actionBarMenu != null){
                 actionBarMenu.findItem(R.id.map_action_start_track).setVisible(true);
@@ -117,7 +119,7 @@ public class MapActivity extends AppCompatActivity {
             }
         }
         if (tracking){
-            startTrackButton.setBackgroundColor(Color.argb(100, 175, 20, 20));
+            startTrackButton.setBackgroundColor(getResources().getColor(R.color.liodevel_red));
             startTrackButton.setText("Tracking...");
             actionBarMenu.findItem(R.id.map_action_start_track).setVisible(true);
             actionBarMenu.findItem(R.id.map_action_center_map).setVisible(true);
@@ -134,7 +136,7 @@ public class MapActivity extends AppCompatActivity {
         super.onRestart();
         if (!trackerReady){
             startTrackButton = (Button) findViewById(R.id.buttonStart);
-            startTrackButton.setBackgroundColor(Color.argb(100, 20, 175, 20));
+            startTrackButton.setBackgroundColor(getResources().getColor(R.color.liodevel_dark_green));
             startTrackButton.setText("Getting Location...");
             if (actionBarMenu != null) {
                 actionBarMenu.findItem(R.id.map_action_start_track).setVisible(false);
@@ -142,7 +144,7 @@ public class MapActivity extends AppCompatActivity {
             }
 
         } else {
-            startTrackButton.setBackgroundColor(Color.argb(255, 20, 175, 20));
+            startTrackButton.setBackgroundColor(getResources().getColor(R.color.liodevel_light_green));
             startTrackButton.setText("Ready");
             if (actionBarMenu != null) {
                 actionBarMenu.findItem(R.id.map_action_start_track).setVisible(true);
@@ -150,7 +152,7 @@ public class MapActivity extends AppCompatActivity {
             }
         }
         if (tracking){
-            startTrackButton.setBackgroundColor(Color.argb(100, 175, 20, 20));
+            startTrackButton.setBackgroundColor(getResources().getColor(R.color.liodevel_red));
             startTrackButton.setText("Tracking...");
             actionBarMenu.findItem(R.id.map_action_start_track).setVisible(true);
             actionBarMenu.findItem(R.id.map_action_center_map).setVisible(true);
@@ -190,11 +192,11 @@ public class MapActivity extends AppCompatActivity {
             case R.id.map_action_center_map:
                 if (centerMap){
                     centerMap = false;
-                    actionBarMenu.findItem(R.id.map_action_center_map).setIcon(R.drawable.abc_btn_radio_to_on_mtrl_000);
+                    actionBarMenu.findItem(R.id.map_action_center_map).setIcon(R.drawable.ic_action_center_ko);
                 } else {
                     centerMap();
                     centerMap = true;
-                    actionBarMenu.findItem(R.id.map_action_center_map).setIcon(R.drawable.abc_btn_radio_to_on_mtrl_015);
+                    actionBarMenu.findItem(R.id.map_action_center_map).setIcon(R.drawable.ic_action_center_ok);
                 }
                 return true;
 
@@ -258,7 +260,7 @@ public class MapActivity extends AppCompatActivity {
         if (exit) {
             finish(); // finish activity
         } else {
-            Utils.showMessage(this, "Press Back again to Exit");
+            Utils.showMessage(getApplicationContext(), "Press Back again to Exit");
             exit = true;
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -304,7 +306,7 @@ public class MapActivity extends AppCompatActivity {
                         marker.setIcon((BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
                     } else {
                         marker.setIcon((BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
-                        startTrackButton.setBackgroundColor(Color.argb(255, 20, 175, 20));
+                        startTrackButton.setBackgroundColor(getResources().getColor(R.color.liodevel_light_green));
                         startTrackButton.setText("Ready");
                     }
 
@@ -335,7 +337,7 @@ public class MapActivity extends AppCompatActivity {
             // START TRACKING
             if (startTrack() == 0) {
                 // Start track correcto
-                startTrackButton.setBackgroundColor(Color.argb(100, 175, 20, 20));
+                startTrackButton.setBackgroundColor(getResources().getColor(R.color.liodevel_red));
                 startTrackButton.setText("Tracking...");
                 tracking = true;
                 currentTrackDistance = 0;
@@ -362,13 +364,16 @@ public class MapActivity extends AppCompatActivity {
                 public void done(com.parse.ParseException e) {
                     if (e == null) {
                         Log.i("SAVE startTrack", "OK");
+                        Utils.showMessage(getApplicationContext(), "Track successfully saved");
                     } else {
                         Log.i("SAVE startTrack", "ERROR: " + e.toString());
+                        Utils.showMessage(getApplicationContext(), "Sorry, error saving Track :(");
+
                     }
                 }
             });
 
-            startTrackButton.setBackgroundColor(Color.argb(255, 20, 175, 20));
+            startTrackButton.setBackgroundColor(getResources().getColor(R.color.liodevel_light_green));
             startTrackButton.setText("Ready");
             tracking = false;
 
@@ -450,6 +455,7 @@ public class MapActivity extends AppCompatActivity {
         Log.i("SEND", "startTrack()");
         int ret = -1;
         mMap.clear();
+        currentTrackDistance = 0;
         markerOptions = new MarkerOptions()
                 .position(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()))
                 .title("Hi!")
@@ -494,6 +500,13 @@ public class MapActivity extends AppCompatActivity {
 
             if (prevLocation != null){
                 currentTrackDistance = currentTrackDistance + prevLocation.distanceTo(lastLocation);
+                DecimalFormat df = new DecimalFormat();
+                df.setMaximumFractionDigits(2);
+                if (currentTrackDistance < 1000) {
+                    startTrackButton.setText(df.format(currentTrackDistance) + " m");
+                } else {
+                    startTrackButton.setText(df.format((currentTrackDistance / 1000)) + " km");
+                }
                 drawTrackPoint(
                         new LatLng(prevLocation.getLatitude(), prevLocation.getLongitude()),
                         new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()));

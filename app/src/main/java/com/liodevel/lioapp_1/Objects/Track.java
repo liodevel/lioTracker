@@ -17,12 +17,14 @@ public class Track {
     ParseUser user;
     Date date;
     Date dateEnd;
-    float distance;      // en metros
-    long duration;      // en segundos
-    int vehicle;        // 1-Coche; 2-Transporte público; 3-Bici; 4-Andando;
+    float distance;         // en metros
+    long duration;          // en segundos
+    int vehicle;            // 1-Coche; 2-Transporte público; 3-Bici; 4-Andando;
     String info;
     ParseGeoPoint fromLocation;
     ParseGeoPoint toLocation;
+
+    boolean isChecked;
 
     ArrayList<TrackPoint> trackPoints;
 
@@ -35,6 +37,7 @@ public class Track {
         fromLocation = new ParseGeoPoint();
         toLocation = new ParseGeoPoint();
 
+        isChecked = false;
         trackPoints = new ArrayList<>();
     }
 
@@ -124,5 +127,13 @@ public class Track {
 
     public void setToLocation(ParseGeoPoint toLocation) {
         this.toLocation = toLocation;
+    }
+
+    public boolean isChecked() {
+        return isChecked;
+    }
+
+    public void setIsChecked(boolean isChecked) {
+        this.isChecked = isChecked;
     }
 }

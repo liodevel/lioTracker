@@ -154,7 +154,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         startActivity(launchNextActivity);
                     } else {
                         showProgress(false);
-                        Utils.showMessage(LoginActivity.this, "Incorrect eMail or password");
+                        Utils.showMessage(getApplicationContext(), "Incorrect eMail or password");
                     }
                 }
             });
@@ -214,7 +214,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 public void done(ParseException e) {
                     if (e == null) {
                         Log.i("LIOTRACK", "Register: OK: " + email);
-                        Utils.showMessage(LoginActivity.this, "Hi, " + email + "!");
+                        Utils.showMessage(getApplicationContext(), "Hi, " + email + "!");
                         parseUser.logInInBackground(email, password, new LogInCallback() {
                             @Override
                             public void done(ParseUser user, ParseException e) {
@@ -229,7 +229,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                 } else {
                                     showProgress(false);
                                     Log.i("LIOTRACK", "LOGIN ERROR: " + e.toString());
-                                    Utils.showMessage(LoginActivity.this, "Login error, retry please");
+                                    Utils.showMessage(getApplicationContext(), "Login error, retry please");
 
                                 }
                             }
@@ -241,9 +241,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         showProgress(false);
                         Log.i("LIOTRACK", "Register: ERROR: " + e.toString());
                         if (e.toString().contains("username") && e.toString().contains("taken")){
-                            Utils.showMessage(LoginActivity.this, "Username " + email + " already taken!");
+                            Utils.showMessage(getApplicationContext(), "Username " + email + " already taken!");
                         } else {
-                            Utils.showMessage(LoginActivity.this, "Error, please retry...");
+                            Utils.showMessage(getApplicationContext(), "Error, please retry...");
                         }
                     }
                 }

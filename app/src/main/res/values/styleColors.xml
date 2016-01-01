@@ -6,4 +6,12 @@
     <color name="grey">#aaaaaa</color>
     <color name="light_grey">#eeeeee</color>
 
+    <color name="liodevel_light_green">#51a451</color>
+    <color name="liodevel_dark_green">#336833</color>
+    <color name="liodevel_dark_grey">#444137</color>
+    <color name="liodevel_grey">#6f6b62</color>
+    <color name="liodevel_white">#e7dcbd</color>
+    <color name="liodevel_red">#bb5533</color>
+
+
 </resources>

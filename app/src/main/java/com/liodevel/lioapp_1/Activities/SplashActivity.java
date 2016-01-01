@@ -24,6 +24,7 @@ public class SplashActivity extends Activity {
 
 
         try {
+            Parse.enableLocalDatastore(this);
             Parse.initialize(this);
 
         } catch (Exception e){

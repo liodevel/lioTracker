@@ -10,7 +10,7 @@
         android:id="@+id/my_tracks_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
+        android:background="@color/liodevel_white"
         android:elevation="4dp"
         app:title="My tracks"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"/>

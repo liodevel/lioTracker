@@ -40,6 +40,12 @@ public class MyTracksListAdapter extends ArrayAdapter<Track> {
         TextView distance = (TextView) convertView.findViewById(R.id.text_track_distance_item);
         TextView duration = (TextView) convertView.findViewById(R.id.text_track_duration_item);
 
+        if (track.isChecked()){
+            convertView.setBackground(getContext().getResources().getDrawable(R.drawable.item_selected));
+        } else {
+            convertView.setBackground(getContext().getResources().getDrawable(R.drawable.item));
+        }
+
         // Fecha Inicio
         Date currentDate = new Date();
         Calendar c = Calendar.getInstance();

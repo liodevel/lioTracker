@@ -3,6 +3,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     style="@android:style/Widget.ActionButton"
     android:contentDescription="@string/app_name"
-    android:src="@drawable/ic_rec_24dp"
+    android:src="@drawable/ic_room_black_24dp"
     android:onClick="clickStart"
     />
