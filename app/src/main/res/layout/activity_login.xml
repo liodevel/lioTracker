@@ -24,9 +24,7 @@
         android:layout_height="88dp"
         android:id="@+id/logoLiodevelSplash"
         android:background="@drawable/logo_app"
-        android:scaleType="matrix"
-        android:layout_above="@+id/pieSplash"
-        android:layout_centerHorizontal="true" />
+        android:scaleType="matrix" />
     <TextView
         android:layout_width="match_parent"
         android:layout_height="75dp"

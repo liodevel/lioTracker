@@ -27,11 +27,8 @@ import android.widget.TextView;
 
 import com.liodevel.lioapp_1.R;
 import com.liodevel.lioapp_1.Utils.Utils;
-import com.parse.GetCallback;
 import com.parse.LogInCallback;
-import com.parse.Parse;
 import com.parse.ParseException;
-import com.parse.ParseSession;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
@@ -140,10 +137,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             ParseUser parseUser = new ParseUser();
             parseUser.setUsername(email);
             parseUser.setPassword(password);
-            parseUser.logInInBackground(email, password, new LogInCallback() {
+            ParseUser.logInInBackground(email, password, new LogInCallback() {
                 @Override
                 public void done(ParseUser user, ParseException e) {
-                    if (user != null && user.isAuthenticated()){
+                    if (user != null && user.isAuthenticated()) {
                         Log.i("LIOTRACK", "Login: OK");
 
                         Intent launchNextActivity;
@@ -215,7 +212,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     if (e == null) {
                         Log.i("LIOTRACK", "Register: OK: " + email);
                         Utils.showMessage(getApplicationContext(), "Hi, " + email + "!");
-                        parseUser.logInInBackground(email, password, new LogInCallback() {
+                        ParseUser.logInInBackground(email, password, new LogInCallback() {
                             @Override
                             public void done(ParseUser user, ParseException e) {
                                 if (user != null && user.isAuthenticated()) {

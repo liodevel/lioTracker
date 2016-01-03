@@ -2,7 +2,6 @@ package com.liodevel.lioapp_1.Objects;
 
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
-import com.parse.ParseUser;
 
 import java.util.Date;
 
@@ -11,11 +10,11 @@ import java.util.Date;
  */
 public class TrackPoint {
 
-    String objectId;
-    ParseObject track;
-    ParseGeoPoint position;
-    Date date;
-    float accuracy;
+    private String objectId;
+    private ParseObject track;
+    private ParseGeoPoint position;
+    private Date date;
+    private float accuracy;
 
     public TrackPoint() {
         objectId = "";

@@ -11,7 +11,9 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -29,6 +31,7 @@ import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.SaveCallback;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -36,22 +39,24 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;;
+import java.util.concurrent.TimeUnit;
 
 public class TrackActivity extends AppCompatActivity {
 
     private GoogleMap mMap;
-    Menu actionBarMenu;
-    Marker marker;
-    MarkerOptions markerOptions;
+    private Menu actionBarMenu;
     ProgressDialog progressDialog;
-    public static Context context;
-    String trackObjectId = "";
-    Track currentTrack = new Track();
-    static ProgressDialog progress;
+    private static Context context;
+    private String trackObjectId = "";
+    private Track currentTrack = new Track();
+    private static ProgressDialog progress;
+    ParseObject trackObject = null;
 
-    Toolbar myToolbar;
-    TextView durationInfo, distanceInfo;
+    private Toolbar myToolbar;
+    private TextView durationInfo;
+    private TextView distanceInfo;
+    private TextView info;
+    private EditText editInfo;
 
     static ArrayList<TrackPoint> trackPoints;
 
@@ -64,12 +69,14 @@ public class TrackActivity extends AppCompatActivity {
 
         myToolbar = (Toolbar) findViewById(R.id.track_toolbar);
         setSupportActionBar(myToolbar);
-        durationInfo = (TextView)findViewById(R.id.text_track_duration_track_info);
-        distanceInfo = (TextView)findViewById(R.id.text_track_distance_track_info);
+        durationInfo = (TextView) findViewById(R.id.text_track_duration_track_info);
+        distanceInfo = (TextView) findViewById(R.id.text_track_distance_track_info);
+        info = (TextView) findViewById(R.id.text_track_info);
+        editInfo = (EditText) findViewById(R.id.edit_info);
 
         //progressDialog.show(this, "Track", "Downloading track", true);
         Bundle extras = getIntent().getExtras();
-        if(extras == null) {
+        if (extras == null) {
             trackObjectId = "";
         } else {
             trackObjectId = extras.getString("objectId");
@@ -79,33 +86,34 @@ public class TrackActivity extends AppCompatActivity {
         if (mMap == null) {
             mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapTrack)).getMap();
             if (mMap == null) {
-                Utils.showMessage(getApplicationContext(),"Sorry! unable to create maps");
+                Utils.showMessage(getApplicationContext(), "Sorry! unable to create maps");
             }
-        };
-
+        }
 
         getTrackByObjectId(trackObjectId);
         updateTrackInfo();
-
-
-
-
     }
 
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        updateTrack();
+    }
 
     /**
      * Dibuja una linea en el mapa
+     *
      * @param start
      * @param end
      */
-    public void drawTrackPoint(LatLng start, LatLng end){
-        PolylineOptions line =
-                new PolylineOptions().add(start, end)
-                        .width(10).color(Color.BLACK);
-        mMap.addPolyline(line);
+    private void drawTrackPoint(LatLng start, LatLng end) {
+        if (mMap != null) {
+            PolylineOptions line =
+                    new PolylineOptions().add(start, end)
+                            .width(10).color(Color.BLACK);
+            mMap.addPolyline(line);
+        }
     }
-
 
 
     @Override
@@ -123,7 +131,7 @@ public class TrackActivity extends AppCompatActivity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder
                         .setMessage("Delete track")
-                        .setPositiveButton("Yes",  new DialogInterface.OnClickListener() {
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
                                 deleteTrackByObjectId(trackObjectId);
@@ -132,7 +140,7 @@ public class TrackActivity extends AppCompatActivity {
                         })
                         .setNegativeButton("No", new DialogInterface.OnClickListener() {
                             @Override
-                            public void onClick(DialogInterface dialog,int id) {
+                            public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
                             }
                         })
@@ -145,8 +153,13 @@ public class TrackActivity extends AppCompatActivity {
         }
     }
 
-
-    public boolean getTrackByObjectId(String objectId){
+    /**
+     * Get currentTrack
+     *
+     * @param objectId
+     * @return
+     */
+    private boolean getTrackByObjectId(String objectId) {
         Log.i("LIOTRACK", "getTrackByObjectId()");
 
         progress = new ProgressDialog(context);
@@ -156,17 +169,17 @@ public class TrackActivity extends AppCompatActivity {
         boolean ret = false;
         LatLng prevPos = null;
         LatLng actualPos = null;
-        ParseObject trackObject = null;
 
         ParseQuery<ParseObject> queryTrackObject = ParseQuery.getQuery("track");
         queryTrackObject.whereEqualTo("objectId", objectId);
         try {
-            List <ParseObject> parseQueriesTrackObject = queryTrackObject.find();
+            List<ParseObject> parseQueriesTrackObject = queryTrackObject.find();
             trackObject = parseQueriesTrackObject.get(0);
             currentTrack.setObjectId(parseQueriesTrackObject.get(0).getObjectId());
             currentTrack.setDate((Date) parseQueriesTrackObject.get(0).get("date"));
             currentTrack.setDateEnd((Date) parseQueriesTrackObject.get(0).get("dateEnd"));
-            currentTrack.setDistance((float)parseQueriesTrackObject.get(0).getDouble("distance"));
+            currentTrack.setDistance((float) parseQueriesTrackObject.get(0).getDouble("distance"));
+            currentTrack.setInfo((String) parseQueriesTrackObject.get(0).get("info"));
             Log.i("LIOTRACK", "Track ID: " + trackObject.getObjectId());
             ret = true;
         } catch (ParseException e) {
@@ -193,7 +206,9 @@ public class TrackActivity extends AppCompatActivity {
                         drawTrackPoint(prevPos, actualPos);
                     } else {
                         // Centrar en primera localización
-                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(actualPos, 16));
+                        if (mMap != null){
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(actualPos, 16));
+                        }
                     }
                     prevPos = actualPos;
                 }
@@ -208,14 +223,18 @@ public class TrackActivity extends AppCompatActivity {
         return ret;
     }
 
-    public void deleteTrackByObjectId(String objectId){
+    /**
+     * Borrar Track
+     * @param objectId
+     */
+    private void deleteTrackByObjectId(String objectId) {
         Log.i("LIOTRACK", "deleteTrackByObjectId()");
         ParseObject trackObject = null;
 
         ParseQuery<ParseObject> queryTrackObject = ParseQuery.getQuery("track");
         queryTrackObject.whereEqualTo("objectId", objectId);
         try {
-            List <ParseObject> parseQueriesTrackObject = queryTrackObject.find();
+            List<ParseObject> parseQueriesTrackObject = queryTrackObject.find();
             trackObject = parseQueriesTrackObject.get(0);
             trackObject.delete();
             trackObject.saveInBackground();
@@ -226,20 +245,39 @@ public class TrackActivity extends AppCompatActivity {
         }
     }
 
-    void updateTrackInfo(){
+    private void updateTrackInfo() {
         Date currentDate = new Date();
         Calendar c = Calendar.getInstance();
         c.setTime(currentTrack.getDate());
 
-        if (currentDate.getTime() - currentTrack.getDate().getTime() < TimeUnit.MILLISECONDS.convert(6, TimeUnit.DAYS)){
+        // Info
+        if (currentTrack.getInfo() != null && currentTrack.getInfo().length() > 0) {
+            info.setText(currentTrack.getInfo());
+            editInfo.setText(currentTrack.getInfo());
+        } else {
+            info.setText("Insert track info here");
+            editInfo.setText("Insert track info here");
+            info.setTextColor(getResources().getColor(R.color.liodevel_grey));
+        }
+
+        // Date
+        if (currentDate.getTime() - currentTrack.getDate().getTime() < TimeUnit.MILLISECONDS.convert(6, TimeUnit.DAYS)) {
             String weekDay = "";
-            if (c.get(Calendar.DAY_OF_WEEK) == 1){weekDay = Utils.SATURDAY;}
-            else if (c.get(Calendar.DAY_OF_WEEK) == 2){weekDay = Utils.MONDAY;}
-            else if (c.get(Calendar.DAY_OF_WEEK) == 3){weekDay = Utils.TUESDAY;}
-            else if (c.get(Calendar.DAY_OF_WEEK) == 4){weekDay = Utils.WEDNESDAY;}
-            else if (c.get(Calendar.DAY_OF_WEEK) == 5){weekDay = Utils.THURSDAY;}
-            else if (c.get(Calendar.DAY_OF_WEEK) == 6){weekDay = Utils.FRIDAY;}
-            else if (c.get(Calendar.DAY_OF_WEEK) == 7){weekDay = Utils.SATURDAY;}
+            if (c.get(Calendar.DAY_OF_WEEK) == 1) {
+                weekDay = Utils.SATURDAY;
+            } else if (c.get(Calendar.DAY_OF_WEEK) == 2) {
+                weekDay = Utils.MONDAY;
+            } else if (c.get(Calendar.DAY_OF_WEEK) == 3) {
+                weekDay = Utils.TUESDAY;
+            } else if (c.get(Calendar.DAY_OF_WEEK) == 4) {
+                weekDay = Utils.WEDNESDAY;
+            } else if (c.get(Calendar.DAY_OF_WEEK) == 5) {
+                weekDay = Utils.THURSDAY;
+            } else if (c.get(Calendar.DAY_OF_WEEK) == 6) {
+                weekDay = Utils.FRIDAY;
+            } else if (c.get(Calendar.DAY_OF_WEEK) == 7) {
+                weekDay = Utils.SATURDAY;
+            }
 
             myToolbar.setTitle(new SimpleDateFormat("HH:mm").format(currentTrack.getDate()) + "   " + weekDay);
         } else {
@@ -258,19 +296,53 @@ public class TrackActivity extends AppCompatActivity {
         // Duration
         if (currentTrack.getDateEnd() != null) {
             Long durationLong = currentTrack.getDateEnd().getTime() - currentTrack.getDate().getTime();
+            double durationDouble;
             // duracion en minutos;
-            durationLong = durationLong / 1000 / 60;
+            durationDouble = durationLong / 1000 / 60;
 
-            if (durationLong < 60) {
-                durationInfo.setText(durationLong + " Min");
+            if (durationDouble < 60) {
+                durationInfo.setText(df.format(durationDouble) + " Min");
             } else {
-                float hours = durationLong / 60;
-                durationInfo.setText(hours + " Hours");
+                double hours = durationDouble / 60;
+                durationInfo.setText(df.format(hours) + " Hours");
             }
         } else {
             durationInfo.setText("");
         }
 
     }
+
+    /**
+     * Oculta Info y muestra el EditInfo
+     * @param v
+     */
+    public void toggleVisibilityInfo(View v) {
+        editInfo.setVisibility(View.VISIBLE);
+        info.setVisibility(View.INVISIBLE);
+    }
+
+    /**
+     * Actualiza campo info en la Base de datos
+     */
+    private void updateTrack() {
+
+        if (!editInfo.getText().toString().equals(info.getText().toString())) {
+            trackObject.put("info", editInfo.getText().toString());
+            trackObject.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(com.parse.ParseException e) {
+                    if (e == null) {
+                        Log.i("SAVE startTrack", "OK");
+                        Utils.showMessage(getApplicationContext(), "Track info successfully saved");
+                    } else {
+                        Log.i("SAVE startTrack", "ERROR: " + e.toString());
+                        Utils.showMessage(getApplicationContext(), "Sorry, error saving Track info :(");
+
+                    }
+                }
+            });
+        }
+    }
+
 
 }

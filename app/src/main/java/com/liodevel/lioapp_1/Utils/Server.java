@@ -1,12 +1,10 @@
 package com.liodevel.lioapp_1.Utils;
 
 import android.util.Log;
-import android.widget.Toast;
 
 import com.liodevel.lioapp_1.Objects.Track;
 import com.liodevel.lioapp_1.Objects.TrackPoint;
 import com.parse.FindCallback;
-import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;

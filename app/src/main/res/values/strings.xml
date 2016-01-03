@@ -27,7 +27,7 @@
     <string name="pref_header_general">General</string>
 
     <string name="pref_only_gps">Only GPS</string>
-    <string name="pref_desc_only_gps">Disable othre location services</string>
+    <string name="pref_desc_only_gps">Disable other location services</string>
 
 
     <string name="pref_title_social_recommendations">Enable social recommendations</string>

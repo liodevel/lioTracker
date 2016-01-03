@@ -1,7 +1,5 @@
 package com.liodevel.lioapp_1.Objects;
 
-import android.location.Location;
-
 import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
 
@@ -13,21 +11,21 @@ import java.util.Date;
  */
 public class Track {
 
-    String objectId;
-    ParseUser user;
-    Date date;
-    Date dateEnd;
-    float distance;         // en metros
-    long duration;          // en segundos
-    int vehicle;            // 1-Coche; 2-Transporte público; 3-Bici; 4-Andando;
-    String info;
-    ParseGeoPoint fromLocation;
-    ParseGeoPoint toLocation;
-    boolean favorite;
+    private String objectId;
+    private ParseUser user;
+    private Date date;
+    private Date dateEnd;
+    private float distance;         // en metros
+    private long duration;          // en segundos
+    private int vehicle;            // 1-Coche; 2-Transporte público; 3-Bici; 4-Andando;
+    private String info;
+    private ParseGeoPoint fromLocation;
+    private ParseGeoPoint toLocation;
+    private boolean favorite;
 
-    boolean isChecked;
+    private boolean isChecked;
 
-    ArrayList<TrackPoint> trackPoints;
+    private ArrayList<TrackPoint> trackPoints;
 
     public Track() {
         objectId = "";

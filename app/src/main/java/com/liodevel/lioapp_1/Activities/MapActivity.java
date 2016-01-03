@@ -22,7 +22,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -50,32 +49,37 @@ import java.util.TimerTask;
 
 public class MapActivity extends AppCompatActivity {
 
-    private GoogleMap mMap;
+    private Boolean exit = false;
+
+    // VIEW
     private TextView textInfo, textProviderInfo;
     private Menu actionBarMenu;
+
+    // MAPS
+    private GoogleMap mMap;
     private Marker marker;
     private MarkerOptions markerOptions;
+    private boolean centerMap = true;
 
+    // TRACKING
     private boolean tracking = false;
     private boolean trackerReady = false;
-    private boolean centerMap = true;
-    private Boolean exit = false;
     private String currentTrackObjectId = "";
     private ParseObject currentTrack = null;
-
     private Location prevLocation;
     private Location lastLocation;
     private float currentTrackDistance = 0;
-
     private LocationManager locationManager;
     private LocationListener locationListener;
 
+    // TIMER
     private Timer timer;
     private TimerTask timerTask;
     private final Handler handler = new Handler();
 
-    // Preferences
+    // PREFERENCIAS
     private boolean onlyGPS = true;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,11 +107,7 @@ public class MapActivity extends AppCompatActivity {
         textProviderInfo = (TextView) findViewById(R.id.text_provider_info);
 
         textInfo.setText("Getting Location...");
-        if (onlyGPS){
-            textProviderInfo.setText("GPS");
-        } else {
-            textProviderInfo.setText("GPS\nNetwork");
-        }
+        updateGpsProviders();
     }
 
     @Override
@@ -116,39 +116,9 @@ public class MapActivity extends AppCompatActivity {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         onlyGPS = prefs.getBoolean("only_gps", true);
 
-        if (!trackerReady){
-            textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_dark_green));
-            textInfo.setText("Getting Location...");
-            if (actionBarMenu != null){
-                actionBarMenu.findItem(R.id.map_action_start_track).setVisible(false);
-                actionBarMenu.findItem(R.id.map_action_center_map).setVisible(false);
-            }
+        updateViews();
+        updateGpsProviders();
 
-        } else {
-            textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_light_green));
-            textInfo.setText("Ready");
-            if (actionBarMenu != null){
-                actionBarMenu.findItem(R.id.map_action_start_track).setVisible(true);
-                actionBarMenu.findItem(R.id.map_action_center_map).setVisible(true);
-            }
-        }
-        if (tracking){
-            textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_red));
-            textInfo.setText("Tracking");
-            actionBarMenu.findItem(R.id.map_action_start_track).setVisible(true);
-            actionBarMenu.findItem(R.id.map_action_center_map).setVisible(true);
-        }
-        try {
-            if (!onlyGPS){
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-                textProviderInfo.setText("GPS\nNetwork");
-            } else {
-                textProviderInfo.setText("GPS");
-            }
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-        } catch (Exception e){
-
-        }
     }
 
     @Override
@@ -156,39 +126,10 @@ public class MapActivity extends AppCompatActivity {
         super.onRestart();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         onlyGPS = prefs.getBoolean("only_gps", true);
-        if (!trackerReady){
-            textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_dark_green));
-            textInfo.setText("Getting Location...");
-            if (actionBarMenu != null) {
-                actionBarMenu.findItem(R.id.map_action_start_track).setVisible(false);
-                actionBarMenu.findItem(R.id.map_action_center_map).setVisible(false);
-            }
 
-        } else {
-            textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_light_green));
-            textInfo.setText("Ready");
-            if (actionBarMenu != null) {
-                actionBarMenu.findItem(R.id.map_action_start_track).setVisible(true);
-                actionBarMenu.findItem(R.id.map_action_center_map).setVisible(true);
-            }
-        }
-        if (tracking){
-            textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_red));
-            textInfo.setText("Tracking");
-            actionBarMenu.findItem(R.id.map_action_start_track).setVisible(true);
-            actionBarMenu.findItem(R.id.map_action_center_map).setVisible(true);
-        }
-        try {
-            if (!onlyGPS){
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-                textProviderInfo.setText("GPS\nNetwork");
-            } else {
-                textProviderInfo.setText("GPS");
-            }
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-        } catch (Exception e){
+        updateViews();
+        updateGpsProviders();
 
-        }
     }
 
     @Override
@@ -197,12 +138,31 @@ public class MapActivity extends AppCompatActivity {
         try {
             timerTask.cancel();
         } catch (Exception e){
+            Log.e("LIOTRACKS", "Error: " + e.toString());
+        }
+        try {
+            currentTrack.put("dateEnd", new Date(System.currentTimeMillis()));
+            currentTrack.put("distance", currentTrackDistance);
+            currentTrack.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(com.parse.ParseException e) {
+                    if (e == null) {
+                        Log.i("SAVE startTrack", "OK");
+                        Utils.showMessage(getApplicationContext(), "Track successfully saved");
+                    } else {
+                        Log.i("SAVE startTrack", "ERROR: " + e.toString());
+                        Utils.showMessage(getApplicationContext(), "Sorry, error saving Track :(");
 
+                    }
+                }
+            });
+        } catch (Exception e){
+            Log.e("LIOTRACKS", "Error: " + e.toString());
         }
         try {
             locationManager.removeUpdates(locationListener);
         } catch (Exception e){
-
+            Log.e("LIOTRACKS", "Error: " + e.toString());
         }
     }
 
@@ -308,13 +268,13 @@ public class MapActivity extends AppCompatActivity {
     /**
      * Inicializar Mapa
      */
-    public void initMap() {
+    private void initMap() {
         if (mMap == null) {
             mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
             if (mMap == null) {
                 Utils.showMessage(getApplicationContext(), "Sorry! unable to create maps");
             }
-        };
+        }
 
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
@@ -325,28 +285,31 @@ public class MapActivity extends AppCompatActivity {
                     trackerReady = true;
                     actionBarMenu.findItem(R.id.map_action_start_track).setVisible(true);
                     actionBarMenu.findItem(R.id.map_action_center_map).setVisible(true);
-                    if (marker == null) {
-                        markerOptions = new MarkerOptions()
-                                .position(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()))
-                                .title("Hi!")
-                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                        marker = mMap.addMarker(markerOptions);
-                    } else {
-                        marker.setPosition(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()));
-                    }
+                    if (mMap != null) {
 
-                    if (tracking){
-                        marker.setIcon((BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
-                    } else {
-                        marker.setIcon((BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
-                        textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_light_green));
-                        textInfo.setText("Ready");
-                    }
+                        if (marker == null) {
+                            markerOptions = new MarkerOptions()
+                                    .position(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()))
+                                    .title("Hi!")
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.liodevel_logo_128));
+                            marker = mMap.addMarker(markerOptions);
+                        } else {
+                            marker.setPosition(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()));
+                        }
 
-                    if (centerMap) {
-                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                                        new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()), 16)
-                        );
+                        if (tracking) {
+                            marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.liodevel_logo_red_128));
+                        } else {
+                            marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.liodevel_logo_128));
+                            textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_light_green));
+                            textInfo.setText("Ready");
+                        }
+
+                        if (centerMap) {
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                                            new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()), 16)
+                            );
+                        }
                     }
                 }
             }
@@ -356,13 +319,7 @@ public class MapActivity extends AppCompatActivity {
             public void onProviderDisabled(String provider) {}
         };
 
-        if (!onlyGPS){
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-            textProviderInfo.setText("GPS\nNetwork");
-        } else {
-            textProviderInfo.setText("GPS");
-        }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+        updateGpsProviders();
 
     }
 
@@ -429,10 +386,12 @@ public class MapActivity extends AppCompatActivity {
      * Centrar Mapa
      */
     private void centerMap(){
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                        new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()),
-                        mMap.getCameraPosition().zoom)
-        );
+        if (mMap != null) {
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                            new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()),
+                            mMap.getCameraPosition().zoom)
+            );
+        }
     }
 
     /**
@@ -441,17 +400,19 @@ public class MapActivity extends AppCompatActivity {
      * @param end
      */
     private void drawTrackPoint(LatLng start, LatLng end){
-        PolylineOptions line =
-                new PolylineOptions().add(start, end)
-                        .width(10).color(Color.BLACK);
-        mMap.addPolyline(line);
+        if (mMap != null) {
+            PolylineOptions line =
+                    new PolylineOptions().add(start, end)
+                            .width(10).color(Color.BLACK);
+            mMap.addPolyline(line);
+        }
     }
 
     // TIMERTRACK
     /**
      * Start the TimerTask
      */
-    public void startTimerTrack() {
+    private void startTimerTrack() {
         Log.i("StartTimer", "Track");
         timer = new Timer();
         initializeTimerTrack();
@@ -461,7 +422,7 @@ public class MapActivity extends AppCompatActivity {
     /**
      * Stop the TimerTask
      */
-    public void stopTimerTrack() {
+    private void stopTimerTrack() {
         Log.i("StopTimer", "Track");
         if (timer != null) {
             timer.cancel();
@@ -472,7 +433,7 @@ public class MapActivity extends AppCompatActivity {
     /**
      * TimerTask for Tracking
      */
-    public void initializeTimerTrack() {
+    private void initializeTimerTrack() {
         timerTask = new TimerTask() {
             public void run() {
                 //use a handler to run a toast that shows the current timestamp
@@ -489,7 +450,7 @@ public class MapActivity extends AppCompatActivity {
     /**
      * Send startTrack
      */
-    int startTrack() {
+    private int startTrack() {
         Log.i("SEND", "startTrack()");
         int ret = -1;
         mMap.clear();
@@ -497,9 +458,12 @@ public class MapActivity extends AppCompatActivity {
         markerOptions = new MarkerOptions()
                 .position(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()))
                 .title("Hi!")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.liodevel_logo_red_128)
+        );
 
-        marker = mMap.addMarker(markerOptions);
+        if (mMap != null) {
+            marker = mMap.addMarker(markerOptions);
+        }
         final ParseObject dataObject = new ParseObject("track");
         dataObject.put("date", new Date(System.currentTimeMillis()));
         dataObject.put("user", ParseUser.getCurrentUser());
@@ -523,9 +487,9 @@ public class MapActivity extends AppCompatActivity {
     }
 
     /**
-     * Send location
+     * Enviar trackPoint
      */
-    void sendLocation() {
+    private void sendLocation() {
         Log.i("SEND", "sendLocation()");
 
         if (lastLocation != null) {
@@ -553,6 +517,56 @@ public class MapActivity extends AppCompatActivity {
         } else {
             Log.i("SEND", "NULL Location");
         }
+    }
+
+    /**
+     * Actualiza info de localización
+     */
+    private void updateGpsProviders() {
+        try {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+        } catch (Exception e) {
+        }
+        if (onlyGPS) {
+            textProviderInfo.setText("GPS");
+        } else {
+            textProviderInfo.setText("GPS\nNetwork");
+            try {
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+            } catch (Exception e) {
+            }
+
+        }
+
+    }
+
+    /**
+     * Actualiza elementos de la pantalla al volver a esta
+     */
+    private void updateViews(){
+        if (!trackerReady){
+            textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_dark_green));
+            textInfo.setText("Getting Location...");
+            if (actionBarMenu != null) {
+                actionBarMenu.findItem(R.id.map_action_start_track).setVisible(false);
+                actionBarMenu.findItem(R.id.map_action_center_map).setVisible(false);
+            }
+
+        } else {
+            textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_light_green));
+            textInfo.setText("Ready");
+            if (actionBarMenu != null) {
+                actionBarMenu.findItem(R.id.map_action_start_track).setVisible(true);
+                actionBarMenu.findItem(R.id.map_action_center_map).setVisible(true);
+            }
+        }
+        if (tracking){
+            textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_red));
+            textInfo.setText("Tracking");
+            actionBarMenu.findItem(R.id.map_action_start_track).setVisible(true);
+            actionBarMenu.findItem(R.id.map_action_center_map).setVisible(true);
+        }
+
     }
 
 }

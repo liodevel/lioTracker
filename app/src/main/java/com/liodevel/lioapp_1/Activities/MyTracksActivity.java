@@ -41,7 +41,7 @@ public class MyTracksActivity extends AppCompatActivity {
     private static MyTracksListAdapter adapter;
     private static Context context;
     private int selectedPosition = -1;
-    private ArrayList<String> selectedTracksId = new ArrayList<String>();
+    private ArrayList<String> selectedTracksId = new ArrayList<>();
     private static ProgressDialog progress;
     private boolean selecting = false;
 
@@ -198,7 +198,7 @@ public class MyTracksActivity extends AppCompatActivity {
     /**
      * Recupera la lista de Tracks
      */
-    public static void getTracksByCurrentUser(){
+    private static void getTracksByCurrentUser(){
         Log.i("LIOTRACK", "getTracksByUser()");
         progress = new ProgressDialog(context);
         progress.setMessage("Loading your tracks");
@@ -218,6 +218,7 @@ public class MyTracksActivity extends AppCompatActivity {
                         track.setDate((Date) parseObject.get("date"));
                         track.setDateEnd((Date) parseObject.get("dateEnd"));
                         track.setDistance((float) parseObject.getDouble("distance"));
+                        track.setInfo((String) parseObject.get("info"));
                         Log.i("LIOTRACK", "Track: " + track.getDate());
                         //tracks.add(track);
                         adapter.add(track);
@@ -258,7 +259,7 @@ public class MyTracksActivity extends AppCompatActivity {
     /**
      * Borra un Track
      */
-    public void deleteSelectedTracks(){
+    private void deleteSelectedTracks(){
         Log.i("LIOTRACK", "deleteSelectedTracks()");
         if (selectedTracksId.size() > 0) {
             ParseObject trackObject = null;

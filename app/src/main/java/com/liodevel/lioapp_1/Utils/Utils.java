@@ -1,7 +1,6 @@
 package com.liodevel.lioapp_1.Utils;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.widget.Toast;
 
 /**

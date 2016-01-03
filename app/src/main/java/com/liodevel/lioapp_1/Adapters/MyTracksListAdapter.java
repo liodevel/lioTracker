@@ -12,7 +12,6 @@ import com.liodevel.lioapp_1.R;
 import com.liodevel.lioapp_1.Utils.Utils;
 
 import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -39,6 +38,7 @@ public class MyTracksListAdapter extends ArrayAdapter<Track> {
         TextView date = (TextView) convertView.findViewById(R.id.text_track_date_item);
         TextView distance = (TextView) convertView.findViewById(R.id.text_track_distance_item);
         TextView duration = (TextView) convertView.findViewById(R.id.text_track_duration_item);
+        TextView info = (TextView) convertView.findViewById(R.id.text_track_info_item);
 
         if (track.isChecked()){
             convertView.setBackground(getContext().getResources().getDrawable(R.drawable.item_selected));
@@ -79,17 +79,25 @@ public class MyTracksListAdapter extends ArrayAdapter<Track> {
         // Duration
         if (track.getDateEnd() != null) {
             Long durationLong = track.getDateEnd().getTime() - track.getDate().getTime();
+            double durationDouble;
             // duracion en minutos;
-            durationLong = durationLong / 1000 / 60;
+            durationDouble = durationLong / 1000 / 60;
 
-            if (durationLong < 60) {
-                duration.setText(durationLong + " Min");
+            if (durationDouble < 60) {
+                duration.setText(df.format(durationDouble) + " Min");
             } else {
-                float hours = durationLong / 60;
-                duration.setText(hours + " Hours");
+                double hours = durationDouble / 60;
+                duration.setText(df.format(hours) + " Hours");
             }
         } else {
             duration.setText("");
+        }
+
+        // Info
+        if (track.getInfo() != null){
+            info.setText(track.getInfo());
+        } else {
+            info.setText("");
         }
         return convertView;
     }
