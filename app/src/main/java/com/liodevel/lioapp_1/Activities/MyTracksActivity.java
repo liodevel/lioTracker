@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +16,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.liodevel.lioapp_1.Objects.Track;
 import com.liodevel.lioapp_1.R;
 import com.liodevel.lioapp_1.Adapters.MyTracksListAdapter;
@@ -24,6 +28,7 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,6 +41,7 @@ import java.util.List;
 public class MyTracksActivity extends AppCompatActivity {
 
     private static ArrayList<Track> tracks;
+    private static ArrayList<ParseObject> tracksParseObject;
     private Menu actionBarMenu;
     private ListView tracksList;
     private static MyTracksListAdapter adapter;
@@ -44,6 +50,11 @@ public class MyTracksActivity extends AppCompatActivity {
     private ArrayList<String> selectedTracksId = new ArrayList<>();
     private static ProgressDialog progress;
     private boolean selecting = false;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +64,7 @@ public class MyTracksActivity extends AppCompatActivity {
 
         context = this;
         tracks = new ArrayList<>();
+        tracksParseObject = new ArrayList<>();
 
         // Toolbar
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_tracks_toolbar);
@@ -141,6 +153,9 @@ public class MyTracksActivity extends AppCompatActivity {
         tracksList.setAdapter(adapter);
         adapter.clear();
         getTracksByCurrentUser();
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     @Override
@@ -149,7 +164,7 @@ public class MyTracksActivity extends AppCompatActivity {
         adapter.clear();
         try {
             progress.dismiss();
-        } catch (Exception e){
+        } catch (Exception e) {
 
         }
         getTracksByCurrentUser();
@@ -169,7 +184,7 @@ public class MyTracksActivity extends AppCompatActivity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder
                         .setMessage("Delete selected track")
-                        .setPositiveButton("Yes",  new DialogInterface.OnClickListener() {
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
                                 actionBarMenu.findItem(R.id.map_action_delete_my_tracks).setVisible(false);
@@ -180,7 +195,7 @@ public class MyTracksActivity extends AppCompatActivity {
                         })
                         .setNegativeButton("No", new DialogInterface.OnClickListener() {
                             @Override
-                            public void onClick(DialogInterface dialog,int id) {
+                            public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
                             }
                         })
@@ -194,11 +209,10 @@ public class MyTracksActivity extends AppCompatActivity {
     }
 
 
-
     /**
      * Recupera la lista de Tracks
      */
-    private static void getTracksByCurrentUser(){
+    private static void getTracksByCurrentUser() {
         Log.i("LIOTRACK", "getTracksByUser()");
         progress = new ProgressDialog(context);
         progress.setMessage("Loading your tracks");
@@ -210,7 +224,7 @@ public class MyTracksActivity extends AppCompatActivity {
         query.orderByDescending("date");
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
-            public void done(List<ParseObject> objects, com.parse.ParseException e) {
+            public void done(List<ParseObject> objects, ParseException e) {
                 if (e == null) {
                     for (ParseObject parseObject : objects) {
                         Track track = new Track();
@@ -219,9 +233,11 @@ public class MyTracksActivity extends AppCompatActivity {
                         track.setDateEnd((Date) parseObject.get("dateEnd"));
                         track.setDistance((float) parseObject.getDouble("distance"));
                         track.setInfo((String) parseObject.get("info"));
+                        track.setFavorite(parseObject.getBoolean("favorite"));
                         Log.i("LIOTRACK", "Track: " + track.getDate());
                         //tracks.add(track);
                         adapter.add(track);
+                        tracksParseObject.add(parseObject);
                     }
                     //adapter.addAll(tracks);
                     progress.dismiss();
@@ -236,15 +252,16 @@ public class MyTracksActivity extends AppCompatActivity {
 
     /**
      * Borra un Track
+     *
      * @param objectId
      */
-    public void deleteTrackByObjectId(String objectId){
+    public void deleteTrackByObjectId(String objectId) {
         Log.i("LIOTRACK", "deleteTrackByObjectId()");
         ParseObject trackObject = null;
         ParseQuery<ParseObject> queryTrackObject = ParseQuery.getQuery("track");
         queryTrackObject.whereEqualTo("objectId", objectId);
         try {
-            List <ParseObject> parseQueriesTrackObject = queryTrackObject.find();
+            List<ParseObject> parseQueriesTrackObject = queryTrackObject.find();
             trackObject = parseQueriesTrackObject.get(0);
             trackObject.delete();
             //trackObject.save();
@@ -257,9 +274,9 @@ public class MyTracksActivity extends AppCompatActivity {
 
 
     /**
-     * Borra un Track
+     * Borra los Tracks seleccionados
      */
-    private void deleteSelectedTracks(){
+    private void deleteSelectedTracks() {
         Log.i("LIOTRACK", "deleteSelectedTracks()");
         if (selectedTracksId.size() > 0) {
             ParseObject trackObject = null;
@@ -284,5 +301,9 @@ public class MyTracksActivity extends AppCompatActivity {
         }
     }
 
-
 }
+
+
+
+
+

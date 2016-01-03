@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.liodevel.lioapp_1.Objects.Track;
@@ -39,6 +40,7 @@ public class MyTracksListAdapter extends ArrayAdapter<Track> {
         TextView distance = (TextView) convertView.findViewById(R.id.text_track_distance_item);
         TextView duration = (TextView) convertView.findViewById(R.id.text_track_duration_item);
         TextView info = (TextView) convertView.findViewById(R.id.text_track_info_item);
+        ImageView favorite = (ImageView) convertView.findViewById(R.id.favorite_icon_item);
 
         if (track.isChecked()){
             convertView.setBackground(getContext().getResources().getDrawable(R.drawable.item_selected));
@@ -99,6 +101,14 @@ public class MyTracksListAdapter extends ArrayAdapter<Track> {
         } else {
             info.setText("");
         }
+
+        // Favorito
+        if (track.isFavorite()){
+            favorite.setBackground(getContext().getResources().getDrawable(R.drawable.ic_favorite_black_48dp));
+        } else {
+            favorite.setBackground(getContext().getResources().getDrawable(R.drawable.ic_favorite_border_black_48dp));
+        }
+
         return convertView;
     }
 }

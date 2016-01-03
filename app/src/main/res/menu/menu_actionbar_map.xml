@@ -1,12 +1,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item
-        android:id="@+id/map_action_center_map"
-        android:icon="@drawable/ic_action_center_ok"
-        app:showAsAction="always"
-        android:title="Center"
-        android:visible="false"/>
+
+
 
     <item
         android:id="@+id/map_action_start_track"
@@ -15,6 +11,20 @@
         android:title="Track"
         android:visible="false"/>
 
+    <item
+        android:id="@+id/map_action_center_map"
+        android:icon="@drawable/ic_action_center_ok"
+        app:showAsAction="always"
+        android:title="Center"
+        android:visible="false"/>
+
+    <item
+        android:id="@+id/map_action_type_map"
+        android:icon="@drawable/ic_map_black_24dp"
+        app:showAsAction="always"
+        android:title="Type"/>
+
+    <!-- MENU -->
     <item android:id="@+id/map_action_profile_name"
         app:showAsAction="never"
         android:enabled="false"
@@ -23,11 +33,6 @@
     <item android:id="@+id/map_action_my_tracks"
         app:showAsAction="never"
         android:title="My tracks" />
-    <!--
-    <item android:id="@+id/map_action_profile"
-        app:showAsAction="never"
-        android:title="Profile" />
-        -->
     <item android:id="@+id/map_action_settings"
         app:showAsAction="never"
         android:title="Settings" />

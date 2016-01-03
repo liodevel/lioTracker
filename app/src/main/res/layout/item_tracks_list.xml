@@ -3,67 +3,8 @@
     android:layout_height="?android:attr/listPreferredItemHeight"
     android:padding="6dip"
     android:background="@drawable/item"
-
-    >
-    <TextView
-        android:id="@+id/text_track_date_item"
-        android:layout_width="wrap_content"
-        android:layout_height="30dp"
-        android:layout_alignWithParentIfMissing="true"
-        android:text="DATE TRACK"
-        android:gravity="center_vertical"
-        android:textColor="@color/liodevel_dark_green"
-        android:textSize="16sp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:paddingLeft="12dp"
-        android:layout_toStartOf="@+id/text_track_distance_item"
-        android:layout_toLeftOf="@+id/text_track_distance_item" />
-
-    <TextView
-        android:id="@+id/text_track_distance_item"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignWithParentIfMissing="true"
-        android:text="DISTANCE TRACK"
-        android:gravity="center_vertical|left"
-        android:textColor="@color/liodevel_dark_grey"
-        android:textSize="12sp"
-        android:paddingLeft="16dp"
-        android:layout_toLeftOf="@+id/text_track_duration_item"
-        android:layout_toStartOf="@+id/text_track_duration_item"
-        android:layout_alignParentTop="true"
-        android:layout_above="@+id/text_track_info_item" />
-
-    <TextView
-        android:id="@+id/text_track_duration_item"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignWithParentIfMissing="true"
-        android:text="DURATION TRACK"
-        android:gravity="center_vertical|right"
-        android:textColor="@color/liodevel_dark_grey"
-        android:textSize="12sp"
-        android:paddingLeft="16dp"
-        android:layout_alignBottom="@+id/text_track_distance_item"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true" />
-
-    <TextView
-        android:id="@+id/text_track_from_item"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignWithParentIfMissing="true"
-        android:text=""
-        android:gravity="center_vertical|right"
-        android:textColor="@color/liodevel_dark_grey"
-        android:textSize="12sp"
-        android:paddingRight="16dp"
-        android:layout_alignBaseline="@+id/text_track_date_item"
-        android:layout_alignBottom="@+id/text_track_date_item"
-        android:layout_alignRight="@+id/text_track_duration_item"
-        android:layout_alignEnd="@+id/text_track_duration_item" />
+    android:paddingLeft="18dp"
+    android:paddingRight="12dp">
 
     <TextView
         android:id="@+id/text_track_info_item"
@@ -75,11 +16,81 @@
         android:gravity="center_vertical|left"
         android:textColor="@color/liodevel_light_green"
         android:textSize="16sp"
-        android:paddingLeft="12dp"
-        android:layout_below="@+id/text_track_date_item"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/favorite_icon_item"
+        android:layout_toLeftOf="@+id/favorite_icon_item"
         android:layout_alignParentBottom="true" />
+
+    <ImageView
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:id="@+id/favorite_icon_item"
+        android:background="@drawable/ic_favorite_border_black_48dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_above="@+id/text_track_info_item"
+        android:layout_toLeftOf="@+id/favorite_icon_item"
+        android:layout_toStartOf="@+id/favorite_icon_item">
+
+        <TextView
+            android:id="@+id/text_track_date_item"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignWithParentIfMissing="true"
+            android:text="DATE TRACK"
+            android:gravity="center_vertical"
+            android:textColor="@color/liodevel_dark_green"
+            android:textSize="16sp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_toStartOf="@+id/text_track_duration_item"
+            android:layout_toLeftOf="@+id/text_track_duration_item"
+            android:layout_weight="0.2"/>
+
+        <TextView
+            android:id="@+id/text_track_distance_item"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignWithParentIfMissing="true"
+            android:text="DISTANCE TRACK"
+            android:gravity="center_vertical|left"
+            android:textColor="@color/liodevel_dark_grey"
+            android:textSize="12sp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:layout_toLeftOf="@+id/text_track_duration_item"
+            android:layout_alignParentTop="true"
+            android:layout_above="@+id/text_track_info_item"
+            android:layout_weight="0.3"/>
+
+        <TextView
+            android:id="@+id/text_track_duration_item"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignWithParentIfMissing="true"
+            android:text="DURATION TRACK"
+            android:gravity="center_vertical|right"
+            android:textColor="@color/liodevel_dark_grey"
+            android:textSize="12sp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:layout_alignBottom="@+id/text_track_distance_item"
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@+id/favorite_icon_item"
+            android:layout_toStartOf="@+id/favorite_icon_item"
+            android:layout_weight="0.3"/>
+
+
+    </LinearLayout>
 
 
 </RelativeLayout>

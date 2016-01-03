@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -45,7 +46,6 @@ public class TrackActivity extends AppCompatActivity {
 
     private GoogleMap mMap;
     private Menu actionBarMenu;
-    ProgressDialog progressDialog;
     private static Context context;
     private String trackObjectId = "";
     private Track currentTrack = new Track();
@@ -121,6 +121,13 @@ public class TrackActivity extends AppCompatActivity {
         actionBarMenu = menu;
         getMenuInflater().inflate(R.menu.menu_actionbar_track, menu);
 
+        // Favorito
+        if (currentTrack != null && currentTrack.isFavorite()){
+            actionBarMenu.findItem(R.id.track_action_favorite).setIcon(R.drawable.ic_favorite_black_36dp);;
+        } else {
+            actionBarMenu.findItem(R.id.track_action_favorite).setIcon(R.drawable.ic_favorite_border_black_36dp);;
+        }
+
         return true;
     }
 
@@ -146,6 +153,17 @@ public class TrackActivity extends AppCompatActivity {
                         })
                         .show();
                 return true;
+
+            // TIPO MAPA
+            case R.id.track_action_type_map:
+                toggleMapType();
+                return true;
+
+            // FAVORITO
+            case R.id.track_action_favorite:
+                updateTrackFavorite();
+                return true;
+
 
             default:
                 return super.onOptionsItemSelected(item);
@@ -180,6 +198,7 @@ public class TrackActivity extends AppCompatActivity {
             currentTrack.setDateEnd((Date) parseQueriesTrackObject.get(0).get("dateEnd"));
             currentTrack.setDistance((float) parseQueriesTrackObject.get(0).getDouble("distance"));
             currentTrack.setInfo((String) parseQueriesTrackObject.get(0).get("info"));
+            currentTrack.setFavorite(parseQueriesTrackObject.get(0).getBoolean("favorite"));
             Log.i("LIOTRACK", "Track ID: " + trackObject.getObjectId());
             ret = true;
         } catch (ParseException e) {
@@ -310,6 +329,8 @@ public class TrackActivity extends AppCompatActivity {
             durationInfo.setText("");
         }
 
+
+
     }
 
     /**
@@ -344,5 +365,48 @@ public class TrackActivity extends AppCompatActivity {
         }
     }
 
+
+    /**
+     * Actualiza campo info en la Base de datos
+     */
+    private void updateTrackFavorite() {
+
+        if (currentTrack.isFavorite()) {
+            currentTrack.setFavorite(false);
+            trackObject.put("favorite", false);
+            actionBarMenu.findItem(R.id.track_action_favorite).setIcon(R.drawable.ic_favorite_border_black_36dp);;
+        } else {
+            currentTrack.setFavorite(true);
+            trackObject.put("favorite", true);
+            actionBarMenu.findItem(R.id.track_action_favorite).setIcon(R.drawable.ic_favorite_black_36dp);;
+        }
+
+        trackObject.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null) {
+                    Log.i("LIOTRACKS", "Update favorite");
+                    //Utils.showMessage(getApplicationContext(), "Track info successfully saved");
+                } else {
+                    Log.i("LIOTRACKS", "ERROR: " + e.toString());
+                    Utils.showMessage(getApplicationContext(), "Sorry, error saving Track favorite :(");
+
+                }
+            }
+        });
+
+    }
+
+
+    /**
+     *
+     */
+    public void toggleMapType(){
+        if (mMap.getMapType() == GoogleMap.MAP_TYPE_SATELLITE){
+            mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        } else {
+            mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+        }
+    }
 
 }

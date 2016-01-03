@@ -11,6 +11,7 @@ import android.location.LocationManager;
 import android.os.Handler;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -54,6 +55,7 @@ public class MapActivity extends AppCompatActivity {
     // VIEW
     private TextView textInfo, textProviderInfo;
     private Menu actionBarMenu;
+    private Context context;
 
     // MAPS
     private GoogleMap mMap;
@@ -72,6 +74,9 @@ public class MapActivity extends AppCompatActivity {
     private LocationManager locationManager;
     private LocationListener locationListener;
 
+    private boolean gps_enabled = false;
+    private boolean network_enabled = false;
+
     // TIMER
     private Timer timer;
     private TimerTask timerTask;
@@ -86,6 +91,7 @@ public class MapActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        context = this;
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.map_toolbar);
         setSupportActionBar(myToolbar);
@@ -187,6 +193,11 @@ public class MapActivity extends AppCompatActivity {
                 }
                 return true;
 
+            // TIPO MAPA
+            case R.id.map_action_type_map:
+                toggleMapType();
+                return true;
+
             // MY TRACKS
             case R.id.map_action_my_tracks:
                 Intent launchNextActivity;
@@ -221,7 +232,7 @@ public class MapActivity extends AppCompatActivity {
 
                 return true;
 
-            // SETTINS
+            // SETTINGS
             case R.id.map_action_settings:
                 Intent launchSettingsActivity;
                 launchSettingsActivity = new Intent(MapActivity.this, SettingsActivity.class);
@@ -525,8 +536,7 @@ public class MapActivity extends AppCompatActivity {
     private void updateGpsProviders() {
         try {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-        } catch (Exception e) {
-        }
+        } catch (Exception e) {}
         if (onlyGPS) {
             textProviderInfo.setText("GPS");
         } else {
@@ -536,6 +546,35 @@ public class MapActivity extends AppCompatActivity {
             } catch (Exception e) {
             }
 
+        }
+
+        try {
+            gps_enabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        } catch(Exception ex) {}
+
+        try {
+            network_enabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        } catch(Exception ex) {}
+
+        if(!gps_enabled && !network_enabled) {
+            // notify user
+            AlertDialog.Builder dialog = new AlertDialog.Builder(context);
+            dialog.setMessage(getApplicationContext().getResources().getString(R.string.gps_network_not_enabled));
+            dialog.setPositiveButton(getApplicationContext().getResources().getString(R.string.open_location_settings), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                    Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    context.startActivity(myIntent);
+                }
+            });
+            dialog.setNegativeButton(getApplicationContext().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                    finish();
+                }
+            });
+            dialog.show();
         }
 
     }
@@ -567,6 +606,14 @@ public class MapActivity extends AppCompatActivity {
             actionBarMenu.findItem(R.id.map_action_center_map).setVisible(true);
         }
 
+    }
+
+    public void toggleMapType(){
+        if (mMap.getMapType() == GoogleMap.MAP_TYPE_SATELLITE){
+            mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        } else {
+            mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+        }
     }
 
 }

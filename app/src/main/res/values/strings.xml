@@ -5,6 +5,10 @@
     <string name="open">Open</string>
     <string name="close">Close</string>
 
+    <string name="cancel">Cancel</string>
+    <string name="gps_network_not_enabled">Location services are disabled</string>
+    <string name="open_location_settings">Open location settings</string>
+
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
