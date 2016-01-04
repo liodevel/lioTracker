@@ -74,6 +74,18 @@
                 android:layout_marginTop="16dp"
                 android:text="@string/action_sign_in"
                 android:textStyle="bold" />
+
+            <Button
+                style="?android:textAppearanceMedium"
+                android:id="@+id/facebook_login"
+                android:layout_width="353dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/action_facebook_sign_in"
+                android:textStyle="bold"
+                android:onClick="facebookLogin"
+                android:layout_gravity="right" />
+
             <Button
                 android:id="@+id/email_register_button"
                 style="?android:textAppearanceSmall"

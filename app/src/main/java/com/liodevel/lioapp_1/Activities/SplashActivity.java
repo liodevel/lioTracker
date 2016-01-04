@@ -10,6 +10,7 @@ import com.liodevel.lioapp_1.Utils.Utils;
 import com.parse.GetCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
+import com.parse.ParseFacebookUtils;
 import com.parse.ParseSession;
 import com.parse.ParseUser;
 
@@ -20,6 +21,11 @@ public class SplashActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
+        try {
+            ParseFacebookUtils.initialize(this);
+        } catch (Exception e){
+            Log.i("LIOTRACK", "Error ParseFacebookUtils");
+        }
 
 
         try {

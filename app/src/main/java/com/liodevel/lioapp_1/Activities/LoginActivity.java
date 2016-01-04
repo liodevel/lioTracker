@@ -7,6 +7,9 @@ import android.app.LoaderManager.LoaderCallbacks;
 
 import android.content.CursorLoader;
 import android.content.Loader;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.database.Cursor;
 import android.net.Uri;
 
@@ -14,6 +17,7 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -29,9 +33,12 @@ import com.liodevel.lioapp_1.R;
 import com.liodevel.lioapp_1.Utils.Utils;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
+import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,14 +53,17 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-
-
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
+
+        try {
+            ParseFacebookUtils.initialize(this);
+        } catch (Exception e){
+            Log.i("LIOTRACK", "Error ParseFacebookUtils");
+        }
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -333,6 +343,44 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         int ADDRESS = 0;
         int IS_PRIMARY = 1;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        ParseFacebookUtils.onActivityResult(requestCode, resultCode, data);
+    }
+
+    public void facebookLogin(View v){
+        ArrayList<String> permissions = new ArrayList();
+
+        ParseFacebookUtils.logInWithReadPermissionsInBackground(this, permissions, new LogInCallback() {
+            @Override
+            public void done(ParseUser user, ParseException err) {
+                if (user == null) {
+                    Log.d("LIOTRACKS", "Uh oh. The user cancelled the Facebook login.");
+                } else if (user.isNew()) {
+                    Log.d("LIOTRACKS", "User signed up and logged in through Facebook!");
+                    Utils.showMessage(LoginActivity.this, "Hi, " + ParseUser.getCurrentUser().getUsername() + "!");
+                    Intent launchNextActivity;
+                    launchNextActivity = new Intent(LoginActivity.this, MapActivity.class);
+                    launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                    startActivity(launchNextActivity);
+                } else {
+                    Log.d("LIOTRACKS", "User logged in through Facebook!");
+                    Log.d("LIOTRACKS", "User signed up and logged in through Facebook!");
+                    Utils.showMessage(LoginActivity.this, "Hi, " + ParseUser.getCurrentUser().getUsername() + "!");
+                    Intent launchNextActivity;
+                    launchNextActivity = new Intent(LoginActivity.this, MapActivity.class);
+                    launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                    startActivity(launchNextActivity);
+                }
+            }
+        });
     }
 }
 
