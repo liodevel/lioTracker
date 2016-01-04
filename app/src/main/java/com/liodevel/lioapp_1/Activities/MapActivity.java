@@ -302,16 +302,16 @@ public class MapActivity extends AppCompatActivity {
                             markerOptions = new MarkerOptions()
                                     .position(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()))
                                     .title("Hi!")
-                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.liodevel_logo_128));
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_liodevel_logo_128));
                             marker = mMap.addMarker(markerOptions);
                         } else {
                             marker.setPosition(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()));
                         }
 
                         if (tracking) {
-                            marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.liodevel_logo_red_128));
+                            marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_liodevel_logo_red_128));
                         } else {
-                            marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.liodevel_logo_128));
+                            marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_liodevel_logo_128));
                             textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_light_green));
                             textInfo.setText("Ready");
                         }
@@ -359,8 +359,9 @@ public class MapActivity extends AppCompatActivity {
             } else {
                 // NO Start track
             }
-        } else {
             // STOP TRACKING
+
+        } else {
             stopTimerTrack();
 
             currentTrack.put("dateEnd", new Date(System.currentTimeMillis()));
@@ -469,7 +470,7 @@ public class MapActivity extends AppCompatActivity {
         markerOptions = new MarkerOptions()
                 .position(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()))
                 .title("Hi!")
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.liodevel_logo_red_128)
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_liodevel_logo_red_128)
         );
 
         if (mMap != null) {
