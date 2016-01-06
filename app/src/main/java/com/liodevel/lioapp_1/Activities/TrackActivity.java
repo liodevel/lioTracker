@@ -64,7 +64,6 @@ public class TrackActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_track);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         context = this;
 
         myToolbar = (Toolbar) findViewById(R.id.track_toolbar);
@@ -86,7 +85,7 @@ public class TrackActivity extends AppCompatActivity {
         if (mMap == null) {
             mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapTrack)).getMap();
             if (mMap == null) {
-                Utils.showMessage(getApplicationContext(), "Sorry! unable to create maps");
+                Utils.showMessage(getApplicationContext(), getResources().getString(R.string.unable_to_create_map));
             }
         }
 
@@ -123,9 +122,9 @@ public class TrackActivity extends AppCompatActivity {
 
         // Favorito
         if (currentTrack != null && currentTrack.isFavorite()){
-            actionBarMenu.findItem(R.id.track_action_favorite).setIcon(R.drawable.ic_favorite_black_36dp);;
+            actionBarMenu.findItem(R.id.track_action_favorite).setIcon(R.drawable.ic_action_action_favorite);;
         } else {
-            actionBarMenu.findItem(R.id.track_action_favorite).setIcon(R.drawable.ic_favorite_border_black_36dp);;
+            actionBarMenu.findItem(R.id.track_action_favorite).setIcon(R.drawable.ic_action_action_favorite_outline);;
         }
 
         return true;
@@ -137,15 +136,15 @@ public class TrackActivity extends AppCompatActivity {
             case R.id.map_action_delete_track:
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder
-                        .setMessage("Delete track")
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        .setMessage(getResources().getString(R.string.delete_track))
+                        .setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
                                 deleteTrackByObjectId(trackObjectId);
                                 finish();
                             }
                         })
-                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        .setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
@@ -181,7 +180,7 @@ public class TrackActivity extends AppCompatActivity {
         Log.i("LIOTRACK", "getTrackByObjectId()");
 
         progress = new ProgressDialog(context);
-        progress.setMessage("Loading track");
+        progress.setMessage(getResources().getString(R.string.loading_track));
         progress.show();
 
         boolean ret = false;
@@ -274,8 +273,8 @@ public class TrackActivity extends AppCompatActivity {
             info.setText(currentTrack.getInfo());
             editInfo.setText(currentTrack.getInfo());
         } else {
-            info.setText("Insert track info here");
-            editInfo.setText("Insert track info here");
+            info.setText(getResources().getString(R.string.insert_track_info));
+            editInfo.setText(getResources().getString(R.string.insert_track_info));
             info.setTextColor(getResources().getColor(R.color.liodevel_grey));
         }
 
@@ -320,10 +319,10 @@ public class TrackActivity extends AppCompatActivity {
             durationDouble = durationLong / 1000 / 60;
 
             if (durationDouble < 60) {
-                durationInfo.setText(df.format(durationDouble) + " Min");
+                durationInfo.setText(df.format(durationDouble) + " " + getResources().getString(R.string.min));
             } else {
                 double hours = durationDouble / 60;
-                durationInfo.setText(df.format(hours) + " Hours");
+                durationInfo.setText(df.format(hours) + " " + getResources().getString(R.string.hours));
             }
         } else {
             durationInfo.setText("");
@@ -354,10 +353,10 @@ public class TrackActivity extends AppCompatActivity {
                 public void done(com.parse.ParseException e) {
                     if (e == null) {
                         Log.i("SAVE startTrack", "OK");
-                        Utils.showMessage(getApplicationContext(), "Track info successfully saved");
+                        //Utils.showMessage(getApplicationContext(), "Track info successfully saved");
                     } else {
                         Log.i("SAVE startTrack", "ERROR: " + e.toString());
-                        Utils.showMessage(getApplicationContext(), "Sorry, error saving Track info :(");
+                        Utils.showMessage(getApplicationContext(), getResources().getString(R.string.error_saving_track));
 
                     }
                 }
@@ -374,11 +373,11 @@ public class TrackActivity extends AppCompatActivity {
         if (currentTrack.isFavorite()) {
             currentTrack.setFavorite(false);
             trackObject.put("favorite", false);
-            actionBarMenu.findItem(R.id.track_action_favorite).setIcon(R.drawable.ic_favorite_border_black_36dp);;
+            actionBarMenu.findItem(R.id.track_action_favorite).setIcon(R.drawable.ic_action_action_favorite_outline);;
         } else {
             currentTrack.setFavorite(true);
             trackObject.put("favorite", true);
-            actionBarMenu.findItem(R.id.track_action_favorite).setIcon(R.drawable.ic_favorite_black_36dp);;
+            actionBarMenu.findItem(R.id.track_action_favorite).setIcon(R.drawable.ic_action_action_favorite);;
         }
 
         trackObject.saveInBackground(new SaveCallback() {
@@ -389,7 +388,7 @@ public class TrackActivity extends AppCompatActivity {
                     //Utils.showMessage(getApplicationContext(), "Track info successfully saved");
                 } else {
                     Log.i("LIOTRACKS", "ERROR: " + e.toString());
-                    Utils.showMessage(getApplicationContext(), "Sorry, error saving Track favorite :(");
+                    Utils.showMessage(getApplicationContext(), getResources().getString(R.string.error_saving_track));
 
                 }
             }

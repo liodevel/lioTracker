@@ -73,6 +73,7 @@ public class MapActivity extends AppCompatActivity {
     private float currentTrackDistance = 0;
     private LocationManager locationManager;
     private LocationListener locationListener;
+    private Date lastTrackPointDate = new Date();
 
     private boolean gps_enabled = false;
     private boolean network_enabled = false;
@@ -95,8 +96,6 @@ public class MapActivity extends AppCompatActivity {
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.map_toolbar);
         setSupportActionBar(myToolbar);
-        myToolbar.setLogo(R.drawable.logo_app_no_name_128);
-        myToolbar.setTitle("");
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         onlyGPS = prefs.getBoolean("only_gps", true);
@@ -109,10 +108,10 @@ public class MapActivity extends AppCompatActivity {
         }
 
         textInfo = (TextView) findViewById(R.id.text_info);
-        textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_dark_green));
+        textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_dark_grey));
         textProviderInfo = (TextView) findViewById(R.id.text_provider_info);
 
-        textInfo.setText("Getting Location...");
+        textInfo.setText(getResources().getString(R.string.getting_location));
         updateGpsProviders();
     }
 
@@ -147,17 +146,17 @@ public class MapActivity extends AppCompatActivity {
             Log.e("LIOTRACKS", "Error: " + e.toString());
         }
         try {
-            currentTrack.put("dateEnd", new Date(System.currentTimeMillis()));
+            currentTrack.put("dateEnd", lastTrackPointDate);
             currentTrack.put("distance", currentTrackDistance);
             currentTrack.saveInBackground(new SaveCallback() {
                 @Override
                 public void done(com.parse.ParseException e) {
                     if (e == null) {
                         Log.i("SAVE startTrack", "OK");
-                        Utils.showMessage(getApplicationContext(), "Track successfully saved");
+                        Utils.showMessage(getApplicationContext(), getResources().getString(R.string.track_saved));
                     } else {
                         Log.i("SAVE startTrack", "ERROR: " + e.toString());
-                        Utils.showMessage(getApplicationContext(), "Sorry, error saving Track :(");
+                        Utils.showMessage(getApplicationContext(), getResources().getString(R.string.error_saving_track));
 
                     }
                 }
@@ -204,9 +203,8 @@ public class MapActivity extends AppCompatActivity {
                 launchNextActivity = new Intent(MapActivity.this, MyTracksActivity.class);
                 try {
                     locationManager.removeUpdates(locationListener);
-                } catch (Exception e){
+                } catch (Exception e){}
 
-                }
                 startActivity(launchNextActivity);
                 return true;
 
@@ -214,15 +212,15 @@ public class MapActivity extends AppCompatActivity {
             case R.id.map_action_logout:
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder
-                        .setMessage("Confirm Logout")
-                        .setPositiveButton("Yes",  new DialogInterface.OnClickListener() {
+                        .setMessage(getResources().getString(R.string.confirm_logout))
+                        .setPositiveButton(getResources().getString(R.string.yes),  new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
                                 ParseUser.getCurrentUser().logOut();
                                 finish();
                             }
                         })
-                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        .setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog,int id) {
                                 dialog.cancel();
@@ -238,9 +236,8 @@ public class MapActivity extends AppCompatActivity {
                 launchSettingsActivity = new Intent(MapActivity.this, SettingsActivity.class);
                 try {
                     locationManager.removeUpdates(locationListener);
-                } catch (Exception e){
+                } catch (Exception e){}
 
-                }
                 startActivity(launchSettingsActivity);
                 return true;
 
@@ -264,7 +261,7 @@ public class MapActivity extends AppCompatActivity {
         if (exit) {
             finish(); // finish activity
         } else {
-            Utils.showMessage(getApplicationContext(), "Press Back again to Exit");
+            Utils.showMessage(getApplicationContext(), getResources().getString(R.string.press_again_to_exit));
             exit = true;
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -283,7 +280,7 @@ public class MapActivity extends AppCompatActivity {
         if (mMap == null) {
             mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
             if (mMap == null) {
-                Utils.showMessage(getApplicationContext(), "Sorry! unable to create maps");
+                Utils.showMessage(getApplicationContext(), getResources().getString(R.string.unable_to_create_map));
             }
         }
 
@@ -302,23 +299,25 @@ public class MapActivity extends AppCompatActivity {
                             markerOptions = new MarkerOptions()
                                     .position(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()))
                                     .title("Hi!")
-                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_liodevel_logo_128));
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_green));
                             marker = mMap.addMarker(markerOptions);
                         } else {
                             marker.setPosition(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()));
                         }
 
                         if (tracking) {
-                            marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_liodevel_logo_red_128));
+                            marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_red));
                         } else {
-                            marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_liodevel_logo_128));
-                            textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_light_green));
-                            textInfo.setText("Ready");
+                            marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_green));
+                            textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_dark_green));
+                            textInfo.setText(getResources().getString(R.string.ready));
+
                         }
 
                         if (centerMap) {
                             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                                            new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()), 16)
+                                            new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()),
+                                            mMap.getCameraPosition().zoom)
                             );
                         }
                     }
@@ -344,7 +343,7 @@ public class MapActivity extends AppCompatActivity {
             if (startTrack() == 0) {
                 // Start track correcto
                 textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_red));
-                textInfo.setText("Tracking");
+                textInfo.setText(getResources().getString(R.string.tracking));
                 tracking = true;
                 currentTrackDistance = 0;
 
@@ -364,24 +363,24 @@ public class MapActivity extends AppCompatActivity {
         } else {
             stopTimerTrack();
 
-            currentTrack.put("dateEnd", new Date(System.currentTimeMillis()));
+            currentTrack.put("dateEnd", lastTrackPointDate);
             currentTrack.put("distance", currentTrackDistance);
             currentTrack.saveInBackground(new SaveCallback() {
                 @Override
                 public void done(com.parse.ParseException e) {
                     if (e == null) {
                         Log.i("SAVE startTrack", "OK");
-                        Utils.showMessage(getApplicationContext(), "Track successfully saved");
+                        Utils.showMessage(getApplicationContext(), getResources().getString(R.string.track_saved));
                     } else {
                         Log.i("SAVE startTrack", "ERROR: " + e.toString());
-                        Utils.showMessage(getApplicationContext(), "Sorry, error saving Track :(");
+                        Utils.showMessage(getApplicationContext(), getResources().getString(R.string.error_saving_track));
 
                     }
                 }
             });
 
-            textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_light_green));
-            textInfo.setText("Ready");
+            textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_dark_green));
+            textInfo.setText(getResources().getString(R.string.ready));
             tracking = false;
 
             actionBarMenu.findItem(R.id.map_action_start_track).getActionView().clearAnimation();
@@ -425,7 +424,7 @@ public class MapActivity extends AppCompatActivity {
      * Start the TimerTask
      */
     private void startTimerTrack() {
-        Log.i("StartTimer", "Track");
+        Log.i("LIOTRACKS", "startTimerTrack");
         timer = new Timer();
         initializeTimerTrack();
         timer.schedule(timerTask, 0, 5000); //
@@ -435,7 +434,7 @@ public class MapActivity extends AppCompatActivity {
      * Stop the TimerTask
      */
     private void stopTimerTrack() {
-        Log.i("StopTimer", "Track");
+        Log.i("LIOTRACKS", "stopTimerTrack");
         if (timer != null) {
             timer.cancel();
             timer = null;
@@ -470,7 +469,7 @@ public class MapActivity extends AppCompatActivity {
         markerOptions = new MarkerOptions()
                 .position(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()))
                 .title("Hi!")
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_liodevel_logo_red_128)
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_red)
         );
 
         if (mMap != null) {
@@ -511,6 +510,7 @@ public class MapActivity extends AppCompatActivity {
             tr.setAccuracy(lastLocation.getAccuracy());
             tr.setTrack(currentTrack);
             Server.sendTrackPoint(tr);
+            lastTrackPointDate = tr.getDate();
 
             if (prevLocation != null){
                 currentTrackDistance = currentTrackDistance + prevLocation.distanceTo(lastLocation);
@@ -539,9 +539,9 @@ public class MapActivity extends AppCompatActivity {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
         } catch (Exception e) {}
         if (onlyGPS) {
-            textProviderInfo.setText("GPS");
+            textProviderInfo.setText(getResources().getString(R.string.GPS));
         } else {
-            textProviderInfo.setText("GPS\nNetwork");
+            textProviderInfo.setText(getResources().getString(R.string.gps_network));
             try {
                 locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
             } catch (Exception e) {
@@ -585,16 +585,16 @@ public class MapActivity extends AppCompatActivity {
      */
     private void updateViews(){
         if (!trackerReady){
-            textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_dark_green));
-            textInfo.setText("Getting Location...");
+            textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_dark_grey));
+            textInfo.setText(getResources().getString(R.string.getting_location));
             if (actionBarMenu != null) {
                 actionBarMenu.findItem(R.id.map_action_start_track).setVisible(false);
                 actionBarMenu.findItem(R.id.map_action_center_map).setVisible(false);
             }
 
         } else {
-            textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_light_green));
-            textInfo.setText("Ready");
+            textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_dark_green));
+            textInfo.setText(getResources().getString(R.string.ready));
             if (actionBarMenu != null) {
                 actionBarMenu.findItem(R.id.map_action_start_track).setVisible(true);
                 actionBarMenu.findItem(R.id.map_action_center_map).setVisible(true);
@@ -602,14 +602,14 @@ public class MapActivity extends AppCompatActivity {
         }
         if (tracking){
             textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_red));
-            textInfo.setText("Tracking");
+            textInfo.setText(getResources().getString(R.string.tracking));
             actionBarMenu.findItem(R.id.map_action_start_track).setVisible(true);
             actionBarMenu.findItem(R.id.map_action_center_map).setVisible(true);
         }
 
     }
 
-    public void toggleMapType(){
+    private void toggleMapType(){
         if (mMap.getMapType() == GoogleMap.MAP_TYPE_SATELLITE){
             mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         } else {

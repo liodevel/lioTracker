@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/liodevel_white"
-        app:title="My tracks"
+        app:title="@string/myTracks"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"/>
 
     <ListView

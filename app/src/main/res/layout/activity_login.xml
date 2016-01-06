@@ -11,6 +11,34 @@
     tools:context=".Activities.LoginActivity">
 
     <!-- Login progress -->
+    <LinearLayout
+        tools:context=".Activities.LoginActivity"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="87dp"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:layout_marginBottom="20dp">
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:id="@+id/logoLiodevelSplash"
+            android:background="@mipmap/ic_launcher" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="75dp"
+            android:text="@string/app_name"
+            android:id="@+id/textView"
+            android:textSize="42sp"
+            android:gravity="center"
+            android:layout_marginBottom="20dp"
+            android:layout_weight="0.5"/>
+
+    </LinearLayout>
+
     <ProgressBar
         android:id="@+id/login_progress"
         style="?android:attr/progressBarStyleLarge"
@@ -18,21 +46,6 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:visibility="gone" />
-
-    <ImageView
-        android:layout_width="100dp"
-        android:layout_height="88dp"
-        android:id="@+id/logoLiodevelSplash"
-        android:background="@drawable/logo_app"
-        android:scaleType="matrix" />
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="75dp"
-        android:text="@string/app_name"
-        android:id="@+id/textView"
-        android:textSize="42sp"
-        android:gravity="center"
-        android:layout_marginBottom="20dp"/>
 
     <ScrollView
         android:id="@+id/login_form"
@@ -84,7 +97,7 @@
                 android:text="@string/action_facebook_sign_in"
                 android:textStyle="bold"
                 android:onClick="facebookLogin"
-                android:layout_gravity="right" />
+                android:layout_gravity="center_horizontal" />
 
             <Button
                 android:id="@+id/email_register_button"

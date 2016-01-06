@@ -26,7 +26,7 @@
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:id="@+id/favorite_icon_item"
-        android:background="@drawable/ic_favorite_border_black_48dp"
+        android:background="@drawable/ic_action_action_favorite_outline"
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />

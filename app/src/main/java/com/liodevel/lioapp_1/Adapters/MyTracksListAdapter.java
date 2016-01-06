@@ -104,9 +104,9 @@ public class MyTracksListAdapter extends ArrayAdapter<Track> {
 
         // Favorito
         if (track.isFavorite()){
-            favorite.setBackground(getContext().getResources().getDrawable(R.drawable.ic_favorite_black_48dp));
+            favorite.setBackground(getContext().getResources().getDrawable(R.drawable.ic_action_action_favorite));
         } else {
-            favorite.setBackground(getContext().getResources().getDrawable(R.drawable.ic_favorite_border_black_48dp));
+            favorite.setBackground(getContext().getResources().getDrawable(R.drawable.ic_action_action_favorite_outline));
         }
 
         return convertView;

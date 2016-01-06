@@ -81,7 +81,7 @@ public class MyTracksActivity extends AppCompatActivity {
 
                     Log.i("LIOTRACKS", "Track selected: " + tracks.get(position).getObjectId());
                     progress = new ProgressDialog(context);
-                    progress.setMessage("Loading track");
+                    progress.setMessage(getResources().getString(R.string.loading_track));
                     progress.show();
 
                     Intent launchNextActivity;
@@ -183,8 +183,8 @@ public class MyTracksActivity extends AppCompatActivity {
             case R.id.map_action_delete_my_tracks:
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder
-                        .setMessage("Delete selected track")
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        .setMessage(getResources().getString(R.string.delete_selected_tracks))
+                        .setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
                                 actionBarMenu.findItem(R.id.map_action_delete_my_tracks).setVisible(false);
@@ -193,7 +193,7 @@ public class MyTracksActivity extends AppCompatActivity {
                                 getTracksByCurrentUser();
                             }
                         })
-                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        .setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
@@ -215,7 +215,7 @@ public class MyTracksActivity extends AppCompatActivity {
     private static void getTracksByCurrentUser() {
         Log.i("LIOTRACK", "getTracksByUser()");
         progress = new ProgressDialog(context);
-        progress.setMessage("Loading your tracks");
+        progress.setMessage(context.getResources().getString(R.string.loading_your_tracks));
         progress.show();
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery("track");
@@ -293,10 +293,10 @@ public class MyTracksActivity extends AppCompatActivity {
                     Log.i("LIOTRACK", "Track ID: " + trackObject.getObjectId());
                     cont++;
                 }
-                Utils.showMessage(getApplicationContext(), cont + " tracks deleted");
+                Utils.showMessage(getApplicationContext(), cont + " " + getResources().getString(R.string.tracks_deleted));
             } catch (ParseException e) {
                 Log.i("LIOTRACK", "Error deleting: " + e.toString());
-                Utils.showMessage(getApplicationContext(), "Error deleting tracks :(");
+                Utils.showMessage(getApplicationContext(), getResources().getString(R.string.error_deleting_tracks));
             }
         }
     }

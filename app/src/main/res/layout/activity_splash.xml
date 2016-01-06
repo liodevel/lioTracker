@@ -14,27 +14,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="lioTracks"
+        android:text="@string/app_name"
         android:textSize="50sp"
         android:gravity="center"
         android:id="@+id/TituloSplash"
         android:textColor="@color/liodevel_dark_grey"
-        android:layout_below="@+id/logoLioTracksSplash"
-        android:layout_alignRight="@+id/logoLioTracksSplash"
-        android:layout_alignEnd="@+id/logoLioTracksSplash"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-    <ImageView
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:id="@+id/logoLioTracksSplash"
-        android:background="@drawable/logo_app"
-        android:scaleType="matrix"
         android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignRight="@+id/pieSplash"
-        android:layout_alignEnd="@+id/pieSplash" />
+        android:layout_centerHorizontal="true" />
+    <ImageView
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:id="@+id/logoLioTracksSplash"
+        android:background="@mipmap/ic_launcher2"
+        android:layout_below="@+id/TituloSplash"
+        android:layout_centerHorizontal="true" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -45,18 +38,20 @@
         android:gravity="center"
         android:id="@+id/pieSplash"
         android:textColor="@color/liodevel_dark_grey"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
+        android:layout_alignTop="@+id/logoLiodevelSplash"
+        android:layout_alignLeft="@+id/TituloSplash"
+        android:layout_alignStart="@+id/TituloSplash"
+        android:layout_alignBottom="@+id/logoLiodevelSplash"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
     <ImageView
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:id="@+id/logoLiodevelSplash"
         android:background="@drawable/liodevel_logo"
         android:scaleType="matrix"
-        android:layout_above="@+id/pieSplash"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 </RelativeLayout>
