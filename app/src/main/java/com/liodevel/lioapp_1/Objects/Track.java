@@ -17,11 +17,14 @@ public class Track {
     private Date dateEnd;
     private float distance;         // en metros
     private long duration;          // en segundos
-    private int vehicle;            // 1-Coche; 2-Transporte público; 3-Bici; 4-Andando;
+    private int vehicle;            // 1-Coche; 2-Moto; 3-Bici; 4-Patinete; 5-Andando
     private String info;
     private ParseGeoPoint fromLocation;
     private ParseGeoPoint toLocation;
     private boolean favorite;
+
+    private float averageSpeed;
+    private float topSpeed;
 
     private boolean isChecked;
 
@@ -36,6 +39,7 @@ public class Track {
         fromLocation = new ParseGeoPoint();
         toLocation = new ParseGeoPoint();
         favorite = false;
+        vehicle = 1;
 
         isChecked = false;
         trackPoints = new ArrayList<>();
@@ -143,5 +147,21 @@ public class Track {
 
     public void setFavorite(boolean favorite) {
         this.favorite = favorite;
+    }
+
+    public float getAverageSpeed() {
+        return averageSpeed;
+    }
+
+    public void setAverageSpeed(float averageSpeed) {
+        this.averageSpeed = averageSpeed;
+    }
+
+    public float getTopSpeed() {
+        return topSpeed;
+    }
+
+    public void setTopSpeed(float topSpeed) {
+        this.topSpeed = topSpeed;
     }
 }

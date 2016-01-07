@@ -293,6 +293,7 @@ public class MyTracksActivity extends AppCompatActivity {
                     Log.i("LIOTRACK", "Track ID: " + trackObject.getObjectId());
                     cont++;
                 }
+                selectedTracksId = new ArrayList<>();
                 Utils.showMessage(getApplicationContext(), cont + " " + getResources().getString(R.string.tracks_deleted));
             } catch (ParseException e) {
                 Log.i("LIOTRACK", "Error deleting: " + e.toString());

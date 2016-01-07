@@ -55,7 +55,7 @@ public class MyTracksListAdapter extends ArrayAdapter<Track> {
 
         if (currentDate.getTime() - track.getDate().getTime() < TimeUnit.MILLISECONDS.convert(6, TimeUnit.DAYS)){
             String weekDay = "";
-            if (c.get(Calendar.DAY_OF_WEEK) == 1){weekDay = Utils.SATURDAY;}
+            if (c.get(Calendar.DAY_OF_WEEK) == 1){weekDay = Utils.SUNDAY;}
             else if (c.get(Calendar.DAY_OF_WEEK) == 2){weekDay = Utils.MONDAY;}
             else if (c.get(Calendar.DAY_OF_WEEK) == 3){weekDay = Utils.TUESDAY;}
             else if (c.get(Calendar.DAY_OF_WEEK) == 4){weekDay = Utils.WEDNESDAY;}

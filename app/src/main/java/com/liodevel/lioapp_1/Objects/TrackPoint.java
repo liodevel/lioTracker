@@ -16,10 +16,13 @@ public class TrackPoint {
     private Date date;
     private float accuracy;
 
+    private float speed;
+
     public TrackPoint() {
         objectId = "";
         position = new ParseGeoPoint();
         date = new Date();
+        speed = 0.0f;
     }
 
     public String getObjectId() {
@@ -60,5 +63,13 @@ public class TrackPoint {
 
     public void setAccuracy(float accuracy) {
         this.accuracy = accuracy;
+    }
+
+    public float getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(float speed) {
+        this.speed = speed;
     }
 }

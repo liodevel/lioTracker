@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -101,15 +102,52 @@ public class TrackActivity extends AppCompatActivity {
 
     /**
      * Dibuja una linea en el mapa
-     *
-     * @param start
-     * @param end
+     * @param start Coordenadas inicio
+     * @param end Coordenadas final
+     * @param speed velocidad en KM/H
+     * @param vehicle 1-Coche; 2-Moto; 3-Bici; 4-Patinete; 5-Andando
      */
-    private void drawTrackPoint(LatLng start, LatLng end) {
+    private void drawTrackPoint(LatLng start, LatLng end, double speed, int vehicle) {
+        int colorTrack;
+
+        if (vehicle == 1 || vehicle == 2) {
+            if (speed < 10) {
+                colorTrack = Color.BLACK;
+            } else if (speed < 20) {
+                colorTrack = Color.RED;
+            } else if (speed < 30) {
+                colorTrack = Color.YELLOW;
+            } else if (speed < 60) {
+                colorTrack = Color.GREEN;
+            } else if (speed < 90) {
+                colorTrack = Color.CYAN;
+            } else if (speed < 120) {
+                colorTrack = Color.BLUE;
+            } else {
+                colorTrack = Color.MAGENTA;
+            }
+        } else {
+            if (speed < 10) {
+                colorTrack = Color.BLACK;
+            } else if (speed < 20) {
+                colorTrack = Color.RED;
+            } else if (speed < 30) {
+                colorTrack = Color.YELLOW;
+            } else if (speed < 60) {
+                colorTrack = Color.GREEN;
+            } else if (speed < 90) {
+                colorTrack = Color.CYAN;
+            } else if (speed < 120) {
+                colorTrack = Color.BLUE;
+            } else {
+                colorTrack = Color.MAGENTA;
+            }
+        }
+
         if (mMap != null) {
             PolylineOptions line =
                     new PolylineOptions().add(start, end)
-                            .width(10).color(Color.BLACK);
+                            .width(12).color(colorTrack);
             mMap.addPolyline(line);
         }
     }
@@ -186,6 +224,8 @@ public class TrackActivity extends AppCompatActivity {
         boolean ret = false;
         LatLng prevPos = null;
         LatLng actualPos = null;
+        TrackPoint previousTrackPoint = new TrackPoint();
+
 
         ParseQuery<ParseObject> queryTrackObject = ParseQuery.getQuery("track");
         queryTrackObject.whereEqualTo("objectId", objectId);
@@ -221,14 +261,39 @@ public class TrackActivity extends AppCompatActivity {
                     //trackPoints.add(trackPoint);
                     actualPos = new LatLng(trackPoint.getPosition().getLatitude(), trackPoint.getPosition().getLongitude());
                     if (prevPos != null) {
-                        drawTrackPoint(prevPos, actualPos);
+                        if(previousTrackPoint != null) {
+
+                            Location selected_location=new Location("locationA");
+                            selected_location.setLatitude(trackPoint.getPosition().getLatitude());
+                            selected_location.setLongitude( trackPoint.getPosition().getLongitude());
+                            Location near_locations=new Location("locationA");
+                            near_locations.setLatitude(previousTrackPoint.getPosition().getLatitude());
+                            near_locations.setLongitude(previousTrackPoint.getPosition().getLongitude());
+
+                            double distance = selected_location.distanceTo(near_locations);
+
+                            double kilometers = distance / 1000.0;
+                            Log.i("MYTRACKS", "TRACKPOINT DISTANCE      :" + distance);
+                            Log.i("MYTRACKS", "TRACKPOINT DATE          :" + trackPoint.getDate().getTime());
+                            Log.i("MYTRACKS", "PREVIOUSTRACKPOINT DATE  :" + previousTrackPoint.getDate().getTime());
+                            long microsecs = (trackPoint.getDate().getTime() - previousTrackPoint.getDate().getTime());
+                            double hours = microsecs / 1000.0 / 3600.0;
+                            double speed = kilometers / hours;
+                            Log.i("MYTRACKS", "" + speed + "km/h");
+
+                            drawTrackPoint(prevPos, actualPos, speed, currentTrack.getVehicle());
+
+
+                        }
                     } else {
                         // Centrar en primera localización
                         if (mMap != null){
                             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(actualPos, 16));
                         }
                     }
+
                     prevPos = actualPos;
+                    previousTrackPoint = trackPoint;
                 }
                 Log.i("LIOTRACK", "TOTAL TrackPoints: " + cont);
                 ret = true;

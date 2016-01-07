@@ -25,7 +25,7 @@
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:id="@+id/logoLioTracksSplash"
-        android:background="@mipmap/ic_launcher2"
+        android:background="@mipmap/ic_launcher"
         android:layout_below="@+id/TituloSplash"
         android:layout_centerHorizontal="true" />
 
@@ -33,7 +33,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="lioTracks 1.0 - liodevel 2016"
+        android:text="myTracks 1.0 - liodevel 2016"
         android:textSize="20sp"
         android:gravity="center"
         android:id="@+id/pieSplash"

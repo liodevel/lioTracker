@@ -347,6 +347,10 @@ public class MapActivity extends AppCompatActivity {
                 tracking = true;
                 currentTrackDistance = 0;
 
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                                new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()),
+                                18)
+                );
                 // Animacion
                 LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 ImageView iv = (ImageView) inflater.inflate(R.layout.start_track_image, null);
