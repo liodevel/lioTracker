@@ -24,7 +24,7 @@ public class SplashActivity extends Activity {
         try {
             ParseFacebookUtils.initialize(this);
         } catch (Exception e){
-            Log.i("LIOTRACK", "Error ParseFacebookUtils");
+            Utils.logInfo("Error ParseFacebookUtils");
         }
 
 
@@ -33,7 +33,7 @@ public class SplashActivity extends Activity {
             Parse.initialize(this);
 
         } catch (Exception e){
-            Log.i("LIOTRACK", "Parse initialized");
+            Utils.logInfo("Parse initialized");
         }
 
 
@@ -52,7 +52,7 @@ public class SplashActivity extends Activity {
                         launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                         startActivity(launchNextActivity);
                     } else {
-                        Log.i("LIOTRACK", "Session: " + "No session");
+                        Utils.logInfo("Session: " + "No session");
                         Intent launchNextActivity;
                         launchNextActivity = new Intent(SplashActivity.this, LoginActivity.class);
                         launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -61,7 +61,7 @@ public class SplashActivity extends Activity {
                         startActivity(launchNextActivity);
                     }
                 } else {
-                    Log.i("LIOTRACK", "Session: " + "No session");
+                    Utils.logInfo("Session: " + "No session");
                     Intent launchNextActivity;
                     launchNextActivity = new Intent(SplashActivity.this, LoginActivity.class);
                     launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

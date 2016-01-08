@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.MenuItem;
 
 import com.liodevel.lioapp_1.R;
+import com.liodevel.lioapp_1.Utils.Utils;
 
 import java.util.List;
 
@@ -86,7 +87,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // Show the Up button in the action bar.
             actionBar.setDisplayHomeAsUpEnabled(true);
         } else {
-            Log.i("LIOTRACKS", "ActionBar NULL");
+            Utils.logInfo("ActionBar NULL");
         }
     }
 

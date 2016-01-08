@@ -79,7 +79,7 @@ public class MyTracksActivity extends AppCompatActivity {
 
                 if (!selecting) {
 
-                    Log.i("LIOTRACKS", "Track selected: " + tracks.get(position).getObjectId());
+                    Utils.logInfo("Track selected: " + tracks.get(position).getObjectId());
                     progress = new ProgressDialog(context);
                     progress.setMessage(getResources().getString(R.string.loading_track));
                     progress.show();
@@ -91,26 +91,26 @@ public class MyTracksActivity extends AppCompatActivity {
                     startActivity(launchNextActivity);
                 } else {
                     if (!selectedTracksId.contains(tracks.get(position).getObjectId())) {
-                        Log.i("LIOTRACK", "SELECT");
+                        Utils.logInfo("SELECT");
                         //view.setBackground(getResources().getDrawable(R.drawable.item_selected));
                         tracks.get(position).setIsChecked(true);
                         actionBarMenu.findItem(R.id.map_action_delete_my_tracks).setVisible(true);
                         selecting = true;
                         selectedTracksId.add(tracks.get(position).getObjectId());
-                        Log.i("LIOTRACK", "SELECTED tracks: " + selectedTracksId.toString());
+                        Utils.logInfo("SELECTED tracks: " + selectedTracksId.toString());
                     } else {
-                        Log.i("LIOTRACK", "DESELECT");
+                        Utils.logInfo("DESELECT");
                         //view.setBackground(getResources().getDrawable(R.drawable.item));
                         tracks.get(position).setIsChecked(false);
                         selectedTracksId.remove(tracks.get(position).getObjectId());
-                        Log.i("LIOTRACK", "SELECTED tracks: " + selectedTracksId.toString());
+                        Utils.logInfo("SELECTED tracks: " + selectedTracksId.toString());
                         // Si no hay nada seleccionado esconder Trash
                         if (selectedTracksId.size() == 0) {
                             actionBarMenu.findItem(R.id.map_action_delete_my_tracks).setVisible(false);
                             selecting = false;
                         }
                     }
-                    Log.i("LIOTRACK", "LONG CLICK: ObjectID: " + tracks.get(position).getObjectId());
+                    Utils.logInfo("LONG CLICK: ObjectID: " + tracks.get(position).getObjectId());
                     adapter.notifyDataSetChanged();
 
                 }
@@ -124,26 +124,26 @@ public class MyTracksActivity extends AppCompatActivity {
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 
                 if (!selectedTracksId.contains(tracks.get(position).getObjectId())) {
-                    Log.i("LIOTRACK", "SELECT");
+                    Utils.logInfo("SELECT");
                     //view.setBackground(getResources().getDrawable(R.drawable.item_selected));
                     tracks.get(position).setIsChecked(true);
                     actionBarMenu.findItem(R.id.map_action_delete_my_tracks).setVisible(true);
                     selecting = true;
                     selectedTracksId.add(tracks.get(position).getObjectId());
-                    Log.i("LIOTRACK", "SELECTED tracks: " + selectedTracksId.toString());
+                    Utils.logInfo("SELECTED tracks: " + selectedTracksId.toString());
                 } else {
-                    Log.i("LIOTRACK", "DESELECT");
+                    Utils.logInfo("DESELECT");
                     //view.setBackground(getResources().getDrawable(R.drawable.item));
                     tracks.get(position).setIsChecked(false);
                     selectedTracksId.remove(tracks.get(position).getObjectId());
-                    Log.i("LIOTRACK", "SELECTED tracks: " + selectedTracksId.toString());
+                    Utils.logInfo("SELECTED tracks: " + selectedTracksId.toString());
                     // Si no hay nada seleccionado esconder Trash
                     if (selectedTracksId.size() == 0) {
                         actionBarMenu.findItem(R.id.map_action_delete_my_tracks).setVisible(false);
                         selecting = false;
                     }
                 }
-                Log.i("LIOTRACK", "LONG CLICK: ObjectID: " + tracks.get(position).getObjectId());
+                Utils.logInfo("LONG CLICK: ObjectID: " + tracks.get(position).getObjectId());
                 adapter.notifyDataSetChanged();
                 return true;
             }
@@ -213,7 +213,7 @@ public class MyTracksActivity extends AppCompatActivity {
      * Recupera la lista de Tracks
      */
     private static void getTracksByCurrentUser() {
-        Log.i("LIOTRACK", "getTracksByUser()");
+        Utils.logInfo("getTracksByUser()");
         progress = new ProgressDialog(context);
         progress.setMessage(context.getResources().getString(R.string.loading_your_tracks));
         progress.show();
@@ -234,7 +234,7 @@ public class MyTracksActivity extends AppCompatActivity {
                         track.setDistance((float) parseObject.getDouble("distance"));
                         track.setInfo((String) parseObject.get("info"));
                         track.setFavorite(parseObject.getBoolean("favorite"));
-                        Log.i("LIOTRACK", "Track: " + track.getDate());
+                        Utils.logInfo("Track: " + track.getDate());
                         //tracks.add(track);
                         adapter.add(track);
                         tracksParseObject.add(parseObject);
@@ -243,7 +243,7 @@ public class MyTracksActivity extends AppCompatActivity {
                     progress.dismiss();
                 } else {
                     // Something went wrong.
-                    Log.i("LIOTRACK", "Error: " + e.toString());
+                    Utils.logInfo("Error: " + e.toString());
                 }
             }
         });
@@ -256,7 +256,7 @@ public class MyTracksActivity extends AppCompatActivity {
      * @param objectId
      */
     public void deleteTrackByObjectId(String objectId) {
-        Log.i("LIOTRACK", "deleteTrackByObjectId()");
+        Utils.logInfo("deleteTrackByObjectId()");
         ParseObject trackObject = null;
         ParseQuery<ParseObject> queryTrackObject = ParseQuery.getQuery("track");
         queryTrackObject.whereEqualTo("objectId", objectId);
@@ -265,10 +265,10 @@ public class MyTracksActivity extends AppCompatActivity {
             trackObject = parseQueriesTrackObject.get(0);
             trackObject.delete();
             //trackObject.save();
-            Log.i("LIOTRACK", "Track ID: " + trackObject.getObjectId());
+            Utils.logInfo("Track ID: " + trackObject.getObjectId());
 
         } catch (ParseException e) {
-            Log.i("LIOTRACK", "Error deleting: " + e.toString());
+            Utils.logInfo("Error deleting: " + e.toString());
         }
     }
 
@@ -277,7 +277,7 @@ public class MyTracksActivity extends AppCompatActivity {
      * Borra los Tracks seleccionados
      */
     private void deleteSelectedTracks() {
-        Log.i("LIOTRACK", "deleteSelectedTracks()");
+        Utils.logInfo("deleteSelectedTracks()");
         if (selectedTracksId.size() > 0) {
             ParseObject trackObject = null;
             ParseQuery<ParseObject> queryTrackObject = ParseQuery.getQuery("track");
@@ -286,17 +286,17 @@ public class MyTracksActivity extends AppCompatActivity {
                 for (String id : selectedTracksId) {
                     queryTrackObject.whereEqualTo("objectId", id);
                     List<ParseObject> parseQueriesTrackObject = queryTrackObject.find();
-                    Log.i("LIOTRACK", "Find: " + parseQueriesTrackObject.toString());
+                    Utils.logInfo("Find: " + parseQueriesTrackObject.toString());
                     trackObject = parseQueriesTrackObject.get(0);
                     trackObject.delete();
                     //trackObject.save();
-                    Log.i("LIOTRACK", "Track ID: " + trackObject.getObjectId());
+                    Utils.logInfo("Track ID: " + trackObject.getObjectId());
                     cont++;
                 }
                 selectedTracksId = new ArrayList<>();
                 Utils.showMessage(getApplicationContext(), cont + " " + getResources().getString(R.string.tracks_deleted));
             } catch (ParseException e) {
-                Log.i("LIOTRACK", "Error deleting: " + e.toString());
+                Utils.logInfo("Error deleting: " + e.toString());
                 Utils.showMessage(getApplicationContext(), getResources().getString(R.string.error_deleting_tracks));
             }
         }

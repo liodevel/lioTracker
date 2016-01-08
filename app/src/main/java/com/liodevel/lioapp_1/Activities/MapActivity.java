@@ -152,22 +152,22 @@ public class MapActivity extends AppCompatActivity {
                 @Override
                 public void done(com.parse.ParseException e) {
                     if (e == null) {
-                        Log.i("SAVE startTrack", "OK");
+                        Utils.logInfo("SAVE startTrack OK");
                         Utils.showMessage(getApplicationContext(), getResources().getString(R.string.track_saved));
                     } else {
-                        Log.i("SAVE startTrack", "ERROR: " + e.toString());
+                        Utils.logInfo("SAVE startTrack ERROR: " + e.toString());
                         Utils.showMessage(getApplicationContext(), getResources().getString(R.string.error_saving_track));
 
                     }
                 }
             });
         } catch (Exception e){
-            Log.e("LIOTRACKS", "Error: " + e.toString());
+            Utils.logError(e.toString());
         }
         try {
             locationManager.removeUpdates(locationListener);
         } catch (Exception e){
-            Log.e("LIOTRACKS", "Error: " + e.toString());
+            Utils.logError(e.toString());
         }
     }
 
@@ -337,7 +337,7 @@ public class MapActivity extends AppCompatActivity {
      * Start Button
      */
     public void clickStart(View view) {
-        Log.i("CLICK", "clickStart");
+        Utils.logInfo("CLIC clickStart");
         if (!tracking) {
             // START TRACKING
             if (startTrack() == 0) {
@@ -373,10 +373,10 @@ public class MapActivity extends AppCompatActivity {
                 @Override
                 public void done(com.parse.ParseException e) {
                     if (e == null) {
-                        Log.i("SAVE startTrack", "OK");
+                        Utils.logInfo("SAVE startTrack OK");
                         Utils.showMessage(getApplicationContext(), getResources().getString(R.string.track_saved));
                     } else {
-                        Log.i("SAVE startTrack", "ERROR: " + e.toString());
+                        Utils.logInfo("SAVE startTrack ERROR: " + e.toString());
                         Utils.showMessage(getApplicationContext(), getResources().getString(R.string.error_saving_track));
 
                     }
@@ -428,7 +428,7 @@ public class MapActivity extends AppCompatActivity {
      * Start the TimerTask
      */
     private void startTimerTrack() {
-        Log.i("LIOTRACKS", "startTimerTrack");
+        Utils.logInfo("startTimerTrack");
         timer = new Timer();
         initializeTimerTrack();
         timer.schedule(timerTask, 0, 5000); //
@@ -438,7 +438,7 @@ public class MapActivity extends AppCompatActivity {
      * Stop the TimerTask
      */
     private void stopTimerTrack() {
-        Log.i("LIOTRACKS", "stopTimerTrack");
+        Utils.logInfo("stopTimerTrack");
         if (timer != null) {
             timer.cancel();
             timer = null;
@@ -454,8 +454,8 @@ public class MapActivity extends AppCompatActivity {
                 //use a handler to run a toast that shows the current timestamp
                 handler.post(new Runnable() {
                     public void run() {
-                        Log.i("LIOTRACK", "Sending");
-                        sendLocation();
+                        Utils.logInfo("Sending location");
+                                sendLocation();
                     }
                 });
             }
@@ -466,7 +466,7 @@ public class MapActivity extends AppCompatActivity {
      * Send startTrack
      */
     private int startTrack() {
-        Log.i("SEND", "startTrack()");
+        Utils.logInfo("SEND startTrack()");
         int ret = -1;
         mMap.clear();
         currentTrackDistance = 0;
@@ -486,13 +486,13 @@ public class MapActivity extends AppCompatActivity {
             @Override
             public void done(com.parse.ParseException e) {
                 if (e == null) {
-                    Log.i("SAVE startTrack", "OK");
+                    Utils.logInfo("SAVE startTrack OK");
                     currentTrack = dataObject;
                     currentTrackObjectId = dataObject.getObjectId();
                     startTimerTrack();
 
                 } else {
-                    Log.i("SAVE startTrack", "ERROR: " + e.toString());
+                    Utils.logInfo("SAVE startTrack ERROR: " + e.toString());
                 }
             }
         });
@@ -505,7 +505,7 @@ public class MapActivity extends AppCompatActivity {
      * Enviar trackPoint
      */
     private void sendLocation() {
-        Log.i("SEND", "sendLocation()");
+        Utils.logInfo("SEND sendLocation()");
 
         if (lastLocation != null) {
             TrackPoint tr = new TrackPoint();
@@ -531,7 +531,7 @@ public class MapActivity extends AppCompatActivity {
             }
             prevLocation = lastLocation;
         } else {
-            Log.i("SEND", "NULL Location");
+            Utils.logInfo("SEND NULL Location");
         }
     }
 

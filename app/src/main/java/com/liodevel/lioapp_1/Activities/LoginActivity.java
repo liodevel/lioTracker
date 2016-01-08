@@ -62,7 +62,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         try {
             ParseFacebookUtils.initialize(this);
         } catch (Exception e){
-            Log.i("LIOTRACK", "Error ParseFacebookUtils");
+            Utils.logInfo("Error ParseFacebookUtils");
         }
 
         mPasswordView = (EditText) findViewById(R.id.password);
@@ -143,7 +143,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            Log.i("LIOTRACK", "login()");
+            Utils.logInfo("login()");
             ParseUser parseUser = new ParseUser();
             parseUser.setUsername(email);
             parseUser.setPassword(password);
@@ -151,7 +151,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 @Override
                 public void done(ParseUser user, ParseException e) {
                     if (user != null && user.isAuthenticated()) {
-                        Log.i("LIOTRACK", "Login: OK");
+                        Utils.logInfo("Login: OK");
 
                         Intent launchNextActivity;
                         launchNextActivity = new Intent(LoginActivity.this, MapActivity.class);
@@ -211,8 +211,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            Log.i("LIOTRACK", "Register: signup()");
-            Log.i("LIOTRACK", "Register: " + email + " " + password);
+            Utils.logInfo("Register: signup()");
+            Utils.logInfo("Register: " + email + " " + password);
             final ParseUser parseUser = new ParseUser();
             parseUser.setUsername(email);
             parseUser.setPassword(password);
@@ -220,7 +220,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 @Override
                 public void done(ParseException e) {
                     if (e == null) {
-                        Log.i("LIOTRACK", "Register: OK: " + email);
+                        Utils.logInfo("Register: OK: " + email);
                         Utils.showMessage(getApplicationContext(), "Hi, " + email + "!");
                         ParseUser.logInInBackground(email, password, new LogInCallback() {
                             @Override
@@ -235,7 +235,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                     startActivity(launchNextActivity);
                                 } else {
                                     showProgress(false);
-                                    Log.i("LIOTRACK", "LOGIN ERROR: " + e.toString());
+                                    Utils.logInfo("LOGIN ERROR: " + e.toString());
                                     Utils.showMessage(getApplicationContext(), "Login error, retry please");
 
                                 }
@@ -246,7 +246,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
                     } else {
                         showProgress(false);
-                        Log.i("LIOTRACK", "Register: ERROR: " + e.toString());
+                        Utils.logInfo("Register: ERROR: " + e.toString());
                         if (e.toString().contains("username") && e.toString().contains("taken")){
                             Utils.showMessage(getApplicationContext(), "Username " + email + " already taken!");
                         } else {
@@ -358,9 +358,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             @Override
             public void done(ParseUser user, ParseException err) {
                 if (user == null) {
-                    Log.d("LIOTRACKS", "Uh oh. The user cancelled the Facebook login.");
+                    Utils.logInfo("Uh oh. The user cancelled the Facebook login.");
                 } else if (user.isNew()) {
-                    Log.d("LIOTRACKS", "User signed up and logged in through Facebook!");
+                    Utils.logInfo("User signed up and logged in through Facebook!");
                     Utils.showMessage(LoginActivity.this, "Hi, " + ParseUser.getCurrentUser().getUsername() + "!");
                     Intent launchNextActivity;
                     launchNextActivity = new Intent(LoginActivity.this, MapActivity.class);
@@ -369,8 +369,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                     startActivity(launchNextActivity);
                 } else {
-                    Log.d("LIOTRACKS", "User logged in through Facebook!");
-                    Log.d("LIOTRACKS", "User signed up and logged in through Facebook!");
+                    Utils.logInfo("User logged in through Facebook!");
+                    Utils.logInfo("User signed up and logged in through Facebook!");
                     Utils.showMessage(LoginActivity.this, "Hi, " + ParseUser.getCurrentUser().getUsername() + "!");
                     Intent launchNextActivity;
                     launchNextActivity = new Intent(LoginActivity.this, MapActivity.class);

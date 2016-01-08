@@ -1,6 +1,7 @@
 package com.liodevel.lioapp_1.Utils;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
 
 /**
@@ -26,6 +27,13 @@ public class Utils {
         Toast.makeText(context, message, Toast.LENGTH_LONG).show();
     }
 
+
+    public static void logInfo(String message){
+        Log.i("myTracks", message);
+    }
+    public static void logError(String message){
+        Log.e("myTracks", "ERROR: " + message);
+    }
 
 
 

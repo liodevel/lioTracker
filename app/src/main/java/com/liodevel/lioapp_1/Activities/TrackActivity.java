@@ -80,7 +80,7 @@ public class TrackActivity extends AppCompatActivity {
             trackObjectId = "";
         } else {
             trackObjectId = extras.getString("objectId");
-            Log.i("LIOTRACKS", "ObjectId Track: " + trackObjectId);
+            Utils.logInfo("ObjectId Track: " + trackObjectId);
         }
 
         if (mMap == null) {
@@ -94,62 +94,11 @@ public class TrackActivity extends AppCompatActivity {
         updateTrackInfo();
     }
 
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         updateTrack();
-    }
-
-    /**
-     * Dibuja una linea en el mapa
-     * @param start Coordenadas inicio
-     * @param end Coordenadas final
-     * @param speed velocidad en KM/H
-     * @param vehicle 1-Coche; 2-Moto; 3-Bici; 4-Patinete; 5-Andando
-     */
-    private void drawTrackPoint(LatLng start, LatLng end, double speed, int vehicle) {
-        int colorTrack;
-
-        if (vehicle == 1 || vehicle == 2) {
-            if (speed < 10) {
-                colorTrack = Color.BLACK;
-            } else if (speed < 20) {
-                colorTrack = Color.RED;
-            } else if (speed < 30) {
-                colorTrack = Color.YELLOW;
-            } else if (speed < 60) {
-                colorTrack = Color.GREEN;
-            } else if (speed < 90) {
-                colorTrack = Color.CYAN;
-            } else if (speed < 120) {
-                colorTrack = Color.BLUE;
-            } else {
-                colorTrack = Color.MAGENTA;
-            }
-        } else {
-            if (speed < 10) {
-                colorTrack = Color.BLACK;
-            } else if (speed < 20) {
-                colorTrack = Color.RED;
-            } else if (speed < 30) {
-                colorTrack = Color.YELLOW;
-            } else if (speed < 60) {
-                colorTrack = Color.GREEN;
-            } else if (speed < 90) {
-                colorTrack = Color.CYAN;
-            } else if (speed < 120) {
-                colorTrack = Color.BLUE;
-            } else {
-                colorTrack = Color.MAGENTA;
-            }
-        }
-
-        if (mMap != null) {
-            PolylineOptions line =
-                    new PolylineOptions().add(start, end)
-                            .width(12).color(colorTrack);
-            mMap.addPolyline(line);
-        }
     }
 
 
@@ -215,7 +164,7 @@ public class TrackActivity extends AppCompatActivity {
      * @return
      */
     private boolean getTrackByObjectId(String objectId) {
-        Log.i("LIOTRACK", "getTrackByObjectId()");
+        Utils.logInfo("getTrackByObjectId()");
 
         progress = new ProgressDialog(context);
         progress.setMessage(getResources().getString(R.string.loading_track));
@@ -238,10 +187,10 @@ public class TrackActivity extends AppCompatActivity {
             currentTrack.setDistance((float) parseQueriesTrackObject.get(0).getDouble("distance"));
             currentTrack.setInfo((String) parseQueriesTrackObject.get(0).get("info"));
             currentTrack.setFavorite(parseQueriesTrackObject.get(0).getBoolean("favorite"));
-            Log.i("LIOTRACK", "Track ID: " + trackObject.getObjectId());
+            Utils.logInfo("Track ID: " + trackObject.getObjectId());
             ret = true;
         } catch (ParseException e) {
-            Log.i("LIOTRACK", "Error: " + e.toString());
+            Utils.logInfo("Error: " + e.toString());
             ret = false;
         }
 
@@ -273,13 +222,13 @@ public class TrackActivity extends AppCompatActivity {
                             double distance = selected_location.distanceTo(near_locations);
 
                             double kilometers = distance / 1000.0;
-                            Log.i("MYTRACKS", "TRACKPOINT DISTANCE      :" + distance);
-                            Log.i("MYTRACKS", "TRACKPOINT DATE          :" + trackPoint.getDate().getTime());
-                            Log.i("MYTRACKS", "PREVIOUSTRACKPOINT DATE  :" + previousTrackPoint.getDate().getTime());
+                            //Utils.logInfo("TRACKPOINT DISTANCE      :" + distance);
+                            //Utils.logInfo("TRACKPOINT DATE          :" + trackPoint.getDate().getTime());
+                            //Utils.logInfo("PREVIOUSTRACKPOINT DATE  :" + previousTrackPoint.getDate().getTime());
                             long microsecs = (trackPoint.getDate().getTime() - previousTrackPoint.getDate().getTime());
                             double hours = microsecs / 1000.0 / 3600.0;
                             double speed = kilometers / hours;
-                            Log.i("MYTRACKS", "" + speed + "km/h");
+                            Utils.logInfo("" + speed + "km/h");
 
                             drawTrackPoint(prevPos, actualPos, speed, currentTrack.getVehicle());
 
@@ -295,10 +244,10 @@ public class TrackActivity extends AppCompatActivity {
                     prevPos = actualPos;
                     previousTrackPoint = trackPoint;
                 }
-                Log.i("LIOTRACK", "TOTAL TrackPoints: " + cont);
+                Utils.logInfo("TOTAL TrackPoints: " + cont);
                 ret = true;
             } catch (ParseException e) {
-                Log.i("LIOTRACK", "Error: " + e.toString());
+                Utils.logInfo("Error: " + e.toString());
                 ret = false;
             }
         }
@@ -311,7 +260,7 @@ public class TrackActivity extends AppCompatActivity {
      * @param objectId
      */
     private void deleteTrackByObjectId(String objectId) {
-        Log.i("LIOTRACK", "deleteTrackByObjectId()");
+        Utils.logInfo("deleteTrackByObjectId()");
         ParseObject trackObject = null;
 
         ParseQuery<ParseObject> queryTrackObject = ParseQuery.getQuery("track");
@@ -321,10 +270,10 @@ public class TrackActivity extends AppCompatActivity {
             trackObject = parseQueriesTrackObject.get(0);
             trackObject.delete();
             trackObject.saveInBackground();
-            Log.i("LIOTRACK", "Track ID: " + trackObject.getObjectId());
+            Utils.logInfo("Track ID: " + trackObject.getObjectId());
 
         } catch (ParseException e) {
-            Log.i("LIOTRACK", "Error deleting: " + e.toString());
+            Utils.logInfo("Error deleting: " + e.toString());
         }
     }
 
@@ -417,10 +366,10 @@ public class TrackActivity extends AppCompatActivity {
                 @Override
                 public void done(com.parse.ParseException e) {
                     if (e == null) {
-                        Log.i("SAVE startTrack", "OK");
+                        Utils.logInfo("SAVE startTrack OK");
                         //Utils.showMessage(getApplicationContext(), "Track info successfully saved");
                     } else {
-                        Log.i("SAVE startTrack", "ERROR: " + e.toString());
+                        Utils.logInfo("SAVE startTrack ERROR: " + e.toString());
                         Utils.showMessage(getApplicationContext(), getResources().getString(R.string.error_saving_track));
 
                     }
@@ -449,10 +398,10 @@ public class TrackActivity extends AppCompatActivity {
             @Override
             public void done(ParseException e) {
                 if (e == null) {
-                    Log.i("LIOTRACKS", "Update favorite");
+                    Utils.logInfo("Update favorite");
                     //Utils.showMessage(getApplicationContext(), "Track info successfully saved");
                 } else {
-                    Log.i("LIOTRACKS", "ERROR: " + e.toString());
+                    Utils.logInfo("ERROR: " + e.toString());
                     Utils.showMessage(getApplicationContext(), getResources().getString(R.string.error_saving_track));
 
                 }
@@ -472,5 +421,60 @@ public class TrackActivity extends AppCompatActivity {
             mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
         }
     }
+
+
+
+    /**
+     * Dibuja una linea en el mapa
+     * @param start Coordenadas inicio
+     * @param end Coordenadas final
+     * @param speed velocidad en KM/H
+     * @param vehicle 1-Coche; 2-Moto; 3-Bici; 4-Patinete; 5-Andando
+     */
+    private void drawTrackPoint(LatLng start, LatLng end, double speed, int vehicle) {
+        int colorTrack;
+
+        if (vehicle == 1 || vehicle == 2) {
+            if (speed < 10) {
+                colorTrack = Color.BLACK;
+            } else if (speed < 20) {
+                colorTrack = Color.RED;
+            } else if (speed < 30) {
+                colorTrack = Color.YELLOW;
+            } else if (speed < 60) {
+                colorTrack = Color.GREEN;
+            } else if (speed < 90) {
+                colorTrack = Color.CYAN;
+            } else if (speed < 120) {
+                colorTrack = Color.BLUE;
+            } else {
+                colorTrack = Color.MAGENTA;
+            }
+        } else {
+            if (speed < 10) {
+                colorTrack = Color.BLACK;
+            } else if (speed < 20) {
+                colorTrack = Color.RED;
+            } else if (speed < 30) {
+                colorTrack = Color.YELLOW;
+            } else if (speed < 60) {
+                colorTrack = Color.GREEN;
+            } else if (speed < 90) {
+                colorTrack = Color.CYAN;
+            } else if (speed < 120) {
+                colorTrack = Color.BLUE;
+            } else {
+                colorTrack = Color.MAGENTA;
+            }
+        }
+
+        if (mMap != null) {
+            PolylineOptions line =
+                    new PolylineOptions().add(start, end)
+                            .width(12).color(colorTrack);
+            mMap.addPolyline(line);
+        }
+    }
+
 
 }

@@ -42,7 +42,7 @@ public class Server {
     }
 
     public static ArrayList<Track> getTracksByCurrentUser(){
-        Log.i("LIOTRACK", "getTracksByUser()");
+        Utils.logInfo("getTracksByUser()");
 
         ArrayList<Track> ret = new ArrayList<>();
 
@@ -58,12 +58,12 @@ public class Server {
                         track.setObjectId((String) parseObject.get("objectId"));
                         track.setDate((Date) parseObject.get("date"));
                         track.setDateEnd((Date) parseObject.get("dateEnd"));
-                        Log.i("LIOTRACK", "Track: " + track.getDate());
+                        Utils.logInfo("Track: " + track.getDate());
                         //ret.add(track);
                     }
                 } else {
                     // Something went wrong.
-                    Log.i("LIOTRACK", "Error: " + e.toString());
+                    Utils.logError(e.toString());
                 }
             }
         });
