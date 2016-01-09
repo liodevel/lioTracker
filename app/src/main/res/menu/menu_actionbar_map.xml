@@ -27,12 +27,6 @@
         android:enabled="false"
         android:title="Profile name" />
 
-    <item android:id="@+id/map_action_my_tracks"
-        app:showAsAction="never"
-        android:title="@string/title_activity_my_tracks" />
-    <item android:id="@+id/map_action_settings"
-        app:showAsAction="never"
-        android:title="@string/settings" />
     <item android:id="@+id/map_action_logout"
         app:showAsAction="never"
         android:title="@string/logout" />

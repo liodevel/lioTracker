@@ -71,9 +71,11 @@ public class MapActivity extends AppCompatActivity {
     private Location prevLocation;
     private Location lastLocation;
     private float currentTrackDistance = 0;
+    private float trackPointDistance = 0;
     private LocationManager locationManager;
     private LocationListener locationListener;
     private Date lastTrackPointDate = new Date();
+    TrackPoint previousTr = new TrackPoint();
 
     private boolean gps_enabled = false;
     private boolean network_enabled = false;
@@ -197,16 +199,6 @@ public class MapActivity extends AppCompatActivity {
                 toggleMapType();
                 return true;
 
-            // MY TRACKS
-            case R.id.map_action_my_tracks:
-                Intent launchNextActivity;
-                launchNextActivity = new Intent(MapActivity.this, MyTracksActivity.class);
-                try {
-                    locationManager.removeUpdates(locationListener);
-                } catch (Exception e){}
-
-                startActivity(launchNextActivity);
-                return true;
 
             // LOGOUT
             case R.id.map_action_logout:
@@ -230,16 +222,7 @@ public class MapActivity extends AppCompatActivity {
 
                 return true;
 
-            // SETTINGS
-            case R.id.map_action_settings:
-                Intent launchSettingsActivity;
-                launchSettingsActivity = new Intent(MapActivity.this, SettingsActivity.class);
-                try {
-                    locationManager.removeUpdates(locationListener);
-                } catch (Exception e){}
 
-                startActivity(launchSettingsActivity);
-                return true;
 
             default:
                 return super.onOptionsItemSelected(item);
@@ -411,14 +394,52 @@ public class MapActivity extends AppCompatActivity {
 
     /**
      * Dibuja una linea en el mapa
-     * @param start
-     * @param end
+     * @param start Coordenadas inicio
+     * @param end Coordenadas final
+     * @param speed velocidad en KM/H
+     * @param vehicle 1-Coche; 2-Moto; 3-Bici; 4-Patinete; 5-Andando
      */
-    private void drawTrackPoint(LatLng start, LatLng end){
+    private void drawTrackPoint(LatLng start, LatLng end, double speed, int vehicle) {
+        int colorTrack;
+
+        if (vehicle == 1 || vehicle == 2) {
+            if (speed < 10) {
+                colorTrack = Color.BLACK;
+            } else if (speed < 20) {
+                colorTrack = Color.RED;
+            } else if (speed < 30) {
+                colorTrack = Color.YELLOW;
+            } else if (speed < 60) {
+                colorTrack = Color.GREEN;
+            } else if (speed < 90) {
+                colorTrack = Color.CYAN;
+            } else if (speed < 120) {
+                colorTrack = Color.BLUE;
+            } else {
+                colorTrack = Color.MAGENTA;
+            }
+        } else {
+            if (speed < 10) {
+                colorTrack = Color.BLACK;
+            } else if (speed < 20) {
+                colorTrack = Color.RED;
+            } else if (speed < 30) {
+                colorTrack = Color.YELLOW;
+            } else if (speed < 60) {
+                colorTrack = Color.GREEN;
+            } else if (speed < 90) {
+                colorTrack = Color.CYAN;
+            } else if (speed < 120) {
+                colorTrack = Color.BLUE;
+            } else {
+                colorTrack = Color.MAGENTA;
+            }
+        }
+
         if (mMap != null) {
             PolylineOptions line =
                     new PolylineOptions().add(start, end)
-                            .width(10).color(Color.BLACK);
+                            .width(12).color(colorTrack);
             mMap.addPolyline(line);
         }
     }
@@ -513,23 +534,55 @@ public class MapActivity extends AppCompatActivity {
             tr.setPosition(new ParseGeoPoint(lastLocation.getLatitude(), lastLocation.getLongitude()));
             tr.setAccuracy(lastLocation.getAccuracy());
             tr.setTrack(currentTrack);
-            Server.sendTrackPoint(tr);
-            lastTrackPointDate = tr.getDate();
 
             if (prevLocation != null){
-                currentTrackDistance = currentTrackDistance + prevLocation.distanceTo(lastLocation);
-                DecimalFormat df = new DecimalFormat();
-                df.setMaximumFractionDigits(2);
-                if (currentTrackDistance < 1000) {
-                    textInfo.setText(df.format(currentTrackDistance) + " m");
+
+                trackPointDistance = prevLocation.distanceTo(lastLocation);
+
+                if (trackPointDistance > 1) {
+                    Utils.logInfo("SendTrackPoint " + trackPointDistance + "m");
+                    Server.sendTrackPoint(tr);
+                    lastTrackPointDate = tr.getDate();
+
+                    currentTrackDistance = currentTrackDistance + trackPointDistance;
+                    DecimalFormat df = new DecimalFormat();
+                    df.setMaximumFractionDigits(2);
+                    if (currentTrackDistance < 1000) {
+                        textInfo.setText(df.format(currentTrackDistance) + " m");
+                    } else {
+                        textInfo.setText(df.format((currentTrackDistance / 1000)) + " km");
+                    }
+
+
+                    double kilometers = currentTrackDistance / 1000.0;
+                    Utils.logInfo("TRACKPOINT DISTANCE      :" + trackPointDistance);
+                    Utils.logInfo("TRACKPOINT DATE          :" + tr.getDate().getTime());
+                    Utils.logInfo("PREVIOUSTRACKPOINT DATE  :" + previousTr.getDate().getTime());
+                    long microsecs = (tr.getDate().getTime() - previousTr.getDate().getTime());
+                    double hours = microsecs / 1000.0 / 3600.0;
+                    double speed = kilometers / hours;
+                    Utils.logInfo(speed + "km/h");
+
+                    drawTrackPoint(
+                            new LatLng(prevLocation.getLatitude(), prevLocation.getLongitude()),
+                            new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()),
+                            speed, 1);
+
+                    previousTr = tr;
+
                 } else {
-                    textInfo.setText(df.format((currentTrackDistance / 1000)) + " km");
+                    Utils.logInfo("SendTrackPoint Skipped: " + trackPointDistance + "m");
                 }
-                drawTrackPoint(
-                        new LatLng(prevLocation.getLatitude(), prevLocation.getLongitude()),
-                        new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()));
+
+            } else {
+                Utils.logInfo("FIRST SendTrackPoint");
+                Server.sendTrackPoint(tr);
+                lastTrackPointDate = tr.getDate();
+                previousTr = tr;
+
             }
             prevLocation = lastLocation;
+
         } else {
             Utils.logInfo("SEND NULL Location");
         }

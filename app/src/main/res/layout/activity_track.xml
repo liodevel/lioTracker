@@ -4,18 +4,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_gravity="bottom"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/track_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/liodevel_white"
-        app:title="Track"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_below="@+id/track_toolbar"
         android:id="@+id/linearLayout"
         android:background="@color/liodevel_white"
         android:layout_alignParentLeft="true"

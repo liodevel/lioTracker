@@ -36,5 +36,15 @@ public class Utils {
     }
 
 
+    public static String minutesToHour(double min){
+        if (min < 60){
+            return (Math.round(min) + "min");
+        } else {
+            long hours = Math.round(min) / 60;
+            long minutes = Math.round(min) - (60 * hours);
+            return (hours + "h " + minutes + "min");
+        }
+    }
+
 
 }

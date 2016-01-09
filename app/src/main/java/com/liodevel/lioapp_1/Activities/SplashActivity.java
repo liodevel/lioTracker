@@ -46,7 +46,7 @@ public class SplashActivity extends Activity {
                     if (ParseUser.getCurrentUser() != null) {
                         Utils.showMessage(SplashActivity.this, "Hi, " + ParseUser.getCurrentUser().getUsername() + "!");
                         Intent launchNextActivity;
-                        launchNextActivity = new Intent(SplashActivity.this, MapActivity.class);
+                        launchNextActivity = new Intent(SplashActivity.this, MapActivity2.class);
                         launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);

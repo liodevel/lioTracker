@@ -53,7 +53,7 @@ public class TrackActivity extends AppCompatActivity {
     private static ProgressDialog progress;
     ParseObject trackObject = null;
 
-    private Toolbar myToolbar;
+    //private Toolbar myToolbar;
     private TextView durationInfo;
     private TextView distanceInfo;
     private TextView info;
@@ -67,8 +67,8 @@ public class TrackActivity extends AppCompatActivity {
         setContentView(R.layout.activity_track);
         context = this;
 
-        myToolbar = (Toolbar) findViewById(R.id.track_toolbar);
-        setSupportActionBar(myToolbar);
+        // myToolbar = (Toolbar) findViewById(R.id.track_toolbar);
+        //setSupportActionBar(myToolbar);
         durationInfo = (TextView) findViewById(R.id.text_track_duration_track_info);
         distanceInfo = (TextView) findViewById(R.id.text_track_distance_track_info);
         info = (TextView) findViewById(R.id.text_track_info);
@@ -311,9 +311,9 @@ public class TrackActivity extends AppCompatActivity {
                 weekDay = Utils.SATURDAY;
             }
 
-            myToolbar.setTitle(new SimpleDateFormat("HH:mm").format(currentTrack.getDate()) + "   " + weekDay);
+            //getActionBar().setTitle(new SimpleDateFormat("HH:mm").format(currentTrack.getDate()) + "   " + weekDay);
         } else {
-            myToolbar.setTitle(new SimpleDateFormat("HH:mm").format(currentTrack.getDate()) + "   " + new SimpleDateFormat("MM-dd-yyyy").format(currentTrack.getDate()));
+            //getActionBar().setTitle(new SimpleDateFormat("HH:mm").format(currentTrack.getDate()) + "   " + new SimpleDateFormat("MM-dd-yyyy").format(currentTrack.getDate()));
         }
 
         // Distancia
@@ -331,13 +331,8 @@ public class TrackActivity extends AppCompatActivity {
             double durationDouble;
             // duracion en minutos;
             durationDouble = durationLong / 1000 / 60;
+            durationInfo.setText(Utils.minutesToHour(durationDouble));
 
-            if (durationDouble < 60) {
-                durationInfo.setText(df.format(durationDouble) + " " + getResources().getString(R.string.min));
-            } else {
-                double hours = durationDouble / 60;
-                durationInfo.setText(df.format(hours) + " " + getResources().getString(R.string.hours));
-            }
         } else {
             durationInfo.setText("");
         }

@@ -84,13 +84,8 @@ public class MyTracksListAdapter extends ArrayAdapter<Track> {
             double durationDouble;
             // duracion en minutos;
             durationDouble = durationLong / 1000 / 60;
+            duration.setText(Utils.minutesToHour(durationDouble));
 
-            if (durationDouble < 60) {
-                duration.setText(df.format(durationDouble) + " Min");
-            } else {
-                double hours = durationDouble / 60;
-                duration.setText(df.format(hours) + " Hours");
-            }
         } else {
             duration.setText("");
         }

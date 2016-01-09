@@ -66,10 +66,6 @@ public class MyTracksActivity extends AppCompatActivity {
         tracks = new ArrayList<>();
         tracksParseObject = new ArrayList<>();
 
-        // Toolbar
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_tracks_toolbar);
-        setSupportActionBar(myToolbar);
-
         // Lista de tracks
         tracksList = (ListView) findViewById(R.id.tracks_list);
 
