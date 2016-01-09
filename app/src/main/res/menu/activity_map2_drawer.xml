@@ -10,8 +10,13 @@
             android:id="@+id/nav_settings"
             android:icon="@drawable/ic_menu_manage"
             android:title="@string/settings" />
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/ic_account_box_black_36dp"
+            android:title="@string/logout" />
     </group>
 
+    <!--
     <item android:title="Communicate">
         <menu>
             <item
@@ -20,5 +25,5 @@
                 android:title="Share" />
         </menu>
     </item>
-
+    -->
 </menu>

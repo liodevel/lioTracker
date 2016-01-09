@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">myTracks</string>
+    <string name="app_name">My Tracker</string>
     <string name="Profile">Perfil</string>
     <string name="action_facebook_sign_in">Entra con Facebook</string>
     <string name="action_register">Registrarse</string>
@@ -14,27 +14,25 @@
     <string name="error_invalid_password">La contraseña es muy corta</string>
     <string name="gps_network_not_enabled">Servicios de ubicación deshabilitados</string>
     <string name="logout">Cerrar sesión</string>
-    <string name="myTracks">Mis tracks</string>
+    <string name="myTracks">Mis rutas</string>
     <string name="open">Abrir</string>
     <string name="open_location_settings">Abrir opciones de ubicación</string>
     <string name="permission_rationale">Permisos de contactos necesarios para completar emails</string>
     <string name="pref_desc_only_gps">Deshabilitar otros servicios de ubicación</string>
     <string name="pref_header_general">General</string>
-    <string name="pref_header_notifications"></string>
     <string name="pref_only_gps">Sólo GPS</string>
-    <string name="pref_ringtone_silent"></string>
     <string name="prompt_email">Correo electrónico</string>
     <string name="prompt_password">Contraseña</string>
     <string name="settings">Configuración</string>
-    <string name="title_activity_my_tracks">Mis tracks</string>
+    <string name="title_activity_my_tracks">Mis rutas</string>
     <string name="title_activity_settings">Configuración</string>
     <string name="getting_location">Localizando</string>
     <string name="ready">Preparado</string>
     <string name="tracking">Registrando</string>
-    <string name="track_saved">Track guardada</string>
-    <string name="title_activity_map">myTracks</string>
-    <string name="title_activity_login">myTracks</string>
-    <string name="error_saving_track">Puf, error guardando track...</string>
+    <string name="track_saved">Ruta guardada</string>
+    <string name="title_activity_map">My Tracker</string>
+    <string name="title_activity_login">My Tracker</string>
+    <string name="error_saving_track">Puf, error guardando ruta...</string>
     <string name="confirm_logout">¿Cerrar sesión?</string>
     <string name="yes">Sí</string>
     <string name="no">No</string>
@@ -42,13 +40,51 @@
     <string name="unable_to_create_map">Lo siento, no se ha podido crear el Mapa</string>
     <string name="GPS">GPS</string>
     <string name="gps_network">GPS y aGPS</string>
-    <string name="loading_track">Cargando track</string>
-    <string name="delete_selected_tracks">¿Borrar tracks seleccionados?</string>
-    <string name="loading_your_tracks">Cargando tus tracks</string>
-    <string name="tracks_deleted">tracks borrados</string>
-    <string name="error_deleting_tracks">Error borrando tracks</string>
-    <string name="delete_track">¿Borrar track?</string>
-    <string name="insert_track_info">Escribe aquí algo acerca del track</string>
+    <string name="loading_track">Cargando ruta</string>
+    <string name="delete_selected_tracks">¿Borrar rutas seleccionadas?</string>
+    <string name="loading_your_tracks">Cargando tus rutas</string>
+    <string name="tracks_deleted">rutas borradas</string>
+    <string name="error_deleting_tracks">Error borrando rutas</string>
+    <string name="delete_track">¿Borrar ruta?</string>
+    <string name="insert_track_info">Escribe aquí algo acerca del trayecto</string>
     <string name="min">Min.</string>
     <string name="hours">Horas</string>
+    <string name="title_activity_map2">My Tracker</string>
+    <string name="action_settings">Configuración</string>
+    <string name="drawer_close">Cerrar</string>
+    <string name="drawer_open">Abrir</string>
+    <string name="navigation_drawer_close">Cerrar</string>
+    <string name="navigation_drawer_open">Abrir</string>
+
+
+    <string-array name="pref_example_list_titles">
+        <item>Always</item>
+        <item>When possible</item>
+        <item>Never</item>
+    </string-array>
+    <string-array name="pref_example_list_values">
+        <item>1</item>
+        <item>0</item>
+        <item>-1</item>
+    </string-array>
+
+    <!-- Example settings for Data & Sync -->
+
+    <string-array name="pref_sync_frequency_titles">
+        <item>15 minutes</item>
+        <item>30 minutes</item>
+        <item>1 hour</item>
+        <item>3 hours</item>
+        <item>6 hours</item>
+        <item>Never</item>
+    </string-array>
+    <string-array name="pref_sync_frequency_values">
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+        <item>180</item>
+        <item>360</item>
+        <item>-1</item>
+    </string-array>
+
 </resources>

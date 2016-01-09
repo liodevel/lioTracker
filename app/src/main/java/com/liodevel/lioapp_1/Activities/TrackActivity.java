@@ -52,6 +52,7 @@ public class TrackActivity extends AppCompatActivity {
     private Track currentTrack = new Track();
     private static ProgressDialog progress;
     ParseObject trackObject = null;
+    long trackPointsCount = 0;
 
     //private Toolbar myToolbar;
     private TextView durationInfo;
@@ -178,6 +179,8 @@ public class TrackActivity extends AppCompatActivity {
 
         ParseQuery<ParseObject> queryTrackObject = ParseQuery.getQuery("track");
         queryTrackObject.whereEqualTo("objectId", objectId);
+
+
         try {
             List<ParseObject> parseQueriesTrackObject = queryTrackObject.find();
             trackObject = parseQueriesTrackObject.get(0);
@@ -197,7 +200,19 @@ public class TrackActivity extends AppCompatActivity {
         if (ret == true) {
             ParseQuery<ParseObject> query = ParseQuery.getQuery("trackPoint");
             query.whereEqualTo("track", trackObject);
+            try {
+                trackPointsCount = query.count();
+                Utils.logInfo("TrackPoints count: " + trackPointsCount);
+            } catch (Exception e){
+
+            }
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.SECOND, 5);
+            Date date = calendar.getTime();
+            query.whereLessThan("date", date);
             query.setLimit(1000);
+            query.orderByAscending("date");
             int cont = 0;
             try {
                 List<ParseObject> parseQueries = query.find();
@@ -207,6 +222,7 @@ public class TrackActivity extends AppCompatActivity {
                     trackPoint.setObjectId(parseObject.getObjectId());
                     trackPoint.setDate((Date) parseObject.get("date"));
                     trackPoint.setPosition((ParseGeoPoint) parseObject.get("position"));
+                    Utils.logInfo("DATE TR: " + parseObject.get("date"));
                     //trackPoints.add(trackPoint);
                     actualPos = new LatLng(trackPoint.getPosition().getLatitude(), trackPoint.getPosition().getLongitude());
                     if (prevPos != null) {
@@ -228,7 +244,7 @@ public class TrackActivity extends AppCompatActivity {
                             long microsecs = (trackPoint.getDate().getTime() - previousTrackPoint.getDate().getTime());
                             double hours = microsecs / 1000.0 / 3600.0;
                             double speed = kilometers / hours;
-                            Utils.logInfo("" + speed + "km/h");
+                            //Utils.logInfo("" + speed + "km/h");
 
                             drawTrackPoint(prevPos, actualPos, speed, currentTrack.getVehicle());
 
@@ -277,6 +293,9 @@ public class TrackActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     *
+     */
     private void updateTrackInfo() {
         Date currentDate = new Date();
         Calendar c = Calendar.getInstance();

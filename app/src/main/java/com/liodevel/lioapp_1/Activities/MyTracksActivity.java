@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -19,18 +20,23 @@ import android.widget.ListView;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.model.LatLng;
 import com.liodevel.lioapp_1.Objects.Track;
+import com.liodevel.lioapp_1.Objects.TrackPoint;
 import com.liodevel.lioapp_1.R;
 import com.liodevel.lioapp_1.Adapters.MyTracksListAdapter;
 import com.liodevel.lioapp_1.Utils.Utils;
 import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -231,6 +237,10 @@ public class MyTracksActivity extends AppCompatActivity {
                         track.setInfo((String) parseObject.get("info"));
                         track.setFavorite(parseObject.getBoolean("favorite"));
                         Utils.logInfo("Track: " + track.getDate());
+                        if (track.getDateEnd() == null){
+                            Utils.logInfo("Track Incomplete");
+                            fixTrack(track.getObjectId());
+                        }
                         //tracks.add(track);
                         adapter.add(track);
                         tracksParseObject.add(parseObject);
@@ -296,6 +306,90 @@ public class MyTracksActivity extends AppCompatActivity {
                 Utils.showMessage(getApplicationContext(), getResources().getString(R.string.error_deleting_tracks));
             }
         }
+    }
+
+    /**
+     *
+     * @param objectId
+     */
+    private static void fixTrack(String objectId){
+
+        ParseObject trackObject = null;
+        Track currentTrack = new Track();
+
+        boolean ret = false;
+        LatLng prevPos = null;
+        LatLng actualPos = null;
+        TrackPoint previousTrackPoint = new TrackPoint();
+
+        ParseQuery<ParseObject> queryTrackObject = ParseQuery.getQuery("track");
+        queryTrackObject.whereEqualTo("objectId", objectId);
+
+        try {
+            List<ParseObject> parseQueriesTrackObject = queryTrackObject.find();
+            trackObject = parseQueriesTrackObject.get(0);
+            currentTrack.setObjectId(parseQueriesTrackObject.get(0).getObjectId());
+            currentTrack.setDate((Date) parseQueriesTrackObject.get(0).get("date"));
+            currentTrack.setDateEnd((Date) parseQueriesTrackObject.get(0).get("dateEnd"));
+            currentTrack.setDistance((float) parseQueriesTrackObject.get(0).getDouble("distance"));
+            currentTrack.setInfo((String) parseQueriesTrackObject.get(0).get("info"));
+            currentTrack.setFavorite(parseQueriesTrackObject.get(0).getBoolean("favorite"));
+            Utils.logInfo("Track ID: " + trackObject.getObjectId());
+            ret = true;
+        } catch (ParseException e) {
+            Utils.logInfo("Error: " + e.toString());
+            ret = false;
+        }
+
+        if (trackObject != null) {
+            ParseQuery<ParseObject> query = ParseQuery.getQuery("trackPoint");
+            query.whereEqualTo("track", trackObject);
+            query.setLimit(1000);
+            query.orderByAscending("date");
+            int cont = 0;
+            try {
+                List<ParseObject> parseQueries = query.find();
+                float totalDistance = 0;
+                Date lastDate = null;
+                for (ParseObject parseObject : parseQueries) {
+                    cont++;
+                    TrackPoint trackPoint = new TrackPoint();
+                    trackPoint.setObjectId(parseObject.getObjectId());
+                    trackPoint.setDate((Date) parseObject.get("date"));
+                    lastDate = (Date) parseObject.get("date");
+                    trackPoint.setPosition((ParseGeoPoint) parseObject.get("position"));
+                    actualPos = new LatLng(trackPoint.getPosition().getLatitude(), trackPoint.getPosition().getLongitude());
+                    if (prevPos != null) {
+                        if(previousTrackPoint != null) {
+
+                            Location selected_location=new Location("locationA");
+                            selected_location.setLatitude(trackPoint.getPosition().getLatitude());
+                            selected_location.setLongitude( trackPoint.getPosition().getLongitude());
+                            Location near_locations=new Location("locationA");
+                            near_locations.setLatitude(previousTrackPoint.getPosition().getLatitude());
+                            near_locations.setLongitude(previousTrackPoint.getPosition().getLongitude());
+
+                            double distance = selected_location.distanceTo(near_locations);
+                            totalDistance = totalDistance + ((float)distance);
+                        }
+                    }
+
+                    prevPos = actualPos;
+                    previousTrackPoint = trackPoint;
+                }
+                currentTrack.setDistance(totalDistance);
+                trackObject.put("distance", totalDistance);
+                trackObject.put("dateEnd", lastDate);
+                trackObject.save();
+                Utils.logInfo("Track Fixed! ");
+                ret = true;
+            } catch (ParseException e) {
+                Utils.logInfo("Error: " + e.toString());
+                ret = false;
+            }
+        }
+
+
     }
 
 }

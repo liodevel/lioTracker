@@ -59,7 +59,7 @@ public class MapActivity2 extends AppCompatActivity
     private Boolean exit = false;
 
     // VIEW
-    private TextView textInfo, textProviderInfo;
+    private TextView textInfo, textProviderInfo, userName;
     private Menu actionBarMenu;
     private Context context;
 
@@ -116,6 +116,9 @@ public class MapActivity2 extends AppCompatActivity
         navigationView.bringToFront();
         navigationView.requestLayout();
         navigationView.setNavigationItemSelectedListener(this);
+        userName = (TextView) navigationView.getHeaderView(0).findViewById(R.id.textViewUserName);
+        userName.setText(ParseUser.getCurrentUser().getUsername());
+
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         onlyGPS = prefs.getBoolean("only_gps", true);
@@ -157,22 +160,47 @@ public class MapActivity2 extends AppCompatActivity
              startActivity(launchNextActivity);
              return true;
 
+             // SETTINGS
         } else if (id == R.id.nav_settings) {
              Intent launchSettingsActivity;
              launchSettingsActivity = new Intent(MapActivity2.this, SettingsActivity.class);
              try {
                  locationManager.removeUpdates(locationListener);
-             } catch (Exception e){}
+             } catch (Exception e) {
+             }
              DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
              drawer.closeDrawer(GravityCompat.START);
              startActivity(launchSettingsActivity);
              return true;
 
+             // LOGOUT
+         } else if(id == R.id.nav_logout){
+                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                 builder
+                         .setMessage(getResources().getString(R.string.confirm_logout))
+                         .setPositiveButton(getResources().getString(R.string.yes),  new DialogInterface.OnClickListener() {
+                             @Override
+                             public void onClick(DialogInterface dialog, int id) {
+                                 ParseUser.getCurrentUser().logOut();
+                                 finish();
+                             }
+                         })
+                         .setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+                             @Override
+                             public void onClick(DialogInterface dialog,int id) {
+                                 dialog.cancel();
+                             }
+                         })
+                         .show();
 
-        } else if (id == R.id.nav_share) {
+                 return true;
 
-        }
+        // COMPARTIR
+         }
+         /* else if (id == R.id.nav_share) {
 
+            }
+        */
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -263,29 +291,6 @@ public class MapActivity2 extends AppCompatActivity
                 toggleMapType();
                 return true;
 
-
-            // LOGOUT
-            case R.id.map_action_logout:
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder
-                        .setMessage(getResources().getString(R.string.confirm_logout))
-                        .setPositiveButton(getResources().getString(R.string.yes),  new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int id) {
-                                ParseUser.getCurrentUser().logOut();
-                                finish();
-                            }
-                        })
-                        .setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog,int id) {
-                                dialog.cancel();
-                            }
-                        })
-                        .show();
-
-                return true;
-
             default:
                 return super.onOptionsItemSelected(item);
 
@@ -297,7 +302,6 @@ public class MapActivity2 extends AppCompatActivity
         getMenuInflater().inflate(R.menu.menu_actionbar_map, menu);
         actionBarMenu.findItem(R.id.map_action_start_track).setVisible(false);
         actionBarMenu.findItem(R.id.map_action_center_map).setVisible(false);
-//        actionBarMenu.findItem(R.id.map_action_profile_name).setTitle(ParseUser.getCurrentUser().getUsername());
 
         return true;
     }

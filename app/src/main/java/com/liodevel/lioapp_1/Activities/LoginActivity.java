@@ -154,7 +154,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         Utils.logInfo("Login: OK");
 
                         Intent launchNextActivity;
-                        launchNextActivity = new Intent(LoginActivity.this, MapActivity.class);
+                        launchNextActivity = new Intent(LoginActivity.this, MapActivity2.class);
                         launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
@@ -228,7 +228,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                 if (user != null && user.isAuthenticated()) {
                                     Log.i("LIOTRACK", "Login: OK");
                                     Intent launchNextActivity;
-                                    launchNextActivity = new Intent(LoginActivity.this, MapActivity.class);
+                                    launchNextActivity = new Intent(LoginActivity.this, MapActivity2.class);
                                     launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                     launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                     launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
@@ -363,7 +363,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     Utils.logInfo("User signed up and logged in through Facebook!");
                     Utils.showMessage(LoginActivity.this, "Hi, " + ParseUser.getCurrentUser().getUsername() + "!");
                     Intent launchNextActivity;
-                    launchNextActivity = new Intent(LoginActivity.this, MapActivity.class);
+                    launchNextActivity = new Intent(LoginActivity.this, MapActivity2.class);
                     launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
@@ -373,7 +373,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     Utils.logInfo("User signed up and logged in through Facebook!");
                     Utils.showMessage(LoginActivity.this, "Hi, " + ParseUser.getCurrentUser().getUsername() + "!");
                     Intent launchNextActivity;
-                    launchNextActivity = new Intent(LoginActivity.this, MapActivity.class);
+                    launchNextActivity = new Intent(LoginActivity.this, MapActivity2.class);
                     launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);

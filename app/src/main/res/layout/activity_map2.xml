@@ -18,9 +18,6 @@
         app:headerLayout="@layout/nav_header_map2"
         app:menu="@menu/activity_map2_drawer">
 
-
-
-
     </android.support.design.widget.NavigationView>
 
 
@@ -36,8 +33,8 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/liodevel_white"
-            app:title="@string/app_name"
             android:theme="@style/ThemeOverlay.AppCompat.ActionBar"/>
+
 
         <include
             layout="@layout/app_bar_map2"
