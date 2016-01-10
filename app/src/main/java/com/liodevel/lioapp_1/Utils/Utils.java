@@ -1,7 +1,9 @@
 package com.liodevel.lioapp_1.Utils;
 
 import android.content.Context;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 /**
@@ -25,6 +27,16 @@ public class Utils {
      */
     public static void showMessage(Context context, String message){
         Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+    }
+
+
+    /**
+     * Shows a SnakBar
+     * @param view
+     * @param message
+     */
+    public static void showMessage(View view, String message){
+        Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
     }
 
 

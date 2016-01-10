@@ -44,16 +44,17 @@
         <TextView
             android:id="@+id/text_info"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="72dp"
             android:gravity="center"
             android:text="Info"
             android:padding="3dp"
             android:textSize="20sp"
             android:textColor="@color/liodevel_white"
             android:background="@color/liodevel_dark_green"
-            android:layout_below="@+id/map_toolbar"
+            android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
+            android:onClick="clickStart"
             android:layout_toLeftOf="@+id/text_provider_info"
             android:layout_toStartOf="@+id/text_provider_info" />
 
@@ -67,18 +68,20 @@
             android:textSize="10sp"
             android:textColor="@color/liodevel_white"
             android:background="@color/liodevel_dark_green"
+            android:layout_alignBottom="@+id/text_info"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:layout_below="@+id/map_toolbar"
-            android:layout_above="@+id/map" />
+            android:layout_below="@+id/map" />
 
         <fragment
             android:id="@+id/map"
             android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_alignParentBottom="true"
-            android:layout_below="@+id/text_info" />
+            android:layout_below="@+id/map_toolbar"
+            android:layout_above="@+id/text_info" />
+
+
 
     </RelativeLayout>
 

@@ -173,27 +173,41 @@ public class MapActivity2 extends AppCompatActivity
              startActivity(launchSettingsActivity);
              return true;
 
-             // LOGOUT
-         } else if(id == R.id.nav_logout){
-                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                 builder
-                         .setMessage(getResources().getString(R.string.confirm_logout))
-                         .setPositiveButton(getResources().getString(R.string.yes),  new DialogInterface.OnClickListener() {
-                             @Override
-                             public void onClick(DialogInterface dialog, int id) {
-                                 ParseUser.getCurrentUser().logOut();
-                                 finish();
-                             }
-                         })
-                         .setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
-                             @Override
-                             public void onClick(DialogInterface dialog,int id) {
-                                 dialog.cancel();
-                             }
-                         })
-                         .show();
+         // MY TRACKS
+             /*
+        } else if (id == R.id.nav_password) {
 
-                 return true;
+             Intent launchNextActivity;
+             launchNextActivity = new Intent(MapActivity2.this, ChangePasswordActivity.class);
+             try {
+                 locationManager.removeUpdates(locationListener);
+             } catch (Exception e){}
+             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+             drawer.closeDrawer(GravityCompat.START);
+             startActivity(launchNextActivity);
+             return true;
+*/
+         // LOGOUT
+        } else if(id == R.id.nav_logout){
+             AlertDialog.Builder builder = new AlertDialog.Builder(this);
+             builder
+                     .setMessage(getResources().getString(R.string.confirm_logout))
+                     .setPositiveButton(getResources().getString(R.string.yes),  new DialogInterface.OnClickListener() {
+                         @Override
+                         public void onClick(DialogInterface dialog, int id) {
+                             ParseUser.getCurrentUser().logOut();
+                             finish();
+                         }
+                     })
+                     .setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+                         @Override
+                         public void onClick(DialogInterface dialog,int id) {
+                             dialog.cancel();
+                         }
+                     })
+                     .show();
+
+             return true;
 
         // COMPARTIR
          }
@@ -270,10 +284,10 @@ public class MapActivity2 extends AppCompatActivity
         switch (item.getItemId()) {
 
             // START/STOP TRACKING
-            case R.id.map_action_start_track:
-                clickStart(null);
+           /* case R.id.map_action_start_track:
+                //clickStart(null);
                 return true;
-
+*/
             // CENTRAR MAPA
             case R.id.map_action_center_map:
                 if (centerMap){
@@ -300,7 +314,7 @@ public class MapActivity2 extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         actionBarMenu = menu;
         getMenuInflater().inflate(R.menu.menu_actionbar_map, menu);
-        actionBarMenu.findItem(R.id.map_action_start_track).setVisible(false);
+        //actionBarMenu.findItem(R.id.map_action_start_track).setVisible(false);
         actionBarMenu.findItem(R.id.map_action_center_map).setVisible(false);
 
         return true;
@@ -345,7 +359,6 @@ public class MapActivity2 extends AppCompatActivity
 
                 if (lastLocation != null) {
                     trackerReady = true;
-                    actionBarMenu.findItem(R.id.map_action_start_track).setVisible(true);
                     actionBarMenu.findItem(R.id.map_action_center_map).setVisible(true);
                     if (mMap != null) {
 
@@ -361,9 +374,10 @@ public class MapActivity2 extends AppCompatActivity
 
                         if (tracking) {
                             marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_red));
+
                         } else {
                             marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_green));
-                            textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_dark_green));
+                            textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_red));
                             textInfo.setText(getResources().getString(R.string.ready));
 
                         }
@@ -397,7 +411,8 @@ public class MapActivity2 extends AppCompatActivity
             if (startTrack() == 0) {
                 // Start track correcto
                 textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_red));
-                textInfo.setText(getResources().getString(R.string.tracking));
+
+                textInfo.setText(getResources().getString(R.string.tracking) + "\n" + getResources().getString(R.string.push_to_stop));
                 tracking = true;
                 currentTrackDistance = 0;
 
@@ -406,13 +421,16 @@ public class MapActivity2 extends AppCompatActivity
                                 18)
                 );
                 // Animacion
+                /*
+                actionBarMenu.findItem(R.id.map_action_start_track).setVisible(true);
+
                 LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 ImageView iv = (ImageView) inflater.inflate(R.layout.start_track_image, null);
                 Animation rotation = AnimationUtils.loadAnimation(this, R.anim.tracking_animation);
                 rotation.setRepeatCount(Animation.INFINITE);
                 iv.startAnimation(rotation);
                 actionBarMenu.findItem(R.id.map_action_start_track).setActionView(iv);
-
+*/
             } else {
                 // NO Start track
             }
@@ -437,12 +455,13 @@ public class MapActivity2 extends AppCompatActivity
                 }
             });
 
-            textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_dark_green));
+            textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_red));
             textInfo.setText(getResources().getString(R.string.ready));
             tracking = false;
+            //actionBarMenu.findItem(R.id.map_action_start_track).setVisible(false);
 
-            actionBarMenu.findItem(R.id.map_action_start_track).getActionView().clearAnimation();
-            actionBarMenu.findItem(R.id.map_action_start_track).setActionView(null);
+            //actionBarMenu.findItem(R.id.map_action_start_track).getActionView().clearAnimation();
+            //actionBarMenu.findItem(R.id.map_action_start_track).setActionView(null);
 
         }
     }
@@ -619,9 +638,9 @@ public class MapActivity2 extends AppCompatActivity
                     DecimalFormat df = new DecimalFormat();
                     df.setMaximumFractionDigits(2);
                     if (currentTrackDistance < 1000) {
-                        textInfo.setText(df.format(currentTrackDistance) + " m");
+                        textInfo.setText(df.format(currentTrackDistance) + " m" + "\n" + getResources().getString(R.string.push_to_stop));
                     } else {
-                        textInfo.setText(df.format((currentTrackDistance / 1000)) + " km");
+                        textInfo.setText(df.format((currentTrackDistance / 1000)) + " km" + "\n" + getResources().getString(R.string.push_to_stop));
                     }
 
 
@@ -716,22 +735,22 @@ public class MapActivity2 extends AppCompatActivity
             textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_dark_grey));
             textInfo.setText(getResources().getString(R.string.getting_location));
             if (actionBarMenu != null) {
-                actionBarMenu.findItem(R.id.map_action_start_track).setVisible(false);
+                //actionBarMenu.findItem(R.id.map_action_start_track).setVisible(false);
                 actionBarMenu.findItem(R.id.map_action_center_map).setVisible(false);
             }
 
         } else {
-            textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_dark_green));
+            textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_red));
             textInfo.setText(getResources().getString(R.string.ready));
             if (actionBarMenu != null) {
-                actionBarMenu.findItem(R.id.map_action_start_track).setVisible(true);
+               // actionBarMenu.findItem(R.id.map_action_start_track).setVisible(false);
                 actionBarMenu.findItem(R.id.map_action_center_map).setVisible(true);
             }
         }
         if (tracking){
             textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_red));
-            textInfo.setText(getResources().getString(R.string.tracking));
-            actionBarMenu.findItem(R.id.map_action_start_track).setVisible(true);
+            textInfo.setText(getResources().getString(R.string.tracking) + "\n" + getResources().getString(R.string.push_to_stop));
+            //actionBarMenu.findItem(R.id.map_action_start_track).setVisible(true);
             actionBarMenu.findItem(R.id.map_action_center_map).setVisible(true);
         }
 

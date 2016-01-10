@@ -16,15 +16,15 @@
         android:required="true" />
 
     <application
+        android:name="android.support.multidex.MultiDexApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.Light"
-        android:name="android.support.multidex.MultiDexApplication">
+        android:theme="@style/Theme.AppCompat.Light">
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key" />
+            android:value="@string/google_maps_key_production" />
         <meta-data
             android:name="com.parse.APPLICATION_ID"
             android:value="nxGSgy4DyQpgTJWuRQnwI2V3o7oFoG2cMExBJX2o" />
@@ -45,7 +45,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".Activities.LoginActivity"
             android:label="@string/title_activity_login"
@@ -54,31 +53,35 @@
             android:name=".Activities.MapActivity2"
             android:label=""
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
             android:name=".Activities.MyTracksActivity"
             android:label="@string/title_activity_my_tracks"
+            android:parentActivityName=".Activities.MapActivity2"
             android:screenOrientation="portrait"
-            android:parentActivityName="com.liodevel.lioapp_1.Activities.MapActivity2"
-            android:theme="@style/Theme.AppCompat.Light"></activity>
-
+            android:theme="@style/Theme.AppCompat.Light" />
         <activity
             android:name=".Activities.TrackActivity"
             android:label="@string/title_activity_my_tracks"
+            android:parentActivityName=".Activities.MapActivity2"
             android:screenOrientation="portrait"
-            android:parentActivityName="com.liodevel.lioapp_1.Activities.MapActivity2"
-            android:theme="@style/Theme.AppCompat.Light"></activity>
+            android:theme="@style/Theme.AppCompat.Light" />
         <activity
             android:name=".Activities.SettingsActivity"
             android:label="@string/title_activity_settings"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light"></activity>
-
+            android:theme="@style/Theme.AppCompat.Light" />
         <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name"
-            android:theme="@style/Theme.AppCompat.Light"></activity>
+            android:theme="@style/Theme.AppCompat.Light" />
+
+        <activity android:name=".Activities.ChangePasswordActivity"
+            android:parentActivityName=".Activities.MapActivity2"
+            android:screenOrientation="portrait"
+            android:label="@string/change_password"
+            ></activity>
 
         <meta-data
             android:name="com.google.android.gms.version"
