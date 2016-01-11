@@ -102,10 +102,11 @@ public class MapActivity2 extends AppCompatActivity
         setContentView(R.layout.activity_map2);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
+        // ToolBar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
+        // Drawer
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -119,7 +120,7 @@ public class MapActivity2 extends AppCompatActivity
         userName = (TextView) navigationView.getHeaderView(0).findViewById(R.id.textViewUserName);
         userName.setText(ParseUser.getCurrentUser().getUsername());
 
-
+        // Shared Preferences
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         onlyGPS = prefs.getBoolean("only_gps", true);
 
@@ -130,6 +131,7 @@ public class MapActivity2 extends AppCompatActivity
             e.printStackTrace();
         }
 
+        // Infos
         textInfo = (TextView) findViewById(R.id.text_info);
         textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_dark_grey));
         textProviderInfo = (TextView) findViewById(R.id.text_provider_info);
@@ -145,9 +147,9 @@ public class MapActivity2 extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        Utils.logInfo("Nav item: " + id );
+        Utils.logInfo("Nav item: " + id);
 
-        // MY TRACKS
+            // MY TRACKS
          if (id == R.id.nav_my_tracks) {
 
              Intent launchNextActivity;
@@ -173,7 +175,7 @@ public class MapActivity2 extends AppCompatActivity
              startActivity(launchSettingsActivity);
              return true;
 
-         // MY TRACKS
+         // CAMBIAR PASSWORD
              /*
         } else if (id == R.id.nav_password) {
 
@@ -251,7 +253,7 @@ public class MapActivity2 extends AppCompatActivity
         try {
             timerTask.cancel();
         } catch (Exception e){
-            Log.e("LIOTRACKS", "Error: " + e.toString());
+            Utils.logInfo("Error: " + e.toString());
         }
         try {
             currentTrack.put("dateEnd", lastTrackPointDate);
@@ -310,6 +312,7 @@ public class MapActivity2 extends AppCompatActivity
 
         }
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         actionBarMenu = menu;
@@ -482,57 +485,7 @@ public class MapActivity2 extends AppCompatActivity
         }
     }
 
-    /**
-     * Dibuja una linea en el mapa
-     * @param start Coordenadas inicio
-     * @param end Coordenadas final
-     * @param speed velocidad en KM/H
-     * @param vehicle 1-Coche; 2-Moto; 3-Bici; 4-Patinete; 5-Andando
-     */
-    private void drawTrackPoint(LatLng start, LatLng end, double speed, int vehicle) {
-        int colorTrack;
 
-        if (vehicle == 1 || vehicle == 2) {
-            if (speed < 10) {
-                colorTrack = Color.BLACK;
-            } else if (speed < 20) {
-                colorTrack = Color.RED;
-            } else if (speed < 30) {
-                colorTrack = Color.YELLOW;
-            } else if (speed < 60) {
-                colorTrack = Color.GREEN;
-            } else if (speed < 90) {
-                colorTrack = Color.CYAN;
-            } else if (speed < 120) {
-                colorTrack = Color.BLUE;
-            } else {
-                colorTrack = Color.MAGENTA;
-            }
-        } else {
-            if (speed < 10) {
-                colorTrack = Color.BLACK;
-            } else if (speed < 20) {
-                colorTrack = Color.RED;
-            } else if (speed < 30) {
-                colorTrack = Color.YELLOW;
-            } else if (speed < 60) {
-                colorTrack = Color.GREEN;
-            } else if (speed < 90) {
-                colorTrack = Color.CYAN;
-            } else if (speed < 120) {
-                colorTrack = Color.BLUE;
-            } else {
-                colorTrack = Color.MAGENTA;
-            }
-        }
-
-        if (mMap != null) {
-            PolylineOptions line =
-                    new PolylineOptions().add(start, end)
-                            .width(12).color(colorTrack);
-            mMap.addPolyline(line);
-        }
-    }
 
     // TIMERTRACK
     /**
@@ -644,7 +597,7 @@ public class MapActivity2 extends AppCompatActivity
                     }
 
 
-                    double kilometers = currentTrackDistance / 1000.0;
+                    double kilometers = trackPointDistance / 1000.0;
                     Utils.logInfo("TRACKPOINT DISTANCE      :" + trackPointDistance);
                     Utils.logInfo("TRACKPOINT DATE          :" + tr.getDate().getTime());
                     Utils.logInfo("PREVIOUSTRACKPOINT DATE  :" + previousTr.getDate().getTime());
@@ -756,11 +709,66 @@ public class MapActivity2 extends AppCompatActivity
 
     }
 
+    /**
+     * Cambiar tipo de mapa
+     */
     private void toggleMapType(){
         if (mMap.getMapType() == GoogleMap.MAP_TYPE_SATELLITE){
             mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         } else {
             mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+        }
+    }
+
+    /**
+     * Dibuja una linea en el mapa
+     * @param start Coordenadas inicio
+     * @param end Coordenadas final
+     * @param speed velocidad en KM/H
+     * @param vehicle 1-Coche; 2-Moto; 3-Bici; 4-Patinete; 5-Andando
+     */
+    private void drawTrackPoint(LatLng start, LatLng end, double speed, int vehicle) {
+        int colorTrack;
+
+        if (vehicle == 1 || vehicle == 2) {
+            if (speed < 10) {
+                colorTrack = Color.BLACK;
+            } else if (speed < 20) {
+                colorTrack = Color.RED;
+            } else if (speed < 30) {
+                colorTrack = Color.YELLOW;
+            } else if (speed < 60) {
+                colorTrack = Color.GREEN;
+            } else if (speed < 90) {
+                colorTrack = Color.CYAN;
+            } else if (speed < 120) {
+                colorTrack = Color.BLUE;
+            } else {
+                colorTrack = Color.MAGENTA;
+            }
+        } else {
+            if (speed < 10) {
+                colorTrack = Color.BLACK;
+            } else if (speed < 20) {
+                colorTrack = Color.RED;
+            } else if (speed < 30) {
+                colorTrack = Color.YELLOW;
+            } else if (speed < 60) {
+                colorTrack = Color.GREEN;
+            } else if (speed < 90) {
+                colorTrack = Color.CYAN;
+            } else if (speed < 120) {
+                colorTrack = Color.BLUE;
+            } else {
+                colorTrack = Color.MAGENTA;
+            }
+        }
+
+        if (mMap != null) {
+            PolylineOptions line =
+                    new PolylineOptions().add(start, end)
+                            .width(12).color(colorTrack);
+            mMap.addPolyline(line);
         }
     }
 
