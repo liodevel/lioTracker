@@ -527,8 +527,8 @@ public class TrackActivity extends AppCompatActivity {
         Utils.logInfo("exportKML()");
         XmlSerializer xmlSerializer;
 
-        File newxmlfile = new File(getApplicationInfo().dataDir + "/new.xml");
-        Utils.logInfo("PATH: " + getApplicationInfo().dataDir + "/new.xml");
+        File newxmlfile = new File("/sdcard/new.kml");
+        //Utils.logInfo("PATH: " + getApplicationInfo().dataDir + "/new.xml");
 
         try{
             newxmlfile.createNewFile();
@@ -685,7 +685,7 @@ public class TrackActivity extends AppCompatActivity {
             for (TrackPoint tr:trackPoints) {
 
                 // Insertar Coordenadas
-                xmlSerializer.text(Double.toString(tr.getPosition().getLongitude()) + "," + Double.toString(tr.getPosition().getLatitude()));
+                xmlSerializer.text(Double.toString(tr.getPosition().getLongitude()) + "," + Double.toString(tr.getPosition().getLatitude()) + "\n");
             }
 
 
@@ -714,18 +714,12 @@ public class TrackActivity extends AppCompatActivity {
     private void shareKML(File file) {
 
         try {
-            /*
+
             Intent shareIntent = new Intent();
             shareIntent.setAction(Intent.ACTION_SEND);
-            shareIntent.setType("application/xml");
+            //shareIntent.setType("application/xml");
+            shareIntent.setType("application/vnd.google-earth.kml+xml");
             shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
-            startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.send_to)));
-*/
-            Intent shareIntent = new Intent(Intent.ACTION_SEND);
-            shareIntent.setType("application/xml");
-            Uri fileUri = FileProvider.getUriForFile(this, "com.myfileprovider", file);
-            shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
             startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.send_to)));
 
 
