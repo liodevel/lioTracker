@@ -93,5 +93,6 @@
     <string name="change">Cambiar</string>
     <string name="password_changed">Contraseña cambiada</string>
     <string name="push_to_stop">Pulsa para parar</string>
+    <string name="send_to">Enviar a</string>
 
 </resources>

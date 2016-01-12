@@ -3,9 +3,14 @@ package com.liodevel.lioapp_1.Activities;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
+import android.os.Parcelable;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -41,8 +46,11 @@ import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 import org.xmlpull.v1.XmlSerializer;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -162,7 +170,11 @@ public class TrackActivity extends AppCompatActivity {
 
             // EXPORTAR
             case R.id.track_action_export_kml:
-                exportKML();
+                try {
+                    shareKML(exportKML());
+                } catch (Exception e){
+                    Utils.showMessage(getApplicationContext(), "Error");
+                }
                 return true;
 
 
@@ -510,30 +522,33 @@ public class TrackActivity extends AppCompatActivity {
 
 
 
-    public void exportKML() {
+    private File exportKML() {
 
         Utils.logInfo("exportKML()");
         XmlSerializer xmlSerializer;
 
-        /*
-        FileOutputStream fileos = null;
-        StringBuilder sb = new StringBuilder();
-        try {
-            fileos = new FileOutputStream(this.get_pathstring());
+        File newxmlfile = new File(getApplicationInfo().dataDir + "/new.xml");
+        Utils.logInfo("PATH: " + getApplicationInfo().dataDir + "/new.xml");
 
-        } catch (FileNotFoundException e) {
-            // Log.e("FileNotFoundException", e.toString());
-            e.printStackTrace();
+        try{
+            newxmlfile.createNewFile();
+        }catch(IOException e){
+            Utils.logError("IOException: Exception in create new File(");
         }
-*/
+
+        FileOutputStream fileos = null;
+        try{
+            fileos = new FileOutputStream(newxmlfile);
+
+        }catch(FileNotFoundException e){
+            Log.e("FileNotFoundException",e.toString());
+        }
 
         try {
 
             xmlSerializer = Xml.newSerializer();
 
-            StringWriter writer = new StringWriter();
-
-            xmlSerializer.setOutput(writer);
+            xmlSerializer.setOutput(fileos, "UTF-8");
             xmlSerializer.startDocument("UTF-8", true);
 
             //xmlSerializer.setFeature( "http://xmlpull.org/v1/doc/features.html#indent-output", true);
@@ -682,15 +697,43 @@ public class TrackActivity extends AppCompatActivity {
             xmlSerializer.endTag(null, "kml");
             xmlSerializer.endDocument();
             xmlSerializer.flush();
+            fileos.close();
 
             //fileos.close();
-            Utils.logInfo("FILE KML:" + writer.toString());
-
+            //Utils.logInfo("FILE KML:" + writer.toString());
 
         } catch (Exception e) {
             e.printStackTrace();
             // Log.e("Exception", "Exception occured in wroting");
         }
+
+        return newxmlfile;
+    }
+
+
+    private void shareKML(File file) {
+
+        try {
+            /*
+            Intent shareIntent = new Intent();
+            shareIntent.setAction(Intent.ACTION_SEND);
+            shareIntent.setType("application/xml");
+            shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+            startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.send_to)));
+*/
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            shareIntent.setType("application/xml");
+            Uri fileUri = FileProvider.getUriForFile(this, "com.myfileprovider", file);
+            shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
+            startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.send_to)));
+
+
+        } catch (Exception e){
+            Utils.showMessage(getApplicationContext(), "Error");
+            Utils.logError(e.toString());
+        }
+
 
     }
 
