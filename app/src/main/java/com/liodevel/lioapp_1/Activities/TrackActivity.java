@@ -10,6 +10,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.Xml;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -35,6 +36,14 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 
+
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
+import org.xmlpull.v1.XmlSerializer;
+
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.StringWriter;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -60,7 +69,7 @@ public class TrackActivity extends AppCompatActivity {
     private TextView info;
     private EditText editInfo;
 
-    static ArrayList<TrackPoint> trackPoints;
+    static ArrayList<TrackPoint> trackPoints = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,6 +158,11 @@ public class TrackActivity extends AppCompatActivity {
             // FAVORITO
             case R.id.track_action_favorite:
                 updateTrackFavorite();
+                return true;
+
+            // EXPORTAR
+            case R.id.track_action_export_kml:
+                exportKML();
                 return true;
 
 
@@ -246,6 +260,7 @@ public class TrackActivity extends AppCompatActivity {
                             double speed = kilometers / hours;
                             //Utils.logInfo("" + speed + "km/h");
 
+                            trackPoint.setSpeed(speed);
                             drawTrackPoint(prevPos, actualPos, speed, currentTrack.getVehicle());
 
 
@@ -259,6 +274,7 @@ public class TrackActivity extends AppCompatActivity {
 
                     prevPos = actualPos;
                     previousTrackPoint = trackPoint;
+                    trackPoints.add(trackPoint);
                 }
                 Utils.logInfo("TOTAL TrackPoints: " + cont);
                 ret = true;
@@ -434,6 +450,8 @@ public class TrackActivity extends AppCompatActivity {
         } else {
             mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
         }
+
+
     }
 
 
@@ -489,6 +507,216 @@ public class TrackActivity extends AppCompatActivity {
             mMap.addPolyline(line);
         }
     }
+
+
+
+    public void exportKML() {
+
+        Utils.logInfo("exportKML()");
+        XmlSerializer xmlSerializer;
+
+        /*
+        FileOutputStream fileos = null;
+        StringBuilder sb = new StringBuilder();
+        try {
+            fileos = new FileOutputStream(this.get_pathstring());
+
+        } catch (FileNotFoundException e) {
+            // Log.e("FileNotFoundException", e.toString());
+            e.printStackTrace();
+        }
+*/
+
+        try {
+
+            xmlSerializer = Xml.newSerializer();
+
+            StringWriter writer = new StringWriter();
+
+            xmlSerializer.setOutput(writer);
+            xmlSerializer.startDocument("UTF-8", true);
+
+            //xmlSerializer.setFeature( "http://xmlpull.org/v1/doc/features.html#indent-output", true);
+
+            xmlSerializer.startTag(null, "kml");
+            xmlSerializer.attribute(null, "xmlns", "http://earth.google.com/kml/2.2");
+            xmlSerializer.startTag(null, "Document");
+
+            xmlSerializer.startTag(null, "name");
+            xmlSerializer.text("My Tracker");
+            xmlSerializer.endTag(null, "name");
+
+            xmlSerializer.startTag(null, "description");
+            xmlSerializer.cdsect("Your personal GPS tracker");
+            xmlSerializer.endTag(null, "description");
+
+            // STYLES
+
+            // Style NEGRO
+            xmlSerializer.startTag(null, "Style");
+            xmlSerializer.attribute(null, "id", "black");
+            xmlSerializer.startTag(null, "LineStyle");
+            xmlSerializer.startTag(null, "color");
+            xmlSerializer.text(Utils.BLACK);
+            xmlSerializer.endTag(null, "color");
+            xmlSerializer.startTag(null, "width");
+            xmlSerializer.text("4");
+            xmlSerializer.endTag(null, "width");
+            xmlSerializer.endTag(null, "LineStyle");
+            xmlSerializer.endTag(null, "Style");
+
+            // Style ROJO
+            xmlSerializer.startTag(null, "Style");
+            xmlSerializer.attribute(null, "id", "red");
+            xmlSerializer.startTag(null, "LineStyle");
+            xmlSerializer.startTag(null, "color");
+            xmlSerializer.text(Utils.RED);
+            xmlSerializer.endTag(null, "color");
+            xmlSerializer.startTag(null, "width");
+            xmlSerializer.text("4");
+            xmlSerializer.endTag(null, "width");
+            xmlSerializer.endTag(null, "LineStyle");
+            xmlSerializer.endTag(null, "Style");
+
+            // Style AMARILLO
+            xmlSerializer.startTag(null, "Style");
+            xmlSerializer.attribute(null, "id", "yellow");
+            xmlSerializer.startTag(null, "LineStyle");
+            xmlSerializer.startTag(null, "color");
+            xmlSerializer.text(Utils.YELLOW);
+            xmlSerializer.endTag(null, "color");
+            xmlSerializer.startTag(null, "width");
+            xmlSerializer.text("4");
+            xmlSerializer.endTag(null, "width");
+            xmlSerializer.endTag(null, "LineStyle");
+            xmlSerializer.endTag(null, "Style");
+
+            // Style VERDE
+            xmlSerializer.startTag(null, "Style");
+            xmlSerializer.attribute(null, "id", "green");
+            xmlSerializer.startTag(null, "LineStyle");
+            xmlSerializer.startTag(null, "color");
+            xmlSerializer.text(Utils.GREEN);
+            xmlSerializer.endTag(null, "color");
+            xmlSerializer.startTag(null, "width");
+            xmlSerializer.text("4");
+            xmlSerializer.endTag(null, "width");
+            xmlSerializer.endTag(null, "LineStyle");
+            xmlSerializer.endTag(null, "Style");
+
+            // Style CYAN
+            xmlSerializer.startTag(null, "Style");
+            xmlSerializer.attribute(null, "id", "cyan");
+            xmlSerializer.startTag(null, "LineStyle");
+            xmlSerializer.startTag(null, "color");
+            xmlSerializer.text(Utils.CYAN);
+            xmlSerializer.endTag(null, "color");
+            xmlSerializer.startTag(null, "width");
+            xmlSerializer.text("4");
+            xmlSerializer.endTag(null, "width");
+            xmlSerializer.endTag(null, "LineStyle");
+            xmlSerializer.endTag(null, "Style");
+
+            // Style AZUL
+            xmlSerializer.startTag(null, "Style");
+            xmlSerializer.attribute(null, "id", "blue");
+            xmlSerializer.startTag(null, "LineStyle");
+            xmlSerializer.startTag(null, "color");
+            xmlSerializer.text(Utils.BLUE);
+            xmlSerializer.endTag(null, "color");
+            xmlSerializer.startTag(null, "width");
+            xmlSerializer.text("4");
+            xmlSerializer.endTag(null, "width");
+            xmlSerializer.endTag(null, "LineStyle");
+            xmlSerializer.endTag(null, "Style");
+
+            // Style MAGENTA
+            xmlSerializer.startTag(null, "Style");
+            xmlSerializer.attribute(null, "id", "magenta");
+            xmlSerializer.startTag(null, "LineStyle");
+            xmlSerializer.startTag(null, "color");
+            xmlSerializer.text(Utils.MAGENTA);
+            xmlSerializer.endTag(null, "color");
+            xmlSerializer.startTag(null, "width");
+            xmlSerializer.text("4");
+            xmlSerializer.endTag(null, "width");
+            xmlSerializer.endTag(null, "LineStyle");
+            xmlSerializer.endTag(null, "Style");
+
+
+            // Placemark
+
+                xmlSerializer.startTag(null, "Placemark");
+                /*
+                xmlSerializer.startTag(null, "name");
+
+                if (currentTrack.getInfo() != null && currentTrack.getInfo().length() > 0){
+                    xmlSerializer.text(currentTrack.getInfo());
+                } else {
+                    xmlSerializer.text("My Tracker");
+                }
+                xmlSerializer.endTag(null, "name");
+                xmlSerializer.startTag(null, "description");
+                xmlSerializer.cdsect("");
+                xmlSerializer.endTag(null, "description");
+                */
+
+
+                xmlSerializer.startTag(null, "LineString");
+                xmlSerializer.startTag(null, "styleUrl");
+                xmlSerializer.text("#red");
+                xmlSerializer.endTag(null, "styleUrl");
+                xmlSerializer.startTag(null, "coordinates");
+            for (TrackPoint tr:trackPoints) {
+
+                // Insertar Coordenadas
+                xmlSerializer.text(Double.toString(tr.getPosition().getLongitude()) + "," + Double.toString(tr.getPosition().getLatitude()));
+            }
+
+
+            xmlSerializer.endTag(null, "coordinates");
+            xmlSerializer.endTag(null, "LineString");
+
+            xmlSerializer.endTag(null, "Placemark");
+            xmlSerializer.endTag(null, "Document");
+            xmlSerializer.endTag(null, "kml");
+            xmlSerializer.endDocument();
+            xmlSerializer.flush();
+
+            //fileos.close();
+            Utils.logInfo("FILE KML:" + writer.toString());
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Log.e("Exception", "Exception occured in wroting");
+        }
+
+    }
+
+
+    private String getStyle(double speed){
+        String ret;
+
+        if (speed < 10) {
+            ret = "#black";
+        } else if (speed < 20) {
+            ret = "#red";
+        } else if (speed < 30) {
+            ret = "#yellow";
+        } else if (speed < 60) {
+            ret = "#green";
+        } else if (speed < 90) {
+            ret = "#cyan";
+        } else if (speed < 120) {
+            ret = "#blue";
+        } else {
+            ret = "#magenta";
+        }
+
+        return ret;
+    }
+
 
 
 }

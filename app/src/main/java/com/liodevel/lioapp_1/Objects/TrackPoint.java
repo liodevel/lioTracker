@@ -16,7 +16,7 @@ public class TrackPoint {
     private Date date;
     private float accuracy;
 
-    private float speed;
+    private double speed;
 
     public TrackPoint() {
         objectId = "";
@@ -65,11 +65,11 @@ public class TrackPoint {
         this.accuracy = accuracy;
     }
 
-    public float getSpeed() {
+    public double getSpeed() {
         return speed;
     }
 
-    public void setSpeed(float speed) {
+    public void setSpeed(double speed) {
         this.speed = speed;
     }
 }
