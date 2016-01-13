@@ -25,9 +25,11 @@ import java.util.concurrent.TimeUnit;
 public class MyTracksListAdapter extends ArrayAdapter<Track> {
 
     ArrayList<Track> tracks;
+    Context context;
 
     public MyTracksListAdapter(Context context, ArrayList<Track> tracks) {
         super(context, 0, tracks);
+        this.context = context;
     }
 
     @Override
@@ -55,14 +57,21 @@ public class MyTracksListAdapter extends ArrayAdapter<Track> {
 
         if (currentDate.getTime() - track.getDate().getTime() < TimeUnit.MILLISECONDS.convert(6, TimeUnit.DAYS)){
             String weekDay = "";
-            if (c.get(Calendar.DAY_OF_WEEK) == 1){weekDay = Utils.SUNDAY;}
-            else if (c.get(Calendar.DAY_OF_WEEK) == 2){weekDay = Utils.MONDAY;}
-            else if (c.get(Calendar.DAY_OF_WEEK) == 3){weekDay = Utils.TUESDAY;}
-            else if (c.get(Calendar.DAY_OF_WEEK) == 4){weekDay = Utils.WEDNESDAY;}
-            else if (c.get(Calendar.DAY_OF_WEEK) == 5){weekDay = Utils.THURSDAY;}
-            else if (c.get(Calendar.DAY_OF_WEEK) == 6){weekDay = Utils.FRIDAY;}
-            else if (c.get(Calendar.DAY_OF_WEEK) == 7){weekDay = Utils.SATURDAY;}
-
+            if (c.get(Calendar.DAY_OF_WEEK) == 1) {
+                weekDay = context.getResources().getString(R.string.sunday);
+            } else if (c.get(Calendar.DAY_OF_WEEK) == 2) {
+                weekDay = context.getResources().getString(R.string.monday);
+            } else if (c.get(Calendar.DAY_OF_WEEK) == 3) {
+                weekDay = context.getResources().getString(R.string.tuesday);
+            } else if (c.get(Calendar.DAY_OF_WEEK) == 4) {
+                weekDay = context.getResources().getString(R.string.wednesday);
+            } else if (c.get(Calendar.DAY_OF_WEEK) == 5) {
+                weekDay = context.getResources().getString(R.string.thursday);
+            } else if (c.get(Calendar.DAY_OF_WEEK) == 6) {
+                weekDay = context.getResources().getString(R.string.friday);
+            } else if (c.get(Calendar.DAY_OF_WEEK) == 7) {
+                weekDay = context.getResources().getString(R.string.saturday);
+            }
             date.setText(new SimpleDateFormat("HH:mm").format(track.getDate()) + "   " + weekDay);
 
         } else {

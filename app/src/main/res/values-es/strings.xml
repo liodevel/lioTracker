@@ -94,5 +94,16 @@
     <string name="password_changed">Contraseña cambiada</string>
     <string name="push_to_stop">Pulsa para parar</string>
     <string name="send_to">Enviar a</string>
+    <string name="stop_tracking">Para de registrar para salir</string>
+    <string name="pref_save_frequency">Frecuencia de registro</string>
+    <string name="pref_desc_save_frequency">Precisión de registro, en segundos (5 a 60)</string>
+    <string name="ask_stop_tracking">¿Parar de registrar?</string>
+    <string name="sunday">Domingo</string>
+    <string name="monday">Lunes</string>
+    <string name="tuesday">Martes</string>
+    <string name="wednesday">Miércoles</string>
+    <string name="thursday">Jueves</string>
+    <string name="friday">Viernes</string>
+    <string name="saturday">Sábado</string>
 
 </resources>

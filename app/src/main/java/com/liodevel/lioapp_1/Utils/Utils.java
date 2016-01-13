@@ -11,13 +11,6 @@ import android.widget.Toast;
  */
 public class Utils {
 
-    public static String MONDAY = "Monday";
-    public static String TUESDAY = "Tuesday";
-    public static String WEDNESDAY = "Wednesday";
-    public static String THURSDAY = "Thursday";
-    public static String FRIDAY = "Friday";
-    public static String SATURDAY = "Saturday";
-    public static String SUNDAY = "Sunday";
 
     public static final String BLACK = "ff000000";
     public static final String BLUE = "ff0000ff";
@@ -39,7 +32,7 @@ public class Utils {
      * @param message
      */
     public static void showMessage(Context context, String message){
-        Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
 
 

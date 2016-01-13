@@ -77,13 +77,14 @@ public class TrackActivity extends AppCompatActivity {
     private TextView info;
     private EditText editInfo;
 
-    static ArrayList<TrackPoint> trackPoints = new ArrayList<>();
+    ArrayList<TrackPoint> trackPoints = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_track);
         context = this;
+        ArrayList<TrackPoint> trackPoints = new ArrayList<>();
 
         // myToolbar = (Toolbar) findViewById(R.id.track_toolbar);
         //setSupportActionBar(myToolbar);
@@ -343,19 +344,19 @@ public class TrackActivity extends AppCompatActivity {
         if (currentDate.getTime() - currentTrack.getDate().getTime() < TimeUnit.MILLISECONDS.convert(6, TimeUnit.DAYS)) {
             String weekDay = "";
             if (c.get(Calendar.DAY_OF_WEEK) == 1) {
-                weekDay = Utils.SATURDAY;
+                weekDay = this.getResources().getString(R.string.sunday);
             } else if (c.get(Calendar.DAY_OF_WEEK) == 2) {
-                weekDay = Utils.MONDAY;
+                weekDay = this.getResources().getString(R.string.monday);
             } else if (c.get(Calendar.DAY_OF_WEEK) == 3) {
-                weekDay = Utils.TUESDAY;
+                weekDay = this.getResources().getString(R.string.tuesday);
             } else if (c.get(Calendar.DAY_OF_WEEK) == 4) {
-                weekDay = Utils.WEDNESDAY;
+                weekDay = this.getResources().getString(R.string.wednesday);
             } else if (c.get(Calendar.DAY_OF_WEEK) == 5) {
-                weekDay = Utils.THURSDAY;
+                weekDay = this.getResources().getString(R.string.thursday);
             } else if (c.get(Calendar.DAY_OF_WEEK) == 6) {
-                weekDay = Utils.FRIDAY;
+                weekDay = this.getResources().getString(R.string.friday);
             } else if (c.get(Calendar.DAY_OF_WEEK) == 7) {
-                weekDay = Utils.SATURDAY;
+                weekDay = this.getResources().getString(R.string.saturday);
             }
 
             //getActionBar().setTitle(new SimpleDateFormat("HH:mm").format(currentTrack.getDate()) + "   " + weekDay);
@@ -527,7 +528,8 @@ public class TrackActivity extends AppCompatActivity {
         Utils.logInfo("exportKML()");
         XmlSerializer xmlSerializer;
 
-        File newxmlfile = new File("/sdcard/new.kml");
+        //File newxmlfile = new File("/sdcard/new.kml");
+        File newxmlfile = new File("/sdcard/Android/data/com.liodevel.lioapp_1/" + currentTrack.getDate().toString().replace(" ", "_").replace(":","_") + ".kml");
         //Utils.logInfo("PATH: " + getApplicationInfo().dataDir + "/new.xml");
 
         try{
@@ -558,7 +560,7 @@ public class TrackActivity extends AppCompatActivity {
             xmlSerializer.startTag(null, "Document");
 
             xmlSerializer.startTag(null, "name");
-            xmlSerializer.text("My Tracker");
+            xmlSerializer.text(currentTrack.getDate().toString() + " - " + currentTrack.getInfo());
             xmlSerializer.endTag(null, "name");
 
             xmlSerializer.startTag(null, "description");
@@ -662,6 +664,9 @@ public class TrackActivity extends AppCompatActivity {
             // Placemark
 
                 xmlSerializer.startTag(null, "Placemark");
+                xmlSerializer.startTag(null, "styleUrl");
+                xmlSerializer.text("#red");
+                xmlSerializer.endTag(null, "styleUrl");
                 /*
                 xmlSerializer.startTag(null, "name");
 
@@ -678,9 +683,7 @@ public class TrackActivity extends AppCompatActivity {
 
 
                 xmlSerializer.startTag(null, "LineString");
-                xmlSerializer.startTag(null, "styleUrl");
-                xmlSerializer.text("#red");
-                xmlSerializer.endTag(null, "styleUrl");
+
                 xmlSerializer.startTag(null, "coordinates");
             for (TrackPoint tr:trackPoints) {
 

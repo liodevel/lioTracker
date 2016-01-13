@@ -192,6 +192,7 @@ public class MyTracksActivity extends AppCompatActivity {
                                 actionBarMenu.findItem(R.id.map_action_delete_my_tracks).setVisible(false);
                                 deleteSelectedTracks();
                                 adapter.clear();
+                                selecting = false;
                                 getTracksByCurrentUser();
                             }
                         })

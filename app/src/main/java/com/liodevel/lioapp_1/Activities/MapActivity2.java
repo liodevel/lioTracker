@@ -91,8 +91,9 @@ public class MapActivity2 extends AppCompatActivity
     private TimerTask timerTask;
     private final Handler handler = new Handler();
 
-    // PREFERENCIAS
+    // PREFERENCIAS POR DEFECTO
     private boolean onlyGPS = true;
+    private int saveFrequency= 5;
 
 
 
@@ -123,6 +124,22 @@ public class MapActivity2 extends AppCompatActivity
         // Shared Preferences
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         onlyGPS = prefs.getBoolean("only_gps", true);
+
+        try {
+            int tempSaveFrequency = Integer.parseInt(prefs.getString("save_frequency", "5"));
+            if (tempSaveFrequency < 5){
+                saveFrequency = 5;
+            } else if (tempSaveFrequency > 60){
+                saveFrequency = 60;
+            } else {
+                saveFrequency = tempSaveFrequency;
+            }
+
+        } catch (Exception e){
+            saveFrequency = 5;
+        }
+
+        Utils.logInfo("Pref_save_frequency: " + saveFrequency);
 
         // Inicializar mapa
         try {
@@ -230,6 +247,19 @@ public class MapActivity2 extends AppCompatActivity
         super.onResume();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         onlyGPS = prefs.getBoolean("only_gps", true);
+        try {
+            int tempSaveFrequency = Integer.parseInt(prefs.getString("save_frequency", "5"));
+            if (tempSaveFrequency < 5){
+                saveFrequency = 5;
+            } else if (tempSaveFrequency > 60){
+                saveFrequency = 60;
+            } else {
+                saveFrequency = tempSaveFrequency;
+            }
+
+        } catch (Exception e){
+            saveFrequency = 5;
+        }
 
         updateViews();
         updateGpsProviders();
@@ -241,6 +271,19 @@ public class MapActivity2 extends AppCompatActivity
         super.onRestart();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         onlyGPS = prefs.getBoolean("only_gps", true);
+        try {
+            int tempSaveFrequency = Integer.parseInt(prefs.getString("save_frequency", "5"));
+            if (tempSaveFrequency < 5){
+                saveFrequency = 5;
+            } else if (tempSaveFrequency > 60){
+                saveFrequency = 60;
+            } else {
+                saveFrequency = tempSaveFrequency;
+            }
+
+        } catch (Exception e){
+            saveFrequency = 5;
+        }
 
         updateViews();
         updateGpsProviders();
@@ -322,23 +365,29 @@ public class MapActivity2 extends AppCompatActivity
 
         return true;
     }
+
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            if (exit) {
-                finish(); // finish activity
+            if (tracking){
+                Utils.showMessage(getApplicationContext(), getResources().getString(R.string.stop_tracking));
             } else {
-                Utils.showMessage(getApplicationContext(), getResources().getString(R.string.press_again_to_exit));
-                exit = true;
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        exit = false;
-                    }
-                }, 3 * 1000);
+                if (exit) {
+                    finish(); // finish activity
+                } else {
+                    Utils.showMessage(getApplicationContext(), getResources().getString(R.string.press_again_to_exit));
+                    exit = true;
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            exit = false;
+                        }
+                    }, 3 * 1000);
+                }
             }
         }
     }
@@ -440,31 +489,53 @@ public class MapActivity2 extends AppCompatActivity
             // STOP TRACKING
 
         } else {
-            stopTimerTrack();
 
-            currentTrack.put("dateEnd", lastTrackPointDate);
-            currentTrack.put("distance", currentTrackDistance);
-            currentTrack.saveInBackground(new SaveCallback() {
-                @Override
-                public void done(com.parse.ParseException e) {
-                    if (e == null) {
-                        Utils.logInfo("SAVE startTrack OK");
-                        Utils.showMessage(getApplicationContext(), getResources().getString(R.string.track_saved));
-                    } else {
-                        Utils.logInfo("SAVE startTrack ERROR: " + e.toString());
-                        Utils.showMessage(getApplicationContext(), getResources().getString(R.string.error_saving_track));
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder
+                    .setMessage(getResources().getString(R.string.ask_stop_tracking))
+                    .setPositiveButton(getResources().getString(R.string.yes),  new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
 
-                    }
-                }
-            });
+                            stopTimerTrack();
 
-            textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_red));
-            textInfo.setText(getResources().getString(R.string.ready));
-            tracking = false;
-            //actionBarMenu.findItem(R.id.map_action_start_track).setVisible(false);
+                            currentTrack.put("dateEnd", lastTrackPointDate);
+                            currentTrack.put("distance", currentTrackDistance);
+                            currentTrack.saveInBackground(new SaveCallback() {
+                                @Override
+                                public void done(com.parse.ParseException e) {
+                                    if (e == null) {
+                                        Utils.logInfo("SAVE startTrack OK");
+                                        Utils.showMessage(getApplicationContext(), getResources().getString(R.string.track_saved));
+                                    } else {
+                                        Utils.logInfo("SAVE startTrack ERROR: " + e.toString());
+                                        Utils.showMessage(getApplicationContext(), getResources().getString(R.string.error_saving_track));
 
-            //actionBarMenu.findItem(R.id.map_action_start_track).getActionView().clearAnimation();
-            //actionBarMenu.findItem(R.id.map_action_start_track).setActionView(null);
+                                    }
+                                }
+                            });
+
+                            textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_red));
+                            textInfo.setText(getResources().getString(R.string.ready));
+                            tracking = false;
+                            //actionBarMenu.findItem(R.id.map_action_start_track).setVisible(false);
+
+                            //actionBarMenu.findItem(R.id.map_action_start_track).getActionView().clearAnimation();
+                            //actionBarMenu.findItem(R.id.map_action_start_track).setActionView(null);
+
+
+
+                        }
+                    })
+                    .setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog,int id) {
+                            dialog.cancel();
+                        }
+                    })
+                    .show();
+
+
 
         }
     }
@@ -495,7 +566,7 @@ public class MapActivity2 extends AppCompatActivity
         Utils.logInfo("startTimerTrack");
         timer = new Timer();
         initializeTimerTrack();
-        timer.schedule(timerTask, 0, 5000); //
+        timer.schedule(timerTask, 0, saveFrequency * 1000); //
     }
 
     /**

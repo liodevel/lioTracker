@@ -134,4 +134,15 @@
     <string name="password_changed">Password changed</string>
     <string name="push_to_stop">Push to stop</string>
     <string name="send_to">Send to</string>
+    <string name="stop_tracking">Stop tracking to exit</string>
+    <string name="pref_save_frequency">Tracking frequency</string>
+    <string name="pref_desc_save_frequency">Tracking accuracy in seconds (5 to 60)</string>
+    <string name="ask_stop_tracking">Stop tracking?</string>
+    <string name="sunday">Sunday</string>
+    <string name="monday">Monday</string>
+    <string name="tuesday">Tuesday</string>
+    <string name="wednesday">Wednesday</string>
+    <string name="thursday">Thursday</string>
+    <string name="friday">Friday</string>
+    <string name="saturday">Saturday</string>
 </resources>

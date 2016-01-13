@@ -6,5 +6,12 @@
         android:title="@string/pref_only_gps"
         android:summary="@string/pref_desc_only_gps" />
 
+    <EditTextPreference
+        android:defaultValue="5"
+        android:key="save_frequency"
+        android:inputType="number"
+        android:title="@string/pref_save_frequency"
+        android:summary="@string/pref_desc_save_frequency" />
+
 
 </PreferenceScreen>
