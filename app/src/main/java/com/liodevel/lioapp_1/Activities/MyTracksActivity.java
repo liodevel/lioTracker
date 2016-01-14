@@ -56,6 +56,7 @@ public class MyTracksActivity extends AppCompatActivity {
     private ArrayList<String> selectedTracksId = new ArrayList<>();
     private static ProgressDialog progress;
     private boolean selecting = false;
+    private boolean favorites = false;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -72,6 +73,10 @@ public class MyTracksActivity extends AppCompatActivity {
         tracks = new ArrayList<>();
         tracksParseObject = new ArrayList<>();
 
+        if (getIntent().getStringExtra("favorites") != null && getIntent().getStringExtra("favorites").equals("1")){
+            favorites = true;
+            getSupportActionBar().setTitle(R.string.my_favorite_tracks);
+        }
         // Lista de tracks
         tracksList = (ListView) findViewById(R.id.tracks_list);
 
@@ -215,7 +220,7 @@ public class MyTracksActivity extends AppCompatActivity {
     /**
      * Recupera la lista de Tracks
      */
-    private static void getTracksByCurrentUser() {
+    private void getTracksByCurrentUser() {
         Utils.logInfo("getTracksByUser()");
         progress = new ProgressDialog(context);
         progress.setMessage(context.getResources().getString(R.string.loading_your_tracks));
@@ -224,6 +229,9 @@ public class MyTracksActivity extends AppCompatActivity {
         ParseQuery<ParseObject> query = ParseQuery.getQuery("track");
         ParseUser user = ParseUser.getCurrentUser();
         query.whereEqualTo("user", user);
+        if (favorites){
+            query.whereEqualTo("favorite", true);
+        }
         query.orderByDescending("date");
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override

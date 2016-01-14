@@ -105,5 +105,6 @@
     <string name="thursday">Jueves</string>
     <string name="friday">Viernes</string>
     <string name="saturday">Sábado</string>
+    <string name="my_favorite_tracks">Mis rutas favoritas</string>
 
 </resources>

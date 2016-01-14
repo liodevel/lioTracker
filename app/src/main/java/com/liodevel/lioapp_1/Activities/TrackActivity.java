@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.os.Parcelable;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -75,6 +76,8 @@ public class TrackActivity extends AppCompatActivity {
     private TextView durationInfo;
     private TextView distanceInfo;
     private TextView info;
+    private TextView date;
+    private TextView averageSpeed;
     private EditText editInfo;
 
     ArrayList<TrackPoint> trackPoints = new ArrayList<>();
@@ -92,6 +95,10 @@ public class TrackActivity extends AppCompatActivity {
         distanceInfo = (TextView) findViewById(R.id.text_track_distance_track_info);
         info = (TextView) findViewById(R.id.text_track_info);
         editInfo = (EditText) findViewById(R.id.edit_info);
+        date = (TextView) findViewById(R.id.text_track_date);
+        averageSpeed = (TextView) findViewById(R.id.text_track_average_speed_track_info);
+        getSupportActionBar().setTitle("");
+
 
         //progressDialog.show(this, "Track", "Downloading track", true);
         Bundle extras = getIntent().getExtras();
@@ -337,8 +344,10 @@ public class TrackActivity extends AppCompatActivity {
         } else {
             info.setText(getResources().getString(R.string.insert_track_info));
             editInfo.setText(getResources().getString(R.string.insert_track_info));
-            info.setTextColor(getResources().getColor(R.color.liodevel_grey));
+            info.setTextColor(ContextCompat.getColor(this, R.color.liodevel_grey));
         }
+
+        date.setText(currentTrack.getDate().toString());
 
         // Date
         if (currentDate.getTime() - currentTrack.getDate().getTime() < TimeUnit.MILLISECONDS.convert(6, TimeUnit.DAYS)) {
@@ -374,9 +383,9 @@ public class TrackActivity extends AppCompatActivity {
         }
 
         // Duration
+        double durationDouble = 0.0;
         if (currentTrack.getDateEnd() != null) {
             Long durationLong = currentTrack.getDateEnd().getTime() - currentTrack.getDate().getTime();
-            double durationDouble;
             // duracion en minutos;
             durationDouble = durationLong / 1000 / 60;
             durationInfo.setText(Utils.minutesToHour(durationDouble));
@@ -384,6 +393,14 @@ public class TrackActivity extends AppCompatActivity {
         } else {
             durationInfo.setText("");
         }
+
+        // Velocidad media
+        double averageSpeedFloat = 0.0f;
+        averageSpeedFloat = (currentTrack.getDistance() / 1000.0f) / (durationDouble / 60.0);
+
+        averageSpeed.setText(df.format(averageSpeedFloat) + " km/h");
+
+
 
 
 
@@ -481,35 +498,43 @@ public class TrackActivity extends AppCompatActivity {
 
         if (vehicle == 1 || vehicle == 2) {
             if (speed < 10) {
-                colorTrack = Color.BLACK;
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_black);
             } else if (speed < 20) {
-                colorTrack = Color.RED;
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_red);
             } else if (speed < 30) {
-                colorTrack = Color.YELLOW;
-            } else if (speed < 60) {
-                colorTrack = Color.GREEN;
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_orange);
+            } else if (speed < 40) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_yellow);
+            } else if (speed < 50) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_green);
+            } else if (speed < 70) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_dark_green);
             } else if (speed < 90) {
-                colorTrack = Color.CYAN;
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_blue);
             } else if (speed < 120) {
-                colorTrack = Color.BLUE;
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_cyan);
             } else {
-                colorTrack = Color.MAGENTA;
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_magenta);
             }
         } else {
             if (speed < 10) {
-                colorTrack = Color.BLACK;
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_black);
             } else if (speed < 20) {
-                colorTrack = Color.RED;
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_red);
             } else if (speed < 30) {
-                colorTrack = Color.YELLOW;
-            } else if (speed < 60) {
-                colorTrack = Color.GREEN;
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_orange);
+            } else if (speed < 40) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_yellow);
+            } else if (speed < 50) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_green);
+            } else if (speed < 70) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_dark_green);
             } else if (speed < 90) {
-                colorTrack = Color.CYAN;
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_blue);
             } else if (speed < 120) {
-                colorTrack = Color.BLUE;
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_cyan);
             } else {
-                colorTrack = Color.MAGENTA;
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_magenta);
             }
         }
 

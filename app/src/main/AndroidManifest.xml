@@ -65,7 +65,7 @@
         <activity
             android:name=".Activities.TrackActivity"
             android:label="@string/title_activity_my_tracks"
-            android:parentActivityName=".Activities.MapActivity2"
+            android:parentActivityName=".Activities.MyTracksActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light" />
         <activity

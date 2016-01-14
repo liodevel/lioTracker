@@ -14,4 +14,15 @@
     <color name="liodevel_red">#bb5533</color>
 
 
+    <color name="liodevel_chart_black">#ff000000</color>
+    <color name="liodevel_chart_red">#ffff0000</color>
+    <color name="liodevel_chart_orange">#ffc400</color>
+    <color name="liodevel_chart_yellow">#ffffff00</color>
+    <color name="liodevel_chart_green">#ff00ff00</color>
+    <color name="liodevel_chart_dark_green">#00a143</color>
+    <color name="liodevel_chart_cyan">#ff00ffff</color>
+    <color name="liodevel_chart_blue">#ff0000ff</color>
+    <color name="liodevel_chart_magenta">#ffff00ff</color>
+
+
 </resources>

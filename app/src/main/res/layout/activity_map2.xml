@@ -81,6 +81,152 @@
             android:layout_below="@+id/map_toolbar"
             android:layout_above="@+id/text_info" />
 
+        <!-- GRAFICA COLORES -->
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:id="@+id/linearLayout2"
+            android:layout_above="@+id/linearLayout3"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.1"
+                android:background="@color/liodevel_chart_black"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.1"
+                android:background="@color/liodevel_chart_red"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.1"
+                android:background="@color/liodevel_chart_orange"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.1"
+                android:background="@color/liodevel_chart_yellow"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.1"
+                android:background="@color/liodevel_chart_green"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.1"
+                android:background="@color/liodevel_chart_dark_green"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.1"
+                android:background="@color/liodevel_chart_blue"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.1"
+                android:background="@color/liodevel_chart_cyan"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.1"
+                android:background="@color/liodevel_chart_magenta"/>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:background="@color/liodevel_white"
+            android:layout_above="@+id/text_info"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:id="@+id/linearLayout3">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.1"
+                android:textSize="10sp"
+                android:gravity="center"
+                android:text="0-10"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.1"
+                android:textSize="10sp"
+                android:gravity="center"
+                android:text="10-20"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.1"
+                android:textSize="10sp"
+                android:gravity="center"
+                android:text="20-30"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.1"
+                android:textSize="10sp"
+                android:gravity="center"
+                android:text="30-40"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.1"
+                android:textSize="10sp"
+                android:gravity="center"
+                android:text="40-50"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.1"
+                android:textSize="10sp"
+                android:gravity="center"
+                android:text="50-70"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.1"
+                android:textSize="10sp"
+                android:gravity="center"
+                android:text="70-90"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.1"
+                android:textSize="10sp"
+                android:gravity="center"
+                android:text="90-120"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.1"
+                android:textSize="10sp"
+                android:gravity="center"
+                android:text="> 120"/>
+
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:id="@+id/relativeLayout3"
+            android:background="@color/liodevel_dark_grey"
+            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+            android:layout_above="@+id/linearLayout2"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
 
 
     </RelativeLayout>

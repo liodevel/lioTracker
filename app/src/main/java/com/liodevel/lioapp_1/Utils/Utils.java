@@ -18,12 +18,14 @@ public class Utils {
     public static final String DKGRAY = "ff444444";
     public static final String GRAY = "ff888888";
     public static final String GREEN = "ff00ff00";
+    public static final String DKGREEN = "ff006e2e";
     public static final String LTGRAY = "ffcccccc";
     public static final String MAGENTA = "ffff00ff";
     public static final String RED = "ffff0000";
     public static final String TRANSPARENT = "00000000";
     public static final String WHITE = "ffffffff";
     public static final String YELLOW = "ffffff00";
+    public static final String ORANGE = "ffe55300";
 
 
     /**
@@ -56,11 +58,11 @@ public class Utils {
 
     public static String minutesToHour(double min){
         if (min < 60){
-            return (Math.round(min) + "min");
+            return (Math.round(min) + " min");
         } else {
             long hours = Math.round(min) / 60;
             long minutes = Math.round(min) - (60 * hours);
-            return (hours + "h " + minutes + "min");
+            return (hours + "h " + minutes + " min");
         }
     }
 

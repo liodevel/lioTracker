@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -102,6 +103,8 @@ public class MapActivity2 extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map2);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        context = this;
+
 
         // ToolBar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -150,7 +153,7 @@ public class MapActivity2 extends AppCompatActivity
 
         // Infos
         textInfo = (TextView) findViewById(R.id.text_info);
-        textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_dark_grey));
+        textInfo.setBackgroundColor(ContextCompat.getColor(this, R.color.liodevel_dark_grey));
         textProviderInfo = (TextView) findViewById(R.id.text_provider_info);
 
         textInfo.setText(getResources().getString(R.string.getting_location));
@@ -171,13 +174,29 @@ public class MapActivity2 extends AppCompatActivity
 
              Intent launchNextActivity;
              launchNextActivity = new Intent(MapActivity2.this, MyTracksActivity.class);
+             launchNextActivity.putExtra("favorites", "0");
              try {
                  locationManager.removeUpdates(locationListener);
-             } catch (Exception e){}
+             } catch (Exception e) {
+             }
              DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
              drawer.closeDrawer(GravityCompat.START);
              startActivity(launchNextActivity);
              return true;
+
+             // MY FAVORITE TRACKS
+         }else if (id == R.id.nav_my_favorite_tracks) {
+
+             Intent launchFavoritesActivity;
+             launchFavoritesActivity = new Intent(MapActivity2.this, MyTracksActivity.class);
+             launchFavoritesActivity.putExtra("favorites", "1");
+             try {
+                 locationManager.removeUpdates(locationListener);
+             } catch (Exception e){}
+                 DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                 drawer.closeDrawer(GravityCompat.START);
+                 startActivity(launchFavoritesActivity);
+                 return true;
 
              // SETTINGS
         } else if (id == R.id.nav_settings) {
@@ -429,7 +448,7 @@ public class MapActivity2 extends AppCompatActivity
 
                         } else {
                             marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_green));
-                            textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_red));
+                            textInfo.setBackgroundColor(ContextCompat.getColor(context, R.color.liodevel_red));
                             textInfo.setText(getResources().getString(R.string.ready));
 
                         }
@@ -462,7 +481,7 @@ public class MapActivity2 extends AppCompatActivity
             // START TRACKING
             if (startTrack() == 0) {
                 // Start track correcto
-                textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_red));
+                textInfo.setBackgroundColor(ContextCompat.getColor(this, R.color.liodevel_red));
 
                 textInfo.setText(getResources().getString(R.string.tracking) + "\n" + getResources().getString(R.string.push_to_stop));
                 tracking = true;
@@ -515,7 +534,7 @@ public class MapActivity2 extends AppCompatActivity
                                 }
                             });
 
-                            textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_red));
+                            textInfo.setBackgroundColor(ContextCompat.getColor(context, R.color.liodevel_red));
                             textInfo.setText(getResources().getString(R.string.ready));
                             tracking = false;
                             //actionBarMenu.findItem(R.id.map_action_start_track).setVisible(false);
@@ -756,7 +775,7 @@ public class MapActivity2 extends AppCompatActivity
      */
     private void updateViews(){
         if (!trackerReady){
-            textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_dark_grey));
+            textInfo.setBackgroundColor(ContextCompat.getColor(this, R.color.liodevel_dark_grey));
             textInfo.setText(getResources().getString(R.string.getting_location));
             if (actionBarMenu != null) {
                 //actionBarMenu.findItem(R.id.map_action_start_track).setVisible(false);
@@ -764,7 +783,7 @@ public class MapActivity2 extends AppCompatActivity
             }
 
         } else {
-            textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_red));
+            textInfo.setBackgroundColor(ContextCompat.getColor(this, R.color.liodevel_red));
             textInfo.setText(getResources().getString(R.string.ready));
             if (actionBarMenu != null) {
                // actionBarMenu.findItem(R.id.map_action_start_track).setVisible(false);
@@ -772,7 +791,7 @@ public class MapActivity2 extends AppCompatActivity
             }
         }
         if (tracking){
-            textInfo.setBackgroundColor(getResources().getColor(R.color.liodevel_red));
+            textInfo.setBackgroundColor(ContextCompat.getColor(this, R.color.liodevel_red));
             textInfo.setText(getResources().getString(R.string.tracking) + "\n" + getResources().getString(R.string.push_to_stop));
             //actionBarMenu.findItem(R.id.map_action_start_track).setVisible(true);
             actionBarMenu.findItem(R.id.map_action_center_map).setVisible(true);
@@ -803,35 +822,43 @@ public class MapActivity2 extends AppCompatActivity
 
         if (vehicle == 1 || vehicle == 2) {
             if (speed < 10) {
-                colorTrack = Color.BLACK;
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_black);
             } else if (speed < 20) {
-                colorTrack = Color.RED;
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_red);
             } else if (speed < 30) {
-                colorTrack = Color.YELLOW;
-            } else if (speed < 60) {
-                colorTrack = Color.GREEN;
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_orange);
+            } else if (speed < 40) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_yellow);
+            } else if (speed < 50) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_green);
+            } else if (speed < 70) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_dark_green);
             } else if (speed < 90) {
-                colorTrack = Color.CYAN;
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_blue);
             } else if (speed < 120) {
-                colorTrack = Color.BLUE;
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_cyan);
             } else {
-                colorTrack = Color.MAGENTA;
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_magenta);
             }
         } else {
             if (speed < 10) {
-                colorTrack = Color.BLACK;
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_black);
             } else if (speed < 20) {
-                colorTrack = Color.RED;
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_red);
             } else if (speed < 30) {
-                colorTrack = Color.YELLOW;
-            } else if (speed < 60) {
-                colorTrack = Color.GREEN;
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_orange);
+            } else if (speed < 40) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_yellow);
+            } else if (speed < 50) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_green);
+            } else if (speed < 70) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_dark_green);
             } else if (speed < 90) {
-                colorTrack = Color.CYAN;
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_blue);
             } else if (speed < 120) {
-                colorTrack = Color.BLUE;
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_cyan);
             } else {
-                colorTrack = Color.MAGENTA;
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_magenta);
             }
         }
 
