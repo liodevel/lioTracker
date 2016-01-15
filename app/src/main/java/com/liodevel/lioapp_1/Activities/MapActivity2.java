@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -109,6 +110,7 @@ public class MapActivity2 extends AppCompatActivity
         // ToolBar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.liodevel_white)));
 
         // Drawer
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -479,34 +481,37 @@ public class MapActivity2 extends AppCompatActivity
         Utils.logInfo("CLIC clickStart");
         if (!tracking) {
             // START TRACKING
-            if (startTrack() == 0) {
-                // Start track correcto
-                textInfo.setBackgroundColor(ContextCompat.getColor(this, R.color.liodevel_red));
+            if (trackerReady) {
+                if (startTrack() == 0) {
+                    // Start track correcto
+                    textInfo.setBackgroundColor(ContextCompat.getColor(this, R.color.liodevel_red));
 
-                textInfo.setText(getResources().getString(R.string.tracking) + "\n" + getResources().getString(R.string.push_to_stop));
-                tracking = true;
-                currentTrackDistance = 0;
+                    textInfo.setText(getResources().getString(R.string.tracking) + "\n" + getResources().getString(R.string.push_to_stop));
+                    tracking = true;
+                    currentTrackDistance = 0;
 
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                                new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()),
-                                18)
-                );
-                // Animacion
-                /*
-                actionBarMenu.findItem(R.id.map_action_start_track).setVisible(true);
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                                    new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()),
+                                    18)
+                    );
+                    // Animacion
+                    /*
+                    actionBarMenu.findItem(R.id.map_action_start_track).setVisible(true);
 
-                LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                ImageView iv = (ImageView) inflater.inflate(R.layout.start_track_image, null);
-                Animation rotation = AnimationUtils.loadAnimation(this, R.anim.tracking_animation);
-                rotation.setRepeatCount(Animation.INFINITE);
-                iv.startAnimation(rotation);
-                actionBarMenu.findItem(R.id.map_action_start_track).setActionView(iv);
-*/
+                    LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    ImageView iv = (ImageView) inflater.inflate(R.layout.start_track_image, null);
+                    Animation rotation = AnimationUtils.loadAnimation(this, R.anim.tracking_animation);
+                    rotation.setRepeatCount(Animation.INFINITE);
+                    iv.startAnimation(rotation);
+                    actionBarMenu.findItem(R.id.map_action_start_track).setActionView(iv);
+    */
+                } else {
+                    // NO Start track
+                }
+                // STOP TRACKING
             } else {
-                // NO Start track
-            }
-            // STOP TRACKING
 
+            }
         } else {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this);

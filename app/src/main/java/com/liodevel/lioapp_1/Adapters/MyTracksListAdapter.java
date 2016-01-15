@@ -1,6 +1,8 @@
 package com.liodevel.lioapp_1.Adapters;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +44,9 @@ public class MyTracksListAdapter extends ArrayAdapter<Track> {
         TextView distance = (TextView) convertView.findViewById(R.id.text_track_distance_item);
         TextView duration = (TextView) convertView.findViewById(R.id.text_track_duration_item);
         TextView info = (TextView) convertView.findViewById(R.id.text_track_info_item);
+        TextView averageSpeed = (TextView) convertView.findViewById(R.id.text_track_average_speed_item);
         ImageView favorite = (ImageView) convertView.findViewById(R.id.favorite_icon_item);
+        TextView speedBar = (TextView) convertView.findViewById(R.id.speed_bar_item);
 
         if (track.isChecked()){
             convertView.setBackground(getContext().getResources().getDrawable(R.drawable.item_selected));
@@ -87,10 +91,11 @@ public class MyTracksListAdapter extends ArrayAdapter<Track> {
             distance.setText(df.format((track.getDistance() / 1000)) + " km");
         }
 
+        double durationDouble = 0.0;
+
         // Duration
         if (track.getDateEnd() != null) {
             Long durationLong = track.getDateEnd().getTime() - track.getDate().getTime();
-            double durationDouble;
             // duracion en minutos;
             durationDouble = durationLong / 1000 / 60;
             duration.setText(Utils.minutesToHour(durationDouble));
@@ -98,6 +103,12 @@ public class MyTracksListAdapter extends ArrayAdapter<Track> {
         } else {
             duration.setText("");
         }
+
+        // Velocidad media
+        double averageSpeedFloat = 0.0f;
+        averageSpeedFloat = (track.getDistance() / 1000.0f) / (durationDouble / 60.0);
+
+        averageSpeed.setText(df.format(averageSpeedFloat) + " km/h");
 
         // Info
         if (track.getInfo() != null){
@@ -112,6 +123,55 @@ public class MyTracksListAdapter extends ArrayAdapter<Track> {
         } else {
             favorite.setBackground(getContext().getResources().getDrawable(R.drawable.ic_action_action_favorite_outline));
         }
+
+        double speed = averageSpeedFloat;
+        int vehicle = track.getVehicle();
+        int colorTrack = ContextCompat.getColor(context, R.color.liodevel_chart_black);
+
+        if (vehicle == 1 || vehicle == 2) {
+            if (speed < 10) {
+                colorTrack = ContextCompat.getColor(context, R.color.liodevel_chart_black);
+            } else if (speed < 20) {
+                colorTrack = ContextCompat.getColor(context, R.color.liodevel_chart_red);
+            } else if (speed < 30) {
+                colorTrack = ContextCompat.getColor(context, R.color.liodevel_chart_orange);
+            } else if (speed < 40) {
+                colorTrack = ContextCompat.getColor(context, R.color.liodevel_chart_yellow);
+            } else if (speed < 50) {
+                colorTrack = ContextCompat.getColor(context, R.color.liodevel_chart_green);
+            } else if (speed < 70) {
+                colorTrack = ContextCompat.getColor(context, R.color.liodevel_chart_dark_green);
+            } else if (speed < 90) {
+                colorTrack = ContextCompat.getColor(context, R.color.liodevel_chart_blue);
+            } else if (speed < 120) {
+                colorTrack = ContextCompat.getColor(context, R.color.liodevel_chart_cyan);
+            } else {
+                colorTrack = ContextCompat.getColor(context, R.color.liodevel_chart_magenta);
+            }
+        } else {
+            if (speed < 10) {
+                colorTrack = ContextCompat.getColor(context, R.color.liodevel_chart_black);
+            } else if (speed < 20) {
+                colorTrack = ContextCompat.getColor(context, R.color.liodevel_chart_red);
+            } else if (speed < 30) {
+                colorTrack = ContextCompat.getColor(context, R.color.liodevel_chart_orange);
+            } else if (speed < 40) {
+                colorTrack = ContextCompat.getColor(context, R.color.liodevel_chart_yellow);
+            } else if (speed < 50) {
+                colorTrack = ContextCompat.getColor(context, R.color.liodevel_chart_green);
+            } else if (speed < 70) {
+                colorTrack = ContextCompat.getColor(context, R.color.liodevel_chart_dark_green);
+            } else if (speed < 90) {
+                colorTrack = ContextCompat.getColor(context, R.color.liodevel_chart_blue);
+            } else if (speed < 120) {
+                colorTrack = ContextCompat.getColor(context, R.color.liodevel_chart_cyan);
+            } else {
+                colorTrack = ContextCompat.getColor(context, R.color.liodevel_chart_magenta);
+            }
+
+        }
+        speedBar.setBackgroundColor(colorTrack);
+
 
         return convertView;
     }

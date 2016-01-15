@@ -1,9 +1,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="?android:attr/listPreferredItemHeight"
+    android:layout_height="80dp"
     android:padding="6dip"
     android:background="@drawable/item"
-    android:paddingLeft="18dp"
+    android:paddingLeft="0dp"
     android:paddingRight="12dp">
 
     <TextView
@@ -16,11 +16,10 @@
         android:gravity="center_vertical|left"
         android:textColor="@color/liodevel_light_green"
         android:textSize="16sp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_toStartOf="@+id/favorite_icon_item"
+        android:layout_alignTop="@+id/favorite_icon_item"
         android:layout_toLeftOf="@+id/favorite_icon_item"
-        android:layout_alignParentBottom="true" />
+        android:layout_toRightOf="@+id/speed_bar_item"
+        android:layout_toEndOf="@+id/speed_bar_item" />
 
     <ImageView
         android:layout_width="20dp"
@@ -34,12 +33,11 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_above="@+id/text_track_info_item"
-        android:layout_toLeftOf="@+id/favorite_icon_item"
-        android:layout_toStartOf="@+id/favorite_icon_item">
+        android:layout_height="24dp"
+        android:layout_above="@+id/favorite_icon_item"
+        android:layout_alignLeft="@+id/text_track_info_item"
+        android:layout_alignStart="@+id/text_track_info_item">
+
 
         <TextView
             android:id="@+id/text_track_date_item"
@@ -50,27 +48,53 @@
             android:gravity="center_vertical"
             android:textColor="@color/liodevel_dark_green"
             android:textSize="16sp"
+            android:layout_above="@+id/favorite_icon_item"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_toStartOf="@+id/text_track_duration_item"
-            android:layout_toLeftOf="@+id/text_track_duration_item"
-            android:layout_weight="0.2"/>
+            android:layout_alignParentStart="true" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/text_track_info_item"
+        android:layout_alignRight="@+id/text_track_info_item"
+        android:layout_alignEnd="@+id/text_track_info_item"
+        android:id="@+id/linearLayout5"
+        android:layout_toRightOf="@+id/speed_bar_item"
+        android:layout_toEndOf="@+id/speed_bar_item">
 
         <TextView
-            android:id="@+id/text_track_distance_item"
+            android:id="@+id/text_track_average_speed_item"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_alignWithParentIfMissing="true"
-            android:text="DISTANCE TRACK"
+            android:text="SPEED TRACK"
             android:gravity="center_vertical|left"
             android:textColor="@color/liodevel_dark_grey"
             android:textSize="12sp"
             android:paddingLeft="12dp"
             android:paddingRight="12dp"
-            android:layout_toLeftOf="@+id/text_track_duration_item"
+            android:layout_toLeftOf="@+id/textView5"
             android:layout_alignParentTop="true"
             android:layout_above="@+id/text_track_info_item"
-            android:layout_weight="0.3"/>
+            android:layout_weight="0.28" />
+
+        <TextView
+            android:id="@+id/text_track_distance_item"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignWithParentIfMissing="true"
+            android:text="DISTANCE TRACK"
+            android:gravity="center"
+            android:textColor="@color/liodevel_dark_grey"
+            android:textSize="12sp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:layout_toLeftOf="@+id/textView5"
+            android:layout_alignParentTop="true"
+            android:layout_above="@+id/text_track_info_item"
+            android:layout_weight="0.28" />
 
         <TextView
             android:id="@+id/text_track_duration_item"
@@ -83,14 +107,28 @@
             android:textSize="12sp"
             android:paddingLeft="12dp"
             android:paddingRight="12dp"
-            android:layout_alignBottom="@+id/text_track_distance_item"
+            android:layout_alignBottom="@+id/textView4"
             android:layout_alignParentTop="true"
             android:layout_toLeftOf="@+id/favorite_icon_item"
             android:layout_toStartOf="@+id/favorite_icon_item"
-            android:layout_weight="0.3"/>
-
-
+            android:layout_weight="0.28" />
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/speed_bar_item"
+        android:layout_width="6dp"
+        android:layout_height="match_parent"
+        android:layout_alignWithParentIfMissing="true"
+        android:text="S"
+        android:gravity="center_vertical|left"
+        android:textColor="@color/liodevel_dark_grey"
+        android:textSize="12sp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:layout_weight="0.28"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/text_track_info_item" />
 
 
 </RelativeLayout>

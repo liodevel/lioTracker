@@ -26,7 +26,7 @@
     <string name="settings">Configuración</string>
     <string name="title_activity_my_tracks">Mis rutas</string>
     <string name="title_activity_settings">Configuración</string>
-    <string name="getting_location">Localizando</string>
+    <string name="getting_location">Esperando servicios de localización...</string>
     <string name="ready">Preparado\nPulsa para comenzar</string>
     <string name="tracking">Registrando</string>
     <string name="track_saved">Ruta guardada</string>
