@@ -1,11 +1,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
-    android:orientation="vertical"
-
-    tools:context=".Activities.LoginActivity">
+    android:background="@color/liodevel_dark_green"
+    android:orientation="vertical">
 
     <!-- Login progress -->
     <LinearLayout
@@ -16,7 +14,8 @@
         android:layout_height="87dp"
         android:gravity="center_horizontal"
         android:orientation="horizontal"
-        android:layout_marginBottom="20dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="30dp"
         android:background="@mipmap/background1">
 
         <ImageView
@@ -49,7 +48,8 @@
     <ScrollView
         android:id="@+id/login_form"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/liodevel_dark_green">
 
         <LinearLayout
             android:id="@+id/email_login_form"
@@ -64,8 +64,9 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/prompt_email"
                 android:inputType="textEmailAddress"
-                android:textColor="@color/liodevel_dark_grey"
+                android:textColor="@color/liodevel_white"
                 android:maxLines="1"
+                android:textColorHint="@color/liodevel_white"
                 android:singleLine="true" />
 
             <EditText
@@ -77,8 +78,10 @@
                 android:imeActionLabel="@string/action_sign_in_short"
                 android:imeOptions="actionUnspecified"
                 android:inputType="textPassword"
-                android:textColor="@color/liodevel_dark_grey"
+                android:textColor="@color/liodevel_white"
                 android:maxLines="1"
+                android:textColorHint="@color/liodevel_white"
+                android:textColorHighlight="@color/liodevel_white"
                 android:singleLine="true" />
 
             <Button
@@ -88,7 +91,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="@string/action_sign_in"
-                android:textStyle="bold"
+                android:background="@color/liodevel_light_green"
+                android:textColor="@color/liodevel_white"
                 android:layout_gravity="center_horizontal" />
 
             <Button
@@ -98,8 +102,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="@string/action_facebook_sign_in"
-                android:textStyle="bold"
+                android:textColor="@color/liodevel_white"
                 android:onClick="facebookLogin"
+                android:background="@color/liodevel_light_green"
                 android:layout_gravity="center_horizontal" />
 
             <Button
@@ -109,7 +114,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="26dp"
                 android:text="@string/action_register"
-                android:textStyle="bold"
+                android:textColor="@color/liodevel_white"
+                android:background="@color/liodevel_light_green"
                 android:layout_gravity="center_horizontal" />
 
         </LinearLayout>

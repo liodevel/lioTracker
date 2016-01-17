@@ -15,6 +15,7 @@ public class TrackPoint {
     private ParseGeoPoint position;
     private Date date;
     private float accuracy;
+    private String provider;
 
     private double speed;
 
@@ -71,5 +72,13 @@ public class TrackPoint {
 
     public void setSpeed(double speed) {
         this.speed = speed;
+    }
+
+    public String getProvider() {
+        return provider;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
     }
 }

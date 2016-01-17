@@ -19,6 +19,8 @@ import android.preference.RingtonePreference;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.liodevel.lioapp_1.R;
 import com.liodevel.lioapp_1.Utils.Utils;
@@ -77,6 +79,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupActionBar();
+        changeNotificationBar();
+
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.liodevel_white)));
 
     }
@@ -175,5 +179,16 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         }
     }
 
-
+    @TargetApi(21)
+    private void changeNotificationBar() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            Utils.logInfo("Notif.Bar.Coloured");
+            Window window = this.getWindow();
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(this.getResources().getColor(R.color.liodevel_dark_green));
+        } else {
+            Utils.logInfo("Ap");
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package com.liodevel.lioapp_1.Activities;
 
+import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -8,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.os.Parcelable;
@@ -21,6 +23,7 @@ import android.util.Xml;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -88,6 +91,8 @@ public class TrackActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_track);
         context = this;
+        changeNotificationBar();
+
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.liodevel_white)));
 
         ArrayList<TrackPoint> trackPoints = new ArrayList<>();
@@ -259,6 +264,9 @@ public class TrackActivity extends AppCompatActivity {
                     trackPoint.setObjectId(parseObject.getObjectId());
                     trackPoint.setDate((Date) parseObject.get("date"));
                     trackPoint.setPosition((ParseGeoPoint) parseObject.get("position"));
+                    //trackPoint.setAccuracy((float) parseObject.getDouble("accuracy"));
+                    //trackPoint.setProvider(parseObject.getString("provider"));
+                    //Utils.logInfo(trackPoint.getProvider());
                     Utils.logInfo("DATE TR: " + parseObject.get("date"));
                     //trackPoints.add(trackPoint);
                     actualPos = new LatLng(trackPoint.getPosition().getLatitude(), trackPoint.getPosition().getLongitude());
@@ -785,6 +793,17 @@ public class TrackActivity extends AppCompatActivity {
         return ret;
     }
 
-
+    @TargetApi(21)
+    private void changeNotificationBar() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            Utils.logInfo("Notif.Bar.Coloured");
+            Window window = this.getWindow();
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(this.getResources().getColor(R.color.liodevel_dark_green));
+        } else {
+            Utils.logInfo("Ap");
+        }
+    }
 
 }

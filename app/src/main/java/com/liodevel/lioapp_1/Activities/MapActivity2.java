@@ -1,5 +1,6 @@
 package com.liodevel.lioapp_1.Activities;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,8 +10,10 @@ import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.design.widget.Snackbar;
@@ -27,10 +30,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.ScaleAnimation;
+import android.widget.Chronometer;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -61,9 +68,10 @@ public class MapActivity2 extends AppCompatActivity
     private Boolean exit = false;
 
     // VIEW
-    private TextView textInfo, textProviderInfo, userName;
+    private TextView textInfo, textProviderInfo, textTimeInfo, textDistanceInfo, userName;
     private Menu actionBarMenu;
     private Context context;
+    private Chronometer chronoTrack;
 
     // MAPS
     private GoogleMap mMap;
@@ -106,6 +114,7 @@ public class MapActivity2 extends AppCompatActivity
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         context = this;
 
+        changeNotificationBar();
 
         // ToolBar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -157,6 +166,10 @@ public class MapActivity2 extends AppCompatActivity
         textInfo = (TextView) findViewById(R.id.text_info);
         textInfo.setBackgroundColor(ContextCompat.getColor(this, R.color.liodevel_dark_grey));
         textProviderInfo = (TextView) findViewById(R.id.text_provider_info);
+        //textTimeInfo = (TextView) findViewById(R.id.text_time_info);
+        textDistanceInfo = (TextView) findViewById(R.id.text_distance_info);
+        chronoTrack = (Chronometer) findViewById(R.id.chronoTracking);
+
 
         textInfo.setText(getResources().getString(R.string.getting_location));
         updateGpsProviders();
@@ -232,7 +245,7 @@ public class MapActivity2 extends AppCompatActivity
              AlertDialog.Builder builder = new AlertDialog.Builder(this);
              builder
                      .setMessage(getResources().getString(R.string.confirm_logout))
-                     .setPositiveButton(getResources().getString(R.string.yes),  new DialogInterface.OnClickListener() {
+                     .setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
                          @Override
                          public void onClick(DialogInterface dialog, int id) {
                              ParseUser.getCurrentUser().logOut();
@@ -241,7 +254,7 @@ public class MapActivity2 extends AppCompatActivity
                      })
                      .setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
                          @Override
-                         public void onClick(DialogInterface dialog,int id) {
+                         public void onClick(DialogInterface dialog, int id) {
                              dialog.cancel();
                          }
                      })
@@ -474,8 +487,23 @@ public class MapActivity2 extends AppCompatActivity
 
     }
 
+
     /**
-     * Start Button
+     * Centrar Mapa
+     */
+    private void centerMap(){
+        if (mMap != null) {
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                            new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()),
+                            mMap.getCameraPosition().zoom)
+            );
+        }
+    }
+
+
+
+    /**
+     * Start/Stop Button
      */
     public void clickStart(View view) {
         Utils.logInfo("CLIC clickStart");
@@ -488,7 +516,10 @@ public class MapActivity2 extends AppCompatActivity
 
                     textInfo.setText(getResources().getString(R.string.tracking) + "\n" + getResources().getString(R.string.push_to_stop));
                     tracking = true;
+                    chronoTrack.setBase(SystemClock.elapsedRealtime());
+                    chronoTrack.start();
                     currentTrackDistance = 0;
+                    textDistanceInfo.setText("0 m");
 
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
                                     new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()),
@@ -522,7 +553,7 @@ public class MapActivity2 extends AppCompatActivity
                         public void onClick(DialogInterface dialog, int id) {
 
                             stopTimerTrack();
-
+                            chronoTrack.stop();
                             currentTrack.put("dateEnd", lastTrackPointDate);
                             currentTrack.put("distance", currentTrackDistance);
                             currentTrack.saveInBackground(new SaveCallback() {
@@ -561,22 +592,6 @@ public class MapActivity2 extends AppCompatActivity
 
 
 
-        }
-    }
-
-
-
-
-
-    /**
-     * Centrar Mapa
-     */
-    private void centerMap(){
-        if (mMap != null) {
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                            new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()),
-                            mMap.getCameraPosition().zoom)
-            );
         }
     }
 
@@ -671,6 +686,7 @@ public class MapActivity2 extends AppCompatActivity
             tr.setDate(new Date(System.currentTimeMillis()));
             tr.setPosition(new ParseGeoPoint(lastLocation.getLatitude(), lastLocation.getLongitude()));
             tr.setAccuracy(lastLocation.getAccuracy());
+            tr.setProvider(lastLocation.getProvider());
             tr.setTrack(currentTrack);
 
             if (prevLocation != null){
@@ -686,11 +702,10 @@ public class MapActivity2 extends AppCompatActivity
                     DecimalFormat df = new DecimalFormat();
                     df.setMaximumFractionDigits(2);
                     if (currentTrackDistance < 1000) {
-                        textInfo.setText(df.format(currentTrackDistance) + " m" + "\n" + getResources().getString(R.string.push_to_stop));
+                        textDistanceInfo.setText(df.format(currentTrackDistance) + " m");
                     } else {
-                        textInfo.setText(df.format((currentTrackDistance / 1000)) + " km" + "\n" + getResources().getString(R.string.push_to_stop));
+                        textDistanceInfo.setText(df.format((currentTrackDistance / 1000)) + " km");
                     }
-
 
                     double kilometers = trackPointDistance / 1000.0;
                     Utils.logInfo("TRACKPOINT DISTANCE      :" + trackPointDistance);
@@ -876,4 +891,27 @@ public class MapActivity2 extends AppCompatActivity
     }
 
 
+    @TargetApi(21)
+    private void changeNotificationBar() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            Utils.logInfo("Notif.Bar.Coloured");
+            Window window = this.getWindow();
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(this.getResources().getColor(R.color.liodevel_dark_green));
+        } else {
+            Utils.logInfo("Ap");
+        }
+    }
+
+
+    public void scaleView(View v, float startScale, float endScale) {
+        Animation anim = new ScaleAnimation(
+                startScale, endScale, // Start and end values for the X axis scaling
+                1f, 1f, // Start and end values for the Y axis scaling
+                Animation.RELATIVE_TO_SELF, 0f, // Pivot point of X scaling
+                Animation.RELATIVE_TO_SELF, 1f); // Pivot point of Y scaling
+        anim.setFillAfter(true); // Needed to keep the result of the animation
+        v.startAnimation(anim);
+    }
 }
