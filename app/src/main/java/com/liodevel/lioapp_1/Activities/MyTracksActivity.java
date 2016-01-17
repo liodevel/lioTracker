@@ -395,7 +395,9 @@ public class MyTracksActivity extends AppCompatActivity {
                 }
                 currentTrack.setDistance(totalDistance);
                 trackObject.put("distance", totalDistance);
-                trackObject.put("dateEnd", lastDate);
+                if (lastDate != null){
+                    trackObject.put("dateEnd", lastDate);
+                }
                 trackObject.save();
                 Utils.logInfo("Track Fixed! ");
                 ret = true;
