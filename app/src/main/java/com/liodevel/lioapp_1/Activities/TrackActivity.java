@@ -39,6 +39,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.liodevel.lioapp_1.Objects.Track;
 import com.liodevel.lioapp_1.Objects.TrackPoint;
 import com.liodevel.lioapp_1.R;
+import com.liodevel.lioapp_1.Utils.Server;
 import com.liodevel.lioapp_1.Utils.Utils;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
@@ -97,8 +98,6 @@ public class TrackActivity extends AppCompatActivity {
 
         ArrayList<TrackPoint> trackPoints = new ArrayList<>();
 
-        // myToolbar = (Toolbar) findViewById(R.id.track_toolbar);
-        //setSupportActionBar(myToolbar);
         durationInfo = (TextView) findViewById(R.id.text_track_duration_track_info);
         distanceInfo = (TextView) findViewById(R.id.text_track_distance_track_info);
         info = (TextView) findViewById(R.id.text_track_info);
@@ -161,7 +160,7 @@ public class TrackActivity extends AppCompatActivity {
                         .setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
-                                deleteTrackByObjectId(trackObjectId);
+                                Server.deleteTrackByObjectId(trackObjectId);
                                 finish();
                             }
                         })
@@ -318,27 +317,7 @@ public class TrackActivity extends AppCompatActivity {
         return ret;
     }
 
-    /**
-     * Borrar Track
-     * @param objectId
-     */
-    private void deleteTrackByObjectId(String objectId) {
-        Utils.logInfo("deleteTrackByObjectId()");
-        ParseObject trackObject = null;
 
-        ParseQuery<ParseObject> queryTrackObject = ParseQuery.getQuery("track");
-        queryTrackObject.whereEqualTo("objectId", objectId);
-        try {
-            List<ParseObject> parseQueriesTrackObject = queryTrackObject.find();
-            trackObject = parseQueriesTrackObject.get(0);
-            trackObject.delete();
-            trackObject.saveInBackground();
-            Utils.logInfo("Track ID: " + trackObject.getObjectId());
-
-        } catch (ParseException e) {
-            Utils.logInfo("Error deleting: " + e.toString());
-        }
-    }
 
     /**
      *

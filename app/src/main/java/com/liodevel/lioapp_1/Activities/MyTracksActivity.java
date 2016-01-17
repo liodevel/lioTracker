@@ -31,6 +31,7 @@ import com.liodevel.lioapp_1.Objects.Track;
 import com.liodevel.lioapp_1.Objects.TrackPoint;
 import com.liodevel.lioapp_1.R;
 import com.liodevel.lioapp_1.Adapters.MyTracksListAdapter;
+import com.liodevel.lioapp_1.Utils.Server;
 import com.liodevel.lioapp_1.Utils.Utils;
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -202,7 +203,7 @@ public class MyTracksActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
                                 actionBarMenu.findItem(R.id.map_action_delete_my_tracks).setVisible(false);
-                                deleteSelectedTracks();
+                                Server.deleteSelectedTracks(selectedTracksId, context);
                                 adapter.clear();
                                 selecting = false;
                                 getTracksByCurrentUser();
@@ -253,9 +254,9 @@ public class MyTracksActivity extends AppCompatActivity {
                         track.setInfo((String) parseObject.get("info"));
                         track.setFavorite(parseObject.getBoolean("favorite"));
                         Utils.logInfo("Track: " + track.getDate());
-                        if (track.getDateEnd() == null){
+                        if (!track.isClosed()) {
                             Utils.logInfo("Track Incomplete");
-                            fixTrack(track.getObjectId());
+                            Server.fixTrack(track.getObjectId());
                         }
                         //tracks.add(track);
                         adapter.add(track);
@@ -272,143 +273,10 @@ public class MyTracksActivity extends AppCompatActivity {
     }
 
 
-    /**
-     * Borra un Track
-     *
-     * @param objectId
-     */
-    public void deleteTrackByObjectId(String objectId) {
-        Utils.logInfo("deleteTrackByObjectId()");
-        ParseObject trackObject = null;
-        ParseQuery<ParseObject> queryTrackObject = ParseQuery.getQuery("track");
-        queryTrackObject.whereEqualTo("objectId", objectId);
-        try {
-            List<ParseObject> parseQueriesTrackObject = queryTrackObject.find();
-            trackObject = parseQueriesTrackObject.get(0);
-            trackObject.delete();
-            //trackObject.save();
-            Utils.logInfo("Track ID: " + trackObject.getObjectId());
-
-        } catch (ParseException e) {
-            Utils.logInfo("Error deleting: " + e.toString());
-        }
-    }
 
 
-    /**
-     * Borra los Tracks seleccionados
-     */
-    private void deleteSelectedTracks() {
-        Utils.logInfo("deleteSelectedTracks()");
-        if (selectedTracksId.size() > 0) {
-            ParseObject trackObject = null;
-            ParseQuery<ParseObject> queryTrackObject = ParseQuery.getQuery("track");
-            try {
-                int cont = 0;
-                for (String id : selectedTracksId) {
-                    queryTrackObject.whereEqualTo("objectId", id);
-                    List<ParseObject> parseQueriesTrackObject = queryTrackObject.find();
-                    Utils.logInfo("Find: " + parseQueriesTrackObject.toString());
-                    trackObject = parseQueriesTrackObject.get(0);
-                    trackObject.delete();
-                    //trackObject.save();
-                    Utils.logInfo("Track ID: " + trackObject.getObjectId());
-                    cont++;
-                }
-                selectedTracksId = new ArrayList<>();
-                Utils.showMessage(getApplicationContext(), cont + " " + getResources().getString(R.string.tracks_deleted));
-            } catch (ParseException e) {
-                Utils.logInfo("Error deleting: " + e.toString());
-                Utils.showMessage(getApplicationContext(), getResources().getString(R.string.error_deleting_tracks));
-            }
-        }
-    }
-
-    /**
-     *
-     * @param objectId
-     */
-    private static void fixTrack(String objectId){
-
-        ParseObject trackObject = null;
-        Track currentTrack = new Track();
-
-        boolean ret = false;
-        LatLng prevPos = null;
-        LatLng actualPos = null;
-        TrackPoint previousTrackPoint = new TrackPoint();
-
-        ParseQuery<ParseObject> queryTrackObject = ParseQuery.getQuery("track");
-        queryTrackObject.whereEqualTo("objectId", objectId);
-
-        try {
-            List<ParseObject> parseQueriesTrackObject = queryTrackObject.find();
-            trackObject = parseQueriesTrackObject.get(0);
-            currentTrack.setObjectId(parseQueriesTrackObject.get(0).getObjectId());
-            currentTrack.setDate((Date) parseQueriesTrackObject.get(0).get("date"));
-            currentTrack.setDateEnd((Date) parseQueriesTrackObject.get(0).get("dateEnd"));
-            currentTrack.setDistance((float) parseQueriesTrackObject.get(0).getDouble("distance"));
-            currentTrack.setInfo((String) parseQueriesTrackObject.get(0).get("info"));
-            currentTrack.setFavorite(parseQueriesTrackObject.get(0).getBoolean("favorite"));
-            Utils.logInfo("Track ID: " + trackObject.getObjectId());
-            ret = true;
-        } catch (ParseException e) {
-            Utils.logInfo("Error: " + e.toString());
-            ret = false;
-        }
-
-        if (trackObject != null) {
-            ParseQuery<ParseObject> query = ParseQuery.getQuery("trackPoint");
-            query.whereEqualTo("track", trackObject);
-            query.setLimit(1000);
-            query.orderByAscending("date");
-            int cont = 0;
-            try {
-                List<ParseObject> parseQueries = query.find();
-                float totalDistance = 0;
-                Date lastDate = null;
-                for (ParseObject parseObject : parseQueries) {
-                    cont++;
-                    TrackPoint trackPoint = new TrackPoint();
-                    trackPoint.setObjectId(parseObject.getObjectId());
-                    trackPoint.setDate((Date) parseObject.get("date"));
-                    lastDate = (Date) parseObject.get("date");
-                    trackPoint.setPosition((ParseGeoPoint) parseObject.get("position"));
-                    actualPos = new LatLng(trackPoint.getPosition().getLatitude(), trackPoint.getPosition().getLongitude());
-                    if (prevPos != null) {
-                        if(previousTrackPoint != null) {
-
-                            Location selected_location=new Location("locationA");
-                            selected_location.setLatitude(trackPoint.getPosition().getLatitude());
-                            selected_location.setLongitude( trackPoint.getPosition().getLongitude());
-                            Location near_locations=new Location("locationA");
-                            near_locations.setLatitude(previousTrackPoint.getPosition().getLatitude());
-                            near_locations.setLongitude(previousTrackPoint.getPosition().getLongitude());
-
-                            double distance = selected_location.distanceTo(near_locations);
-                            totalDistance = totalDistance + ((float)distance);
-                        }
-                    }
-
-                    prevPos = actualPos;
-                    previousTrackPoint = trackPoint;
-                }
-                currentTrack.setDistance(totalDistance);
-                trackObject.put("distance", totalDistance);
-                if (lastDate != null){
-                    trackObject.put("dateEnd", lastDate);
-                }
-                trackObject.save();
-                Utils.logInfo("Track Fixed! ");
-                ret = true;
-            } catch (ParseException e) {
-                Utils.logInfo("Error: " + e.toString());
-                ret = false;
-            }
-        }
 
 
-    }
 
     @TargetApi(21)
     private void changeNotificationBar() {

@@ -556,6 +556,7 @@ public class MapActivity2 extends AppCompatActivity
                             chronoTrack.stop();
                             currentTrack.put("dateEnd", lastTrackPointDate);
                             currentTrack.put("distance", currentTrackDistance);
+                            currentTrack.put("closed", true);
                             currentTrack.saveInBackground(new SaveCallback() {
                                 @Override
                                 public void done(com.parse.ParseException e) {

@@ -22,6 +22,7 @@ public class Track {
     private ParseGeoPoint fromLocation;
     private ParseGeoPoint toLocation;
     private boolean favorite;
+    private boolean closed;
 
     private float averageSpeed;
     private float topSpeed;
@@ -42,6 +43,7 @@ public class Track {
         vehicle = 1;
 
         isChecked = false;
+        closed = false;
         trackPoints = new ArrayList<>();
     }
 
@@ -163,5 +165,13 @@ public class Track {
 
     public void setTopSpeed(float topSpeed) {
         this.topSpeed = topSpeed;
+    }
+
+    public boolean isClosed() {
+        return closed;
+    }
+
+    public void setClosed(boolean closed) {
+        this.closed = closed;
     }
 }
