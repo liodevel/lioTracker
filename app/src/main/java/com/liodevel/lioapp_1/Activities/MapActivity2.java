@@ -48,6 +48,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.liodevel.lioapp_1.Objects.Track;
 import com.liodevel.lioapp_1.Objects.TrackPoint;
 import com.liodevel.lioapp_1.R;
 import com.liodevel.lioapp_1.Utils.Server;
@@ -58,6 +59,7 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -80,8 +82,6 @@ public class MapActivity2 extends AppCompatActivity
     private boolean centerMap = true;
 
     // TRACKING
-    private boolean tracking = false;
-    private boolean trackerReady = false;
     private String currentTrackObjectId = "";
     private ParseObject currentTrack = null;
     private Location prevLocation;
@@ -92,6 +92,16 @@ public class MapActivity2 extends AppCompatActivity
     private LocationListener locationListener;
     private Date lastTrackPointDate = new Date();
     TrackPoint previousTr = new TrackPoint();
+
+    //OFFLINE
+    private ArrayList<Track> tracksOffline = new ArrayList();
+    private Track currentTrackOffline = new Track();
+    private int currentTrackIndex = 0;
+
+    // FLAGS
+    private boolean tracking = false;
+    private boolean trackerReady = false;
+    private boolean offLineMode = false;
 
     private boolean gps_enabled = false;
     private boolean network_enabled = false;
@@ -109,6 +119,8 @@ public class MapActivity2 extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getDelegate().installViewFactory();
+        getDelegate().onCreate(savedInstanceState);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map2);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -525,17 +537,7 @@ public class MapActivity2 extends AppCompatActivity
                                     new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()),
                                     18)
                     );
-                    // Animacion
-                    /*
-                    actionBarMenu.findItem(R.id.map_action_start_track).setVisible(true);
 
-                    LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                    ImageView iv = (ImageView) inflater.inflate(R.layout.start_track_image, null);
-                    Animation rotation = AnimationUtils.loadAnimation(this, R.anim.tracking_animation);
-                    rotation.setRepeatCount(Animation.INFINITE);
-                    iv.startAnimation(rotation);
-                    actionBarMenu.findItem(R.id.map_action_start_track).setActionView(iv);
-    */
                 } else {
                     // NO Start track
                 }
@@ -554,22 +556,32 @@ public class MapActivity2 extends AppCompatActivity
 
                             stopTimerTrack();
                             chronoTrack.stop();
-                            currentTrack.put("dateEnd", lastTrackPointDate);
-                            currentTrack.put("distance", currentTrackDistance);
-                            currentTrack.put("closed", true);
-                            currentTrack.saveInBackground(new SaveCallback() {
-                                @Override
-                                public void done(com.parse.ParseException e) {
-                                    if (e == null) {
-                                        Utils.logInfo("SAVE startTrack OK");
-                                        Utils.showMessage(getApplicationContext(), getResources().getString(R.string.track_saved));
-                                    } else {
-                                        Utils.logInfo("SAVE startTrack ERROR: " + e.toString());
-                                        Utils.showMessage(getApplicationContext(), getResources().getString(R.string.error_saving_track));
 
+                            if(!offLineMode) {
+                                currentTrack.put("dateEnd", lastTrackPointDate);
+                                currentTrack.put("distance", currentTrackDistance);
+                                currentTrack.put("closed", true);
+                                currentTrack.saveInBackground(new SaveCallback() {
+                                    @Override
+                                    public void done(com.parse.ParseException e) {
+                                        if (e == null) {
+                                            Utils.logInfo("SAVE startTrack OK");
+                                            Utils.showMessage(getApplicationContext(), getResources().getString(R.string.track_saved));
+                                        } else {
+                                            Utils.logInfo("SAVE startTrack ERROR: " + e.toString());
+                                            Utils.showMessage(getApplicationContext(), getResources().getString(R.string.error_saving_track));
+
+                                        }
                                     }
-                                }
-                            });
+                                });
+                            } else {
+                                currentTrackOffline.setDateEnd(lastTrackPointDate);
+                                currentTrackOffline.setDistance(currentTrackDistance);
+                                currentTrackOffline.setClosed(true);
+                                tracksOffline.add(currentTrackOffline);
+                                currentTrackIndex++;
+                                Utils.logInfo("SAVE OFFLINE Track OK");
+                            }
 
                             textInfo.setBackgroundColor(ContextCompat.getColor(context, R.color.liodevel_red));
                             textInfo.setText(getResources().getString(R.string.ready));
@@ -667,12 +679,18 @@ public class MapActivity2 extends AppCompatActivity
                     startTimerTrack();
 
                 } else {
+                    offLineMode = true;
                     Utils.logInfo("SAVE startTrack ERROR: " + e.toString());
+                    currentTrackOffline = new Track();
+                    currentTrackOffline.setLocalId(System.currentTimeMillis());
+                    currentTrackOffline.setDate(new Date(System.currentTimeMillis()));
+                    currentTrackOffline.setUser(ParseUser.getCurrentUser());
+                    Utils.logInfo("SAVE OFFLINE Track OK");
+
                 }
             }
         });
 
-        ret = 0;
         return ret;
     }
 
@@ -696,9 +714,15 @@ public class MapActivity2 extends AppCompatActivity
 
                 if (trackPointDistance > 1) {
                     Utils.logInfo("SendTrackPoint " + trackPointDistance + "m");
-                    Server.sendTrackPoint(tr);
-                    lastTrackPointDate = tr.getDate();
 
+                    if (!offLineMode) {
+                        Server.sendTrackPoint(tr);
+                    } else {
+                        currentTrackOffline.getLocalTrackPoints().add(tr);
+                        Utils.logInfo("OFFLINE MODE, TrackPoint OK");
+                    }
+
+                    lastTrackPointDate = tr.getDate();
                     currentTrackDistance = currentTrackDistance + trackPointDistance;
                     DecimalFormat df = new DecimalFormat();
                     df.setMaximumFractionDigits(2);

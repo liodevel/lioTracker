@@ -29,7 +29,8 @@ public class Track {
 
     private boolean isChecked;
 
-    private ArrayList<TrackPoint> trackPoints;
+    private ArrayList<TrackPoint> localTrackPoints;
+    private long localId;
 
     public Track() {
         objectId = "";
@@ -44,7 +45,8 @@ public class Track {
 
         isChecked = false;
         closed = false;
-        trackPoints = new ArrayList<>();
+        localTrackPoints = new ArrayList<>();
+        localId = -1;
     }
 
     public String getObjectId() {
@@ -88,11 +90,11 @@ public class Track {
     }
 
     public ArrayList<TrackPoint> getTrackPoints() {
-        return trackPoints;
+        return localTrackPoints;
     }
 
     public void setTrackPoints(ArrayList<TrackPoint> trackPoints) {
-        this.trackPoints = trackPoints;
+        this.localTrackPoints = trackPoints;
     }
 
     public int getVehicle() {
@@ -173,5 +175,21 @@ public class Track {
 
     public void setClosed(boolean closed) {
         this.closed = closed;
+    }
+
+    public ArrayList<TrackPoint> getLocalTrackPoints() {
+        return localTrackPoints;
+    }
+
+    public void setLocalTrackPoints(ArrayList<TrackPoint> localTrackPoints) {
+        this.localTrackPoints = localTrackPoints;
+    }
+
+    public long getLocalId() {
+        return localId;
+    }
+
+    public void setLocalId(long localId) {
+        this.localId = localId;
     }
 }

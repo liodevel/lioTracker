@@ -31,7 +31,7 @@
                 android:id="@+id/nav_logout"
                 android:icon="@drawable/ic_account_box_black_36dp"
                 android:title="@string/logout"/>
-        
+
         </menu>
     </item>
 </menu>
