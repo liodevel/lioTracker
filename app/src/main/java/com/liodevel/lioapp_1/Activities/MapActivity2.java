@@ -10,6 +10,8 @@ import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -48,6 +50,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.gson.Gson;
 import com.liodevel.lioapp_1.Objects.Track;
 import com.liodevel.lioapp_1.Objects.TrackPoint;
 import com.liodevel.lioapp_1.R;
@@ -518,34 +521,35 @@ public class MapActivity2 extends AppCompatActivity
      * Start/Stop Button
      */
     public void clickStart(View view) {
-        Utils.logInfo("CLIC clickStart");
         if (!tracking) {
             // START TRACKING
             if (trackerReady) {
-                if (startTrack() == 0) {
-                    // Start track correcto
-                    textInfo.setBackgroundColor(ContextCompat.getColor(this, R.color.liodevel_red));
+                Utils.logInfo("START Tracking");
 
-                    textInfo.setText(getResources().getString(R.string.tracking) + "\n" + getResources().getString(R.string.push_to_stop));
-                    tracking = true;
-                    chronoTrack.setBase(SystemClock.elapsedRealtime());
-                    chronoTrack.start();
-                    currentTrackDistance = 0;
-                    textDistanceInfo.setText("0 m");
+                startTrack();
+                // Start track correcto
+                textInfo.setBackgroundColor(ContextCompat.getColor(this, R.color.liodevel_red));
 
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                                    new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()),
-                                    18)
-                    );
+                textInfo.setText(getResources().getString(R.string.tracking) + "\n" + getResources().getString(R.string.push_to_stop));
+                tracking = true;
+                chronoTrack.setBase(SystemClock.elapsedRealtime());
+                chronoTrack.start();
+                currentTrackDistance = 0;
+                textDistanceInfo.setText("0 m");
 
-                } else {
-                    // NO Start track
-                }
-                // STOP TRACKING
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                                new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()),
+                                18)
+                );
+
             } else {
+                // GPS no preparado
+                Utils.logInfo("NO GPS Ready");
 
             }
         } else {
+
+            Utils.logInfo("STOP Tracking (Dialog)");
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder
@@ -554,6 +558,7 @@ public class MapActivity2 extends AppCompatActivity
                         @Override
                         public void onClick(DialogInterface dialog, int id) {
 
+                            Utils.logInfo("STOP Tracking");
                             stopTimerTrack();
                             chronoTrack.stop();
 
@@ -565,10 +570,10 @@ public class MapActivity2 extends AppCompatActivity
                                     @Override
                                     public void done(com.parse.ParseException e) {
                                         if (e == null) {
-                                            Utils.logInfo("SAVE startTrack OK");
+                                            Utils.logInfo("SAVE to PARSE startTrack OK");
                                             Utils.showMessage(getApplicationContext(), getResources().getString(R.string.track_saved));
                                         } else {
-                                            Utils.logInfo("SAVE startTrack ERROR: " + e.toString());
+                                            Utils.logInfo("SAVE to PARSE startTrack ERROR: " + e.toString());
                                             Utils.showMessage(getApplicationContext(), getResources().getString(R.string.error_saving_track));
 
                                         }
@@ -581,17 +586,26 @@ public class MapActivity2 extends AppCompatActivity
                                 tracksOffline.add(currentTrackOffline);
                                 currentTrackIndex++;
                                 Utils.logInfo("SAVE OFFLINE Track OK");
+
+                                SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+                                SharedPreferences.Editor editor = sharedPrefs.edit();
+
+                                /// Guardar Preferences
+                                // Array de Tracks
+                                Gson gson = new Gson();
+                                String jsonTracksOffline = gson.toJson(tracksOffline);
+                                editor.putString("tracksOffline", jsonTracksOffline);
+                                Log.i("--- PREFS", "tracksOffline: " + jsonTracksOffline);
+                                editor.commit();
+                                Utils.logInfo("SAVE OFFLINE Track OK");
+
                             }
 
+                            offLineMode = false;
+                            Utils.logInfo("OFFLINE MODE FALSE!");
                             textInfo.setBackgroundColor(ContextCompat.getColor(context, R.color.liodevel_red));
                             textInfo.setText(getResources().getString(R.string.ready));
                             tracking = false;
-                            //actionBarMenu.findItem(R.id.map_action_start_track).setVisible(false);
-
-                            //actionBarMenu.findItem(R.id.map_action_start_track).getActionView().clearAnimation();
-                            //actionBarMenu.findItem(R.id.map_action_start_track).setActionView(null);
-
-
 
                         }
                     })
@@ -649,6 +663,10 @@ public class MapActivity2 extends AppCompatActivity
         };
     }
 
+
+
+
+
     /**
      * Send startTrack
      */
@@ -666,30 +684,35 @@ public class MapActivity2 extends AppCompatActivity
         if (mMap != null) {
             marker = mMap.addMarker(markerOptions);
         }
-        final ParseObject dataObject = new ParseObject("track");
-        dataObject.put("date", new Date(System.currentTimeMillis()));
-        dataObject.put("user", ParseUser.getCurrentUser());
-        dataObject.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(com.parse.ParseException e) {
-                if (e == null) {
-                    Utils.logInfo("SAVE startTrack OK");
-                    currentTrack = dataObject;
-                    currentTrackObjectId = dataObject.getObjectId();
-                    startTimerTrack();
+        if (checkConn()) {
+            final ParseObject dataObject = new ParseObject("track");
+            dataObject.put("date", new Date(System.currentTimeMillis()));
+            dataObject.put("user", ParseUser.getCurrentUser());
+            dataObject.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(com.parse.ParseException e) {
+                    if (e == null) {
+                        Utils.logInfo("SAVE startTrack OK");
+                        currentTrack = dataObject;
+                        currentTrackObjectId = dataObject.getObjectId();
+                        startTimerTrack();
 
-                } else {
-                    offLineMode = true;
-                    Utils.logInfo("SAVE startTrack ERROR: " + e.toString());
-                    currentTrackOffline = new Track();
-                    currentTrackOffline.setLocalId(System.currentTimeMillis());
-                    currentTrackOffline.setDate(new Date(System.currentTimeMillis()));
-                    currentTrackOffline.setUser(ParseUser.getCurrentUser());
-                    Utils.logInfo("SAVE OFFLINE Track OK");
-
+                    } else {
+                        Utils.logInfo("SAVE startTrack ERROR: " + e.toString());
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            Utils.logInfo("OFFLINE MODE!");
+            offLineMode = true;
+            currentTrackOffline = new Track();
+            currentTrackOffline.setLocalId(System.currentTimeMillis());
+            currentTrackOffline.setDate(new Date(System.currentTimeMillis()));
+            currentTrackOffline.setUser(ParseUser.getCurrentUser());
+            Utils.logInfo("SAVE OFFLINE Track OK");
+            startTimerTrack();
+
+        }
 
         return ret;
     }
@@ -754,7 +777,12 @@ public class MapActivity2 extends AppCompatActivity
 
             } else {
                 Utils.logInfo("FIRST SendTrackPoint");
-                Server.sendTrackPoint(tr);
+                if (!offLineMode) {
+                    Server.sendTrackPoint(tr);
+                } else {
+                    currentTrackOffline.getLocalTrackPoints().add(tr);
+                    Utils.logInfo("OFFLINE MODE, TrackPoint OK");
+                }
                 lastTrackPointDate = tr.getDate();
                 previousTr = tr;
 
@@ -938,5 +966,12 @@ public class MapActivity2 extends AppCompatActivity
                 Animation.RELATIVE_TO_SELF, 1f); // Pivot point of Y scaling
         anim.setFillAfter(true); // Needed to keep the result of the animation
         v.startAnimation(anim);
+    }
+
+    public boolean checkConn() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) this.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager
+                .getActiveNetworkInfo();
+        return activeNetworkInfo != null;
     }
 }

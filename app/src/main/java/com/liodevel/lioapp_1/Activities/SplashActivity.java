@@ -2,24 +2,46 @@ package com.liodevel.lioapp_1.Activities;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.liodevel.lioapp_1.Objects.Track;
+import com.liodevel.lioapp_1.Objects.TrackPoint;
 import com.liodevel.lioapp_1.R;
+import com.liodevel.lioapp_1.Utils.Server;
 import com.liodevel.lioapp_1.Utils.Utils;
 import com.parse.GetCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
+import com.parse.ParseObject;
 import com.parse.ParseSession;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
+
+import java.lang.reflect.Array;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Date;
 
 public class SplashActivity extends Activity {
+
+    SharedPreferences prefs;
+    ArrayList<Track> tracksOffline = new ArrayList();
+    String currentTrackObjectId = "";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +63,10 @@ public class SplashActivity extends Activity {
         } catch (Exception e){
             Utils.logInfo("Parse initialized");
         }
+
+
+
+
 
 
         ParseSession.getCurrentSessionInBackground(new GetCallback<ParseSession>() {
@@ -92,5 +118,54 @@ public class SplashActivity extends Activity {
         } else {
             Utils.logInfo("Ap");
         }
+    }
+
+    public boolean checkConn() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) this.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager
+                .getActiveNetworkInfo();
+        return activeNetworkInfo != null;
+    }
+
+
+    private void sendTracks(){
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        Gson gsonNoticias = new Gson();
+        String jsonNoticias = this.prefs.getString("tracksOffline", "");
+        Type typeNoticias = new TypeToken<ArrayList<Track>>() {
+        }.getType();
+        ArrayList<Track> tracksOffline = gsonNoticias.fromJson(jsonNoticias, typeNoticias);
+        if (tracksOffline != null) {
+            // Guardar en Parse
+            for (Track track:tracksOffline){
+                final ParseObject dataObject = new ParseObject("track");
+                dataObject.put("date", track.getDate());
+                dataObject.put("user", ParseUser.getCurrentUser());
+                dataObject.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(com.parse.ParseException e) {
+                        if (e == null) {
+                            Utils.logInfo("SAVE startTrack OK");
+                            currentTrackObjectId = dataObject.getObjectId();
+                        } else {
+                            Utils.logInfo("SAVE startTrack ERROR: " + e.toString());
+                        }
+                    }
+                });
+                if (currentTrackObjectId.length() > 0) {
+                    for (TrackPoint tr : track.getLocalTrackPoints()) {
+                        tr.setObjectId(currentTrackObjectId);
+                        Server.sendTrackPoint(tr);
+                    }
+                } else {
+                    // Algo ha ido mal guardando el Track
+                }
+            }
+
+        } else {
+            // Esta vacio
+        }
+
     }
 }

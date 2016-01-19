@@ -1,6 +1,8 @@
 package com.liodevel.lioapp_1.Utils;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
@@ -65,6 +67,8 @@ public class Utils {
             return (hours + "h " + minutes + " min");
         }
     }
+
+
 
 
 }
