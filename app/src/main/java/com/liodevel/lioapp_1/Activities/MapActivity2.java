@@ -706,6 +706,7 @@ public class MapActivity2 extends AppCompatActivity
             Utils.logInfo("OFFLINE MODE!");
             offLineMode = true;
             currentTrackOffline = new Track();
+            currentTrackOffline.setOffline(true);
             currentTrackOffline.setLocalId(System.currentTimeMillis());
             currentTrackOffline.setDate(new Date(System.currentTimeMillis()));
             currentTrackOffline.setUser(ParseUser.getCurrentUser());

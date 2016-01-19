@@ -69,20 +69,32 @@ public class SplashActivity extends Activity {
 
 
 
-        ParseSession.getCurrentSessionInBackground(new GetCallback<ParseSession>() {
-            @Override
-            public void done(ParseSession object, ParseException e) {
-                if (e == null) {
-//                    Log.i("LIOTRACK", "Session: " + object.getSessionToken());
-//                    Log.i("LIOTRACK", "Session: " + ParseUser.getCurrentUser().getUsername());
-                    if (ParseUser.getCurrentUser() != null) {
-                        Utils.showMessage(SplashActivity.this, "Hi, " + ParseUser.getCurrentUser().getUsername() + "!");
-                        Intent launchNextActivity;
-                        launchNextActivity = new Intent(SplashActivity.this, MapActivity2.class);
-                        launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                        startActivity(launchNextActivity);
+        if (checkConn()) {
+            ParseSession.getCurrentSessionInBackground(new GetCallback<ParseSession>() {
+                @Override
+                public void done(ParseSession object, ParseException e) {
+                    if (e == null) {
+                        //                    Log.i("LIOTRACK", "Session: " + object.getSessionToken());
+                        //                    Log.i("LIOTRACK", "Session: " + ParseUser.getCurrentUser().getUsername());
+                        if (ParseUser.getCurrentUser() != null) {
+                            sendTracks();
+
+                            Utils.showMessage(SplashActivity.this, "Hi, " + ParseUser.getCurrentUser().getUsername() + "!");
+                            Intent launchNextActivity;
+                            launchNextActivity = new Intent(SplashActivity.this, MapActivity2.class);
+                            launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                            startActivity(launchNextActivity);
+                        } else {
+                            Utils.logInfo("Session: " + "No session");
+                            Intent launchNextActivity;
+                            launchNextActivity = new Intent(SplashActivity.this, LoginActivity.class);
+                            launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                            startActivity(launchNextActivity);
+                        }
                     } else {
                         Utils.logInfo("Session: " + "No session");
                         Intent launchNextActivity;
@@ -92,17 +104,11 @@ public class SplashActivity extends Activity {
                         launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                         startActivity(launchNextActivity);
                     }
-                } else {
-                    Utils.logInfo("Session: " + "No session");
-                    Intent launchNextActivity;
-                    launchNextActivity = new Intent(SplashActivity.this, LoginActivity.class);
-                    launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                    startActivity(launchNextActivity);
                 }
-            }
-        });
+            });
+        } else {
+            Utils.logInfo("Inicio sin conexión");
+        }
 
 
     }
@@ -131,40 +137,59 @@ public class SplashActivity extends Activity {
     private void sendTracks(){
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-        Gson gsonNoticias = new Gson();
-        String jsonNoticias = this.prefs.getString("tracksOffline", "");
-        Type typeNoticias = new TypeToken<ArrayList<Track>>() {
+        Gson gsonTracks = new Gson();
+        String jsonTracks = this.prefs.getString("tracksOffline", "");
+        Utils.logInfo(jsonTracks);
+        Type typeTracks = new TypeToken<ArrayList<Track>>() {
         }.getType();
-        ArrayList<Track> tracksOffline = gsonNoticias.fromJson(jsonNoticias, typeNoticias);
+        ArrayList<Track> tracksOffline = gsonTracks.fromJson(jsonTracks, typeTracks);
         if (tracksOffline != null) {
             // Guardar en Parse
             for (Track track:tracksOffline){
-                final ParseObject dataObject = new ParseObject("track");
-                dataObject.put("date", track.getDate());
-                dataObject.put("user", ParseUser.getCurrentUser());
-                dataObject.saveInBackground(new SaveCallback() {
-                    @Override
-                    public void done(com.parse.ParseException e) {
-                        if (e == null) {
-                            Utils.logInfo("SAVE startTrack OK");
-                            currentTrackObjectId = dataObject.getObjectId();
-                        } else {
-                            Utils.logInfo("SAVE startTrack ERROR: " + e.toString());
+                final ParseObject trackObject = new ParseObject("track");
+                trackObject.put("date", track.getDate());
+                trackObject.put("offline", true);
+                trackObject.put("user", ParseUser.getCurrentUser());
+
+                try {
+                    trackObject.save();
+                    Utils.logInfo("SAVE Track OFFLINE to Parse OK");
+                    currentTrackObjectId = trackObject.getObjectId();
+
+                    Utils.logInfo("Track OFFLINE size: " + track.getLocalTrackPoints().size());
+
+                    // TrackPoints
+                    if (currentTrackObjectId.length() > 0) {
+                        for (TrackPoint tp : track.getLocalTrackPoints()) {
+                            tp.setObjectId(currentTrackObjectId);
+
+                            ParseObject tpObject = new ParseObject("trackPoint");
+                            tpObject.put("position", tp.getPosition());
+                            tpObject.put("date", tp.getDate());
+                            tpObject.put("accuracy", tp.getAccuracy());
+                            tpObject.put("track", trackObject);
+                            tpObject.saveInBackground(new SaveCallback() {
+                                @Override
+                                public void done(com.parse.ParseException e) {
+                                    if (e == null)
+                                        Log.i("SAVE", "OK");
+                                    else
+                                        Log.i("SAVE", "ERROR: " + e.toString());
+                                }
+                            });
                         }
                     }
-                });
-                if (currentTrackObjectId.length() > 0) {
-                    for (TrackPoint tr : track.getLocalTrackPoints()) {
-                        tr.setObjectId(currentTrackObjectId);
-                        Server.sendTrackPoint(tr);
-                    }
-                } else {
-                    // Algo ha ido mal guardando el Track
+
+                } catch (Exception e){
+                    Utils.logError(e.toString());
                 }
+
+
             }
+            // Borrar Sharedpreferences
 
         } else {
-            // Esta vacio
+            Utils.logInfo("No hay Tracks pendientes");
         }
 
     }

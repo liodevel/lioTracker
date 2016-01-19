@@ -23,6 +23,7 @@ public class Track {
     private ParseGeoPoint toLocation;
     private boolean favorite;
     private boolean closed;
+    private boolean offline;
 
     private float averageSpeed;
     private float topSpeed;
@@ -45,6 +46,7 @@ public class Track {
 
         isChecked = false;
         closed = false;
+        offline = false;
         localTrackPoints = new ArrayList<>();
         localId = -1;
     }
@@ -187,6 +189,14 @@ public class Track {
 
     public long getLocalId() {
         return localId;
+    }
+
+    public boolean isOffline() {
+        return offline;
+    }
+
+    public void setOffline(boolean offline) {
+        this.offline = offline;
     }
 
     public void setLocalId(long localId) {
