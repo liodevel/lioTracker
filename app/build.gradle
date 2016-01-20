@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.liodevel.lioapp_1"
-        minSdkVersion 16
+        minSdkVersion 19
         targetSdkVersion 21
         versionCode 5
         versionName "1.5"

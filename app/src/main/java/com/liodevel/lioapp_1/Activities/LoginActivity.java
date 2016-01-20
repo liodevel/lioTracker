@@ -8,7 +8,6 @@ import android.app.LoaderManager.LoaderCallbacks;
 
 import android.content.CursorLoader;
 import android.content.Loader;
-import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
@@ -162,14 +161,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     if (user != null && user.isAuthenticated()) {
                         Utils.logInfo("Login: OK");
 
-                        // Guardar usuario en ShPref para acceder sin conexión más tarde
-                        SharedPreferences mPrefs = getPreferences(MODE_PRIVATE);
-                        SharedPreferences.Editor prefsEditor = mPrefs.edit();
-                        Gson gson = new Gson();
-                        String json = gson.toJson(ParseUser.getCurrentUser());
-                        prefsEditor.putString("currentUser", json);
-                        prefsEditor.commit();
-
                         Intent launchNextActivity;
                         launchNextActivity = new Intent(LoginActivity.this, MapActivity2.class);
                         launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -244,14 +235,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                             public void done(ParseUser user, ParseException e) {
                                 if (user != null && user.isAuthenticated()) {
                                     Log.i("LIOTRACK", "Login: OK");
-
-                                    // Guardar usuario en ShPref para acceder sin conexión más tarde
-                                    SharedPreferences  mPrefs = getPreferences(MODE_PRIVATE);
-                                    SharedPreferences.Editor prefsEditor = mPrefs.edit();
-                                    Gson gson = new Gson();
-                                    String json = gson.toJson(ParseUser.getCurrentUser());
-                                    prefsEditor.putString("currentUser", json);
-                                    prefsEditor.commit();
 
                                     Intent launchNextActivity;
                                     launchNextActivity = new Intent(LoginActivity.this, MapActivity2.class);
@@ -389,14 +372,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     Utils.logInfo("User signed up and logged in through Facebook!");
                     Utils.showMessage(LoginActivity.this, "Hi, " + ParseUser.getCurrentUser().getUsername() + "!");
 
-                    // Guardar usuario en ShPref para acceder sin conexión más tarde
-                    SharedPreferences  mPrefs = getPreferences(MODE_PRIVATE);
-                    SharedPreferences.Editor prefsEditor = mPrefs.edit();
-                    Gson gson = new Gson();
-                    String json = gson.toJson(ParseUser.getCurrentUser());
-                    prefsEditor.putString("currentUser", json);
-                    prefsEditor.commit();
-
                     Intent launchNextActivity;
                     launchNextActivity = new Intent(LoginActivity.this, MapActivity2.class);
                     launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -406,14 +381,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 } else {
                     Utils.logInfo("User logged in through Facebook!");
                     Utils.logInfo("User signed up and logged in through Facebook!");
-
-                    // Guardar usuario en ShPref para acceder sin conexión más tarde
-                    SharedPreferences  mPrefs = getPreferences(MODE_PRIVATE);
-                    SharedPreferences.Editor prefsEditor = mPrefs.edit();
-                    Gson gson = new Gson();
-                    String json = gson.toJson(ParseUser.getCurrentUser());
-                    prefsEditor.putString("currentUser", json);
-                    prefsEditor.commit();
 
                     Utils.showMessage(LoginActivity.this, "Hi, " + ParseUser.getCurrentUser().getUsername() + "!");
                     Intent launchNextActivity;
@@ -431,7 +398,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     @TargetApi(21)
     private void changeNotificationBar() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Utils.logInfo("Notif.Bar.Coloured");
             Window window = this.getWindow();
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);

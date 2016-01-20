@@ -278,7 +278,7 @@ public class MyTracksActivity extends AppCompatActivity {
 
     @TargetApi(21)
     private void changeNotificationBar() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Utils.logInfo("Notif.Bar.Coloured");
             Window window = this.getWindow();
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
