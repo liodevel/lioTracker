@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.parse.ParseUser;
+
 /**
  * Created by emilio on 29/12/15.
  */
@@ -50,14 +52,28 @@ public class Utils {
     }
 
 
+    /**
+     * Escribe info en el log
+     * @param message
+     */
     public static void logInfo(String message){
         Log.i("myTracks", message);
     }
+
+    /**
+     * Escribe error en el log
+     * @param message
+     */
     public static void logError(String message){
         Log.e("myTracks", "ERROR: " + message);
     }
 
 
+    /**
+     * Convierte minutos a formato HH:mm
+     * @param min
+     * @return
+     */
     public static String minutesToHour(double min){
         if (min < 60){
             return (Math.round(min) + " min");
@@ -68,6 +84,18 @@ public class Utils {
         }
     }
 
+
+    /**
+     * Comprueba el estado de la conexión
+     * @param context
+     * @return
+     */
+    public static boolean checkConn(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager
+                .getActiveNetworkInfo();
+        return activeNetworkInfo != null;
+    }
 
 
 

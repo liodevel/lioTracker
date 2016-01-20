@@ -63,10 +63,7 @@ public class MyTracksActivity extends AppCompatActivity {
     private static ProgressDialog progress;
     private boolean selecting = false;
     private boolean favorites = false;
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
+
     private GoogleApiClient client;
 
     @Override
@@ -81,10 +78,12 @@ public class MyTracksActivity extends AppCompatActivity {
         tracks = new ArrayList<>();
         tracksParseObject = new ArrayList<>();
 
+        // Comprobar si es pantalla de favoritos
         if (getIntent().getStringExtra("favorites") != null && getIntent().getStringExtra("favorites").equals("1")){
             favorites = true;
             getSupportActionBar().setTitle(R.string.my_favorite_tracks);
         }
+
         // Lista de tracks
         tracksList = (ListView) findViewById(R.id.tracks_list);
 
@@ -168,8 +167,7 @@ public class MyTracksActivity extends AppCompatActivity {
         tracksList.setAdapter(adapter);
         adapter.clear();
         getTracksByCurrentUser();
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
+
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
@@ -241,36 +239,35 @@ public class MyTracksActivity extends AppCompatActivity {
             query.whereEqualTo("favorite", true);
         }
         query.orderByDescending("date");
-        query.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-                if (e == null) {
-                    for (ParseObject parseObject : objects) {
-                        Track track = new Track();
-                        track.setObjectId(parseObject.getObjectId());
-                        track.setDate((Date) parseObject.get("date"));
-                        track.setDateEnd((Date) parseObject.get("dateEnd"));
-                        track.setDistance((float) parseObject.getDouble("distance"));
-                        track.setInfo((String) parseObject.get("info"));
-                        track.setFavorite(parseObject.getBoolean("favorite"));
-                        track.setClosed(parseObject.getBoolean("closed"));
-                        Utils.logInfo("Track: " + track.getDate());
-                        if (!track.isClosed()) {
-                            Utils.logInfo("Track Incomplete");
-                            Server.fixTrack(track.getObjectId());
-                        }
-                        //tracks.add(track);
-                        adapter.add(track);
-                        tracksParseObject.add(parseObject);
-                    }
-                    //adapter.addAll(tracks);
-                    progress.dismiss();
-                } else {
-                    // Something went wrong.
-                    Utils.logInfo("Error: " + e.toString());
+
+        try {
+            List<ParseObject> objects = query.find();
+            for (ParseObject parseObject : objects) {
+                Track track = new Track();
+                track.setObjectId(parseObject.getObjectId());
+                track.setDate((Date) parseObject.get("date"));
+                track.setDateEnd((Date) parseObject.get("dateEnd"));
+                track.setDistance((float) parseObject.getDouble("distance"));
+                track.setInfo((String) parseObject.get("info"));
+                track.setFavorite(parseObject.getBoolean("favorite"));
+                track.setClosed(parseObject.getBoolean("closed"));
+                Utils.logInfo("Track: " + track.getDate());
+                if (!track.isClosed()) {
+                    Utils.logInfo("Track Incomplete");
+                    Server.fixTrack(track.getObjectId());
                 }
+                //tracks.add(track);
+                adapter.add(track);
+                tracksParseObject.add(parseObject);
             }
-        });
+            //adapter.addAll(tracks);
+            progress.dismiss();
+
+        } catch (Exception e) {
+            Utils.logInfo("Error: " + e.toString());
+
+        }
+
     }
 
 

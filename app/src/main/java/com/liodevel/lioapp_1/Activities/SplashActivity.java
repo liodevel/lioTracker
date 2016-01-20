@@ -5,9 +5,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.ColorDrawable;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -20,7 +17,6 @@ import com.google.gson.reflect.TypeToken;
 import com.liodevel.lioapp_1.Objects.Track;
 import com.liodevel.lioapp_1.Objects.TrackPoint;
 import com.liodevel.lioapp_1.R;
-import com.liodevel.lioapp_1.Utils.Server;
 import com.liodevel.lioapp_1.Utils.Utils;
 import com.parse.GetCallback;
 import com.parse.Parse;
@@ -31,16 +27,16 @@ import com.parse.ParseSession;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class SplashActivity extends Activity {
 
+    Context context;
     SharedPreferences prefs;
     ArrayList<Track> tracksOffline = new ArrayList();
     String currentTrackObjectId = "";
+
 
 
     @Override
@@ -48,6 +44,7 @@ public class SplashActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         changeNotificationBar();
+        context = this;
 
         try {
             ParseFacebookUtils.initialize(this);
@@ -68,8 +65,8 @@ public class SplashActivity extends Activity {
 
 
 
-
-        if (checkConn()) {
+        // Si hay Conexión
+        if (Utils.checkConn(this)) {
             ParseSession.getCurrentSessionInBackground(new GetCallback<ParseSession>() {
                 @Override
                 public void done(ParseSession object, ParseException e) {
@@ -107,7 +104,17 @@ public class SplashActivity extends Activity {
                 }
             });
         } else {
+
+            // Sin Conexión
             Utils.logInfo("Inicio sin conexión");
+            Utils.showMessage(SplashActivity.this, "Hi, " + ParseUser.getCurrentUser().getUsername() + "!");
+            Intent launchNextActivity;
+            launchNextActivity = new Intent(SplashActivity.this, MapActivity2.class);
+            launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+            launchNextActivity.putExtra("offline", "1");
+            startActivity(launchNextActivity);
         }
 
 
@@ -126,70 +133,79 @@ public class SplashActivity extends Activity {
         }
     }
 
-    public boolean checkConn() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) this.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager
-                .getActiveNetworkInfo();
-        return activeNetworkInfo != null;
-    }
-
 
     private void sendTracks(){
-        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = sharedPrefs.edit();
 
-        Gson gsonTracks = new Gson();
-        String jsonTracks = this.prefs.getString("tracksOffline", "");
-        Utils.logInfo(jsonTracks);
-        Type typeTracks = new TypeToken<ArrayList<Track>>() {
-        }.getType();
-        ArrayList<Track> tracksOffline = gsonTracks.fromJson(jsonTracks, typeTracks);
-        if (tracksOffline != null) {
-            // Guardar en Parse
-            for (Track track:tracksOffline){
-                final ParseObject trackObject = new ParseObject("track");
-                trackObject.put("date", track.getDate());
-                trackObject.put("offline", true);
-                trackObject.put("user", ParseUser.getCurrentUser());
+        try {
+            Gson gsonTracks = new Gson();
+            String jsonTracks = sharedPrefs.getString("tracksOffline", "");
+            Utils.logInfo("----" + jsonTracks);
+            Type typeTracks = new TypeToken<ArrayList<Track>>() {
+            }.getType();
+            ArrayList<Track> tracksOffline = gsonTracks.fromJson(jsonTracks, typeTracks);
+            if (tracksOffline != null) {
+                // Guardar en Parse
+                for (Track track : tracksOffline) {
+                    final ParseObject trackObject = new ParseObject("track");
+                    trackObject.put("date", track.getDate());
+                    trackObject.put("offline", true);
+                    trackObject.put("user", ParseUser.getCurrentUser());
 
-                try {
-                    trackObject.save();
-                    Utils.logInfo("SAVE Track OFFLINE to Parse OK");
-                    currentTrackObjectId = trackObject.getObjectId();
+                    try {
+                        trackObject.save();
+                        Utils.logInfo("SAVE Track OFFLINE to Parse OK");
+                        currentTrackObjectId = trackObject.getObjectId();
 
-                    Utils.logInfo("Track OFFLINE size: " + track.getLocalTrackPoints().size());
+                        Utils.logInfo("Track OFFLINE size: " + track.getLocalTrackPoints().size());
 
-                    // TrackPoints
-                    if (currentTrackObjectId.length() > 0) {
-                        for (TrackPoint tp : track.getLocalTrackPoints()) {
-                            tp.setObjectId(currentTrackObjectId);
+                        // TrackPoints
+                        if (currentTrackObjectId.length() > 0) {
+                            for (TrackPoint tp : track.getLocalTrackPoints()) {
+                                tp.setObjectId(currentTrackObjectId);
 
-                            ParseObject tpObject = new ParseObject("trackPoint");
-                            tpObject.put("position", tp.getPosition());
-                            tpObject.put("date", tp.getDate());
-                            tpObject.put("accuracy", tp.getAccuracy());
-                            tpObject.put("track", trackObject);
-                            tpObject.saveInBackground(new SaveCallback() {
-                                @Override
-                                public void done(com.parse.ParseException e) {
-                                    if (e == null)
-                                        Log.i("SAVE", "OK");
-                                    else
-                                        Log.i("SAVE", "ERROR: " + e.toString());
-                                }
-                            });
+                                ParseObject tpObject = new ParseObject("trackPoint");
+                                tpObject.put("position", tp.getPosition());
+                                tpObject.put("date", tp.getDate());
+                                tpObject.put("accuracy", tp.getAccuracy());
+                                tpObject.put("track", trackObject);
+                                tpObject.saveInBackground(new SaveCallback() {
+                                    @Override
+                                    public void done(com.parse.ParseException e) {
+                                        if (e == null)
+                                            Log.i("SAVE", "OK");
+                                        else
+                                            Log.i("SAVE", "ERROR: " + e.toString());
+                                    }
+                                });
+                            }
                         }
+
+                    } catch (Exception e) {
+                        Utils.logError(e.toString());
                     }
 
-                } catch (Exception e){
-                    Utils.logError(e.toString());
+
                 }
+                /// limpiar tracks offline
+                Gson gson = new Gson();
+                editor.putString("tracksOffline", "");
+                editor.commit();
+                Utils.logInfo("Tracks offline eliminados");
 
-
+            } else {
+                Utils.logInfo("No hay Tracks pendientes");
             }
-            // Borrar Sharedpreferences
+        } catch (Exception e){
+            Utils.logError("Error recuperando Tracks offline");
+            Utils.logError(e.toString());
 
-        } else {
-            Utils.logInfo("No hay Tracks pendientes");
+            /// limpiar tracks offline
+            Gson gson = new Gson();
+            editor.putString("tracksOffline", "");
+            editor.commit();
+            Utils.logInfo("Tracks offline eliminados");
         }
 
     }

@@ -17,9 +17,9 @@
         android:textColor="@color/liodevel_light_green"
         android:textSize="16sp"
         android:layout_alignTop="@+id/favorite_icon_item"
-        android:layout_toLeftOf="@+id/favorite_icon_item"
         android:layout_toRightOf="@+id/speed_bar_item"
-        android:layout_toEndOf="@+id/speed_bar_item" />
+        android:layout_toLeftOf="@+id/favorite_icon_item"
+        android:layout_toStartOf="@+id/favorite_icon_item" />
 
     <ImageView
         android:layout_width="20dp"

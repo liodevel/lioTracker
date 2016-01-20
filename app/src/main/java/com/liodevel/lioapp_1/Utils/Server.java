@@ -130,6 +130,8 @@ public class Server {
             } catch (ParseException e) {
                 Utils.logInfo("Error deleting: " + e.toString());
                 Utils.showMessage(context, context.getResources().getString(R.string.error_deleting_tracks));
+            } catch (Exception ex){
+                Utils.logInfo("Error deleting: " + ex.toString());
             }
         }
     }
@@ -137,7 +139,7 @@ public class Server {
 
 
     /**
-     *
+     * Repara los Tracks mal guardados
      * @param objectId Track objectId
      */
     public static void fixTrack(String objectId){
@@ -145,7 +147,6 @@ public class Server {
         ParseObject trackObject = null;
         Track currentTrack = new Track();
 
-        boolean ret = false;
         LatLng prevPos = null;
         LatLng actualPos = null;
         TrackPoint previousTrackPoint = new TrackPoint();
@@ -163,10 +164,8 @@ public class Server {
             currentTrack.setInfo((String) parseQueriesTrackObject.get(0).get("info"));
             currentTrack.setFavorite(parseQueriesTrackObject.get(0).getBoolean("favorite"));
             Utils.logInfo("Track ID: " + trackObject.getObjectId());
-            ret = true;
         } catch (ParseException e) {
             Utils.logInfo("Error: " + e.toString());
-            ret = false;
         }
 
         if (trackObject != null) {
@@ -190,10 +189,10 @@ public class Server {
                     if (prevPos != null) {
                         if(previousTrackPoint != null) {
 
-                            Location selected_location=new Location("locationA");
+                            Location selected_location = new Location("locationA");
                             selected_location.setLatitude(trackPoint.getPosition().getLatitude());
                             selected_location.setLongitude( trackPoint.getPosition().getLongitude());
-                            Location near_locations=new Location("locationA");
+                            Location near_locations = new Location("locationA");
                             near_locations.setLatitude(previousTrackPoint.getPosition().getLatitude());
                             near_locations.setLongitude(previousTrackPoint.getPosition().getLongitude());
 
@@ -214,10 +213,9 @@ public class Server {
                 }
                 trackObject.save();
                 Utils.logInfo("Track Fixed! ");
-                ret = true;
+
             } catch (ParseException e) {
                 Utils.logInfo("Error: " + e.toString());
-                ret = false;
             }
         }
 

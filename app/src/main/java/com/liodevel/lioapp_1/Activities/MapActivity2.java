@@ -51,6 +51,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.liodevel.lioapp_1.Objects.Track;
 import com.liodevel.lioapp_1.Objects.TrackPoint;
 import com.liodevel.lioapp_1.R;
@@ -61,14 +62,14 @@ import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import java.lang.reflect.Type;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MapActivity2 extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class MapActivity2 extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private Boolean exit = false;
 
@@ -130,6 +131,13 @@ public class MapActivity2 extends AppCompatActivity
         context = this;
 
         changeNotificationBar();
+
+        // Comprobar si está en modo offline
+        if (getIntent().getStringExtra("offline") != null && getIntent().getStringExtra("offline").equals("1")){
+            //offLineMode = true;
+
+        }
+
 
         // ToolBar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -579,19 +587,37 @@ public class MapActivity2 extends AppCompatActivity
                                         }
                                     }
                                 });
+
+
+                                // OFFLINE
                             } else {
-                                currentTrackOffline.setDateEnd(lastTrackPointDate);
+
+                                SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+                                SharedPreferences.Editor editor = sharedPrefs.edit();
+
+                                // Recuperar Tracks en SharedPrefs
+                                Gson gsonTracks = new Gson();
+                                String jsonTracks = sharedPrefs.getString("tracksOffline", "");
+                                Utils.logInfo("----" + jsonTracks);
+                                Type typeTracks = new TypeToken<ArrayList<Track>>() {
+                                }.getType();
+                                tracksOffline = gsonTracks.fromJson(jsonTracks, typeTracks);
+                                if (tracksOffline == null){
+                                    tracksOffline = new ArrayList();
+                                }
+                                Utils.logInfo("Tracks recuperados de SharedPrefs: " + tracksOffline.size());
+
+                                // Añadir currentTrack
+                                //currentTrackOffline.setDateEnd(lastTrackPointDate);
                                 currentTrackOffline.setDistance(currentTrackDistance);
                                 currentTrackOffline.setClosed(true);
                                 tracksOffline.add(currentTrackOffline);
                                 currentTrackIndex++;
                                 Utils.logInfo("SAVE OFFLINE Track OK");
 
-                                SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-                                SharedPreferences.Editor editor = sharedPrefs.edit();
-
                                 /// Guardar Preferences
                                 // Array de Tracks
+                                Utils.logInfo("Tracks guardados en SharedPrefs: " + tracksOffline.size());
                                 Gson gson = new Gson();
                                 String jsonTracksOffline = gson.toJson(tracksOffline);
                                 editor.putString("tracksOffline", jsonTracksOffline);
@@ -684,7 +710,7 @@ public class MapActivity2 extends AppCompatActivity
         if (mMap != null) {
             marker = mMap.addMarker(markerOptions);
         }
-        if (checkConn()) {
+        if (Utils.checkConn(context)) {
             final ParseObject dataObject = new ParseObject("track");
             dataObject.put("date", new Date(System.currentTimeMillis()));
             dataObject.put("user", ParseUser.getCurrentUser());
@@ -730,7 +756,9 @@ public class MapActivity2 extends AppCompatActivity
             tr.setPosition(new ParseGeoPoint(lastLocation.getLatitude(), lastLocation.getLongitude()));
             tr.setAccuracy(lastLocation.getAccuracy());
             tr.setProvider(lastLocation.getProvider());
-            tr.setTrack(currentTrack);
+            if (!offLineMode) {
+                tr.setTrack(currentTrack);
+            }
 
             if (prevLocation != null){
 
@@ -969,10 +997,5 @@ public class MapActivity2 extends AppCompatActivity
         v.startAnimation(anim);
     }
 
-    public boolean checkConn() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) this.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager
-                .getActiveNetworkInfo();
-        return activeNetworkInfo != null;
-    }
+
 }
