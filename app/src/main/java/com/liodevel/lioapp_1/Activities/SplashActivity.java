@@ -50,6 +50,7 @@ public class SplashActivity extends Activity {
             ParseFacebookUtils.initialize(this);
         } catch (Exception e){
             Utils.logInfo("Error ParseFacebookUtils");
+            Utils.logInfo(e.toString());
         }
 
 
@@ -107,14 +108,22 @@ public class SplashActivity extends Activity {
 
             // Sin Conexión
             Utils.logInfo("Inicio sin conexión");
-            Utils.showMessage(SplashActivity.this, "Hi, " + ParseUser.getCurrentUser().getUsername() + "!");
-            Intent launchNextActivity;
-            launchNextActivity = new Intent(SplashActivity.this, MapActivity2.class);
-            launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-            launchNextActivity.putExtra("offline", "1");
-            startActivity(launchNextActivity);
+
+            try {
+                Utils.showMessage(SplashActivity.this, "Hi, " + ParseUser.getCurrentUser().getUsername() + "!");
+                Intent launchNextActivity;
+                launchNextActivity = new Intent(SplashActivity.this, MapActivity2.class);
+                launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                launchNextActivity.putExtra("offline", "1");
+                startActivity(launchNextActivity);
+            } catch (Exception e){
+                Utils.showMessage(SplashActivity.this, "Error!");
+                Utils.logError(e.toString());
+                finish();
+            }
+
         }
 
 
