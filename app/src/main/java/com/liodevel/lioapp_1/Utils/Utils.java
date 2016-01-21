@@ -57,7 +57,7 @@ public class Utils {
      * @param message
      */
     public static void logInfo(String message){
-        Log.i("myTracks", message);
+        Log.i("myTracker", message);
     }
 
     /**
@@ -65,7 +65,7 @@ public class Utils {
      * @param message
      */
     public static void logError(String message){
-        Log.e("myTracks", "ERROR: " + message);
+        Log.e("myTracker", "ERROR: " + message);
     }
 
 
@@ -81,6 +81,25 @@ public class Utils {
             long hours = Math.round(min) / 60;
             long minutes = Math.round(min) - (60 * hours);
             return (hours + "h " + minutes + " min");
+        }
+    }
+
+    /**
+     * Convierte minutos a formato HH:mm
+     * @param seconds
+     * @return
+     */
+    public static String secondsToHour(int seconds){
+        String zeroSeconds = "";
+        if (seconds < 60){
+            return (seconds + " sec");
+        } else {
+            long minutes = seconds / 60;
+            long secondsRet = seconds - (60 * minutes);
+            if (secondsRet < 10){
+                zeroSeconds = "0";
+            }
+            return (minutes + ":" + zeroSeconds + secondsRet);
         }
     }
 

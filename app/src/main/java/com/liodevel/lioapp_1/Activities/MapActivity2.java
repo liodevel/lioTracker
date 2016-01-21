@@ -78,7 +78,7 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
     private Boolean exit = false;
 
     // VIEW
-    private TextView textInfo, textProviderInfo, textTimeInfo, textDistanceInfo, userName;
+    private TextView startButton, textProviderInfo, textDistanceInfo, userName;
     private Menu actionBarMenu;
     private Context context;
     private Chronometer chronoTrack;
@@ -118,15 +118,21 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
     private Timer timer;
     private TimerTask timerTask;
     private final Handler handler = new Handler();
+    int counterTask = 0;
+    int secondsTracking = 0;
 
     // PREFERENCIAS POR DEFECTO
     private boolean onlyGPS = true;
     private int saveFrequency= 5;
 
-
+    // NOTIFICACION
+    NotificationManager mNotificationManager;
+    NotificationCompat.Builder mBuilder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Utils.logInfo("-------onCreate()");
+
         getDelegate().installViewFactory();
         getDelegate().onCreate(savedInstanceState);
         super.onCreate(savedInstanceState);
@@ -190,15 +196,14 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
         }
 
         // Infos
-        textInfo = (TextView) findViewById(R.id.text_info);
-        textInfo.setBackgroundColor(ContextCompat.getColor(this, R.color.liodevel_dark_grey));
+        startButton = (TextView) findViewById(R.id.text_info);
+        startButton.setBackgroundColor(ContextCompat.getColor(this, R.color.liodevel_dark_grey));
         textProviderInfo = (TextView) findViewById(R.id.text_provider_info);
         //textTimeInfo = (TextView) findViewById(R.id.text_time_info);
         textDistanceInfo = (TextView) findViewById(R.id.text_distance_info);
         chronoTrack = (Chronometer) findViewById(R.id.chronoTracking);
 
-
-        textInfo.setText(getResources().getString(R.string.getting_location));
+        startButton.setText(getResources().getString(R.string.getting_location));
         updateGpsProviders();
     }
 
@@ -305,6 +310,7 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onResume() {
+        Utils.logInfo("-------onResume()");
         super.onResume();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         onlyGPS = prefs.getBoolean("only_gps", true);
@@ -329,6 +335,7 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onRestart() {
+        Utils.logInfo("-------onRestart()");
         super.onRestart();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         onlyGPS = prefs.getBoolean("only_gps", true);
@@ -353,6 +360,7 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onDestroy() {
+        Utils.logInfo("-------onDestroy()");
         super.onDestroy();
         try {
             timerTask.cancel();
@@ -490,8 +498,8 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
 
                         } else {
                             marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_green));
-                            textInfo.setBackgroundColor(ContextCompat.getColor(context, R.color.liodevel_red));
-                            textInfo.setText(getResources().getString(R.string.ready));
+                            startButton.setBackgroundColor(ContextCompat.getColor(context, R.color.liodevel_red));
+                            startButton.setText(getResources().getString(R.string.ready));
 
                         }
 
@@ -540,9 +548,10 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
 
                 startTrack();
                 // Start track correcto
-                textInfo.setBackgroundColor(ContextCompat.getColor(this, R.color.liodevel_red));
+                startButton.setBackgroundColor(ContextCompat.getColor(this, R.color.liodevel_red));
+                setInfosStart(true);
 
-                textInfo.setText(getResources().getString(R.string.tracking) + "\n" + getResources().getString(R.string.push_to_stop));
+                startButton.setText(getResources().getString(R.string.tracking) + "\n" + getResources().getString(R.string.push_to_stop));
                 tracking = true;
                 chronoTrack.setBase(SystemClock.elapsedRealtime());
                 chronoTrack.start();
@@ -573,6 +582,9 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
                             Utils.logInfo("STOP Tracking");
                             stopTimerTrack();
                             chronoTrack.stop();
+
+                            // Cerrar notificación
+                            mNotificationManager.cancel(1);
 
                             if(!offLineMode) {
                                 currentTrack.put("dateEnd", lastTrackPointDate);
@@ -633,8 +645,9 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
 
                             offLineMode = false;
                             Utils.logInfo("OFFLINE MODE FALSE!");
-                            textInfo.setBackgroundColor(ContextCompat.getColor(context, R.color.liodevel_red));
-                            textInfo.setText(getResources().getString(R.string.ready));
+                            startButton.setBackgroundColor(ContextCompat.getColor(context, R.color.liodevel_red));
+                            startButton.setText(getResources().getString(R.string.ready));
+                            setInfosStart(false);
                             tracking = false;
 
                         }
@@ -660,9 +673,10 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
      */
     private void startTimerTrack() {
         Utils.logInfo("startTimerTrack");
+        secondsTracking = 0;
         timer = new Timer();
         initializeTimerTrack();
-        timer.schedule(timerTask, 0, saveFrequency * 1000); //
+        timer.schedule(timerTask, 0, 1000); //
     }
 
     /**
@@ -680,13 +694,27 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
      * TimerTask for Tracking
      */
     private void initializeTimerTrack() {
+
+
         timerTask = new TimerTask() {
             public void run() {
                 //use a handler to run a toast that shows the current timestamp
                 handler.post(new Runnable() {
                     public void run() {
-                        Utils.logInfo("Sending location");
-                        sendLocation();
+
+                        if (counterTask == 0) {
+                            Utils.logInfo("Sending location");
+                            sendLocation();
+                        }
+                        if (counterTask == saveFrequency-1){
+                            counterTask = -1;
+                        }
+                        Utils.logInfo("TimerTrack: " + counterTask);
+                        Utils.logInfo("TimerTrack: " + chronoTrack.getText());
+                        mBuilder.setContentText(Utils.secondsToHour(secondsTracking));
+                        mNotificationManager.notify(1, mBuilder.build());
+                        counterTask++;
+                        secondsTracking++;
                     }
                 });
             }
@@ -704,33 +732,25 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
      */
     private int startTrack() {
 
-        NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.mipmap.ic_launcher)
-                        .setContentTitle(getResources().getString(R.string.tracking))
-                        .setContentText("---");
-        // Creates an explicit intent for an Activity in your app
-        Intent resultIntent = new Intent(this, MapActivity2.class);
 
-        // The stack builder object will contain an artificial back stack for the
-        // started Activity.
-        // This ensures that navigating backward from the Activity leads out of
-        // your application to the Home screen.
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-        // Adds the back stack for the Intent (but not the Intent itself)
-        stackBuilder.addParentStack(MapActivity2.class);
-        // Adds the Intent that starts the Activity to the top of the stack
-        stackBuilder.addNextIntent(resultIntent);
-        PendingIntent resultPendingIntent =
-                stackBuilder.getPendingIntent(
-                        0,
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                );
-        mBuilder.setContentIntent(resultPendingIntent);
-        NotificationManager mNotificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        // NOTIFICACION
+        mBuilder = new NotificationCompat.Builder(this);
+        mBuilder.setSmallIcon(R.drawable.ic_stat_icono_notificaciones);
+        mBuilder.setOngoing(true);
+        mBuilder.setContentTitle(getResources().getString(R.string.tracking));
+        mBuilder.setContentText("---");
+        mBuilder.setPriority(NotificationCompat.PRIORITY_MAX);
+
+        Intent resultIntent = new Intent(this, MapActivity2.class);
+        resultIntent.setAction(Intent.ACTION_MAIN);
+        resultIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, resultIntent, 0);
+        mBuilder.setContentIntent(pendingIntent);
+        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         // mId allows you to update the notification later on.
         mNotificationManager.notify(1 , mBuilder.build());
+
 
 
         Utils.logInfo("SEND startTrack()");
@@ -914,24 +934,27 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
      */
     private void updateViews(){
         if (!trackerReady){
-            textInfo.setBackgroundColor(ContextCompat.getColor(this, R.color.liodevel_dark_grey));
-            textInfo.setText(getResources().getString(R.string.getting_location));
+            startButton.setBackgroundColor(ContextCompat.getColor(this, R.color.liodevel_dark_grey));
+            setInfosStart(false);
+            startButton.setText(getResources().getString(R.string.getting_location));
             if (actionBarMenu != null) {
                 //actionBarMenu.findItem(R.id.map_action_start_track).setVisible(false);
                 actionBarMenu.findItem(R.id.map_action_center_map).setVisible(false);
             }
 
         } else {
-            textInfo.setBackgroundColor(ContextCompat.getColor(this, R.color.liodevel_red));
-            textInfo.setText(getResources().getString(R.string.ready));
+            startButton.setBackgroundColor(ContextCompat.getColor(this, R.color.liodevel_red));
+            setInfosStart(false);
+            startButton.setText(getResources().getString(R.string.ready));
             if (actionBarMenu != null) {
                // actionBarMenu.findItem(R.id.map_action_start_track).setVisible(false);
                 actionBarMenu.findItem(R.id.map_action_center_map).setVisible(true);
             }
         }
         if (tracking){
-            textInfo.setBackgroundColor(ContextCompat.getColor(this, R.color.liodevel_red));
-            textInfo.setText(getResources().getString(R.string.tracking) + "\n" + getResources().getString(R.string.push_to_stop));
+            startButton.setBackgroundColor(ContextCompat.getColor(this, R.color.liodevel_red));
+            setInfosStart(false);
+            startButton.setText(getResources().getString(R.string.tracking) + "\n" + getResources().getString(R.string.push_to_stop));
             //actionBarMenu.findItem(R.id.map_action_start_track).setVisible(true);
             actionBarMenu.findItem(R.id.map_action_center_map).setVisible(true);
         }
@@ -1032,6 +1055,20 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
                 Animation.RELATIVE_TO_SELF, 1f); // Pivot point of Y scaling
         anim.setFillAfter(true); // Needed to keep the result of the animation
         v.startAnimation(anim);
+    }
+
+
+    private void setInfosStart(boolean start){
+        if (start) {
+            textDistanceInfo.setBackground(getResources().getDrawable(R.color.liodevel_red));
+            textProviderInfo.setBackground(getResources().getDrawable(R.color.liodevel_red));
+            chronoTrack.setBackground(getResources().getDrawable(R.color.liodevel_red));
+        } else {
+            textDistanceInfo.setBackground(getResources().getDrawable(R.color.liodevel_dark_grey));
+            textProviderInfo.setBackground(getResources().getDrawable(R.color.liodevel_dark_grey));
+            chronoTrack.setBackground(getResources().getDrawable(R.color.liodevel_dark_grey));
+        }
+
     }
 
 

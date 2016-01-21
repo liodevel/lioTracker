@@ -58,6 +58,7 @@
             android:name=".Activities.MapActivity2"
             android:label=""
             android:screenOrientation="portrait"
+            android:launchMode="singleInstance"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
             android:name=".Activities.MyTracksActivity"
