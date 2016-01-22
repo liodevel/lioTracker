@@ -89,7 +89,7 @@ public class Utils {
      * @param seconds
      * @return
      */
-    public static String secondsToHour(int seconds){
+    public static String secondsToHour(long seconds){
         String zeroSeconds = "";
         if (seconds < 60){
             return (seconds + " sec");

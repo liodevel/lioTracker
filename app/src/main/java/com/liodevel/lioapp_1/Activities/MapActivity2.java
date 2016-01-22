@@ -7,26 +7,20 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -39,11 +33,8 @@ import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.animation.ScaleAnimation;
 import android.widget.Chronometer;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -119,7 +110,9 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
     private TimerTask timerTask;
     private final Handler handler = new Handler();
     int counterTask = 0;
-    int secondsTracking = 0;
+    long secondsTracking = 0;
+    long startTimemillis;
+    long currentTimemillis;
 
     // PREFERENCIAS POR DEFECTO
     private boolean onlyGPS = true;
@@ -217,7 +210,7 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
         Utils.logInfo("Nav item: " + id);
 
             // MY TRACKS
-         if (id == R.id.nav_my_tracks) {
+         if (id == R.id.nav_my_tracks && !tracking) {
 
              Intent launchNextActivity;
              launchNextActivity = new Intent(MapActivity2.this, MyTracksActivity.class);
@@ -232,7 +225,7 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
              return true;
 
              // MY FAVORITE TRACKS
-         }else if (id == R.id.nav_my_favorite_tracks) {
+         }else if (id == R.id.nav_my_favorite_tracks && !tracking) {
 
              Intent launchFavoritesActivity;
              launchFavoritesActivity = new Intent(MapActivity2.this, MyTracksActivity.class);
@@ -569,7 +562,7 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
 
             }
         } else {
-
+            // PARAR TRACKING ?
             Utils.logInfo("STOP Tracking (Dialog)");
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -579,6 +572,7 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
                         @Override
                         public void onClick(DialogInterface dialog, int id) {
 
+                            // STOP TRACKING
                             Utils.logInfo("STOP Tracking");
                             stopTimerTrack();
                             chronoTrack.stop();
@@ -674,6 +668,7 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
     private void startTimerTrack() {
         Utils.logInfo("startTimerTrack");
         secondsTracking = 0;
+        startTimemillis = System.currentTimeMillis();
         timer = new Timer();
         initializeTimerTrack();
         timer.schedule(timerTask, 0, 1000); //
@@ -711,7 +706,17 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
                         }
                         Utils.logInfo("TimerTrack: " + counterTask);
                         Utils.logInfo("TimerTrack: " + chronoTrack.getText());
-                        mBuilder.setContentText(Utils.secondsToHour(secondsTracking));
+                        DecimalFormat df = new DecimalFormat();
+                        df.setMaximumFractionDigits(2);
+                        String notifDistance = "0.0 m";
+                        if (currentTrackDistance < 1000) {
+                            notifDistance = df.format(currentTrackDistance) + " m";
+                        } else {
+                            notifDistance = df.format((currentTrackDistance / 1000)) + " km";
+                        }
+                        mBuilder.setContentText(
+                                Utils.secondsToHour((System.currentTimeMillis() - startTimemillis) / 1000)
+                                        + " (" + notifDistance + ")");
                         mNotificationManager.notify(1, mBuilder.build());
                         counterTask++;
                         secondsTracking++;
@@ -953,7 +958,7 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
         }
         if (tracking){
             startButton.setBackgroundColor(ContextCompat.getColor(this, R.color.liodevel_red));
-            setInfosStart(false);
+            setInfosStart(true);
             startButton.setText(getResources().getString(R.string.tracking) + "\n" + getResources().getString(R.string.push_to_stop));
             //actionBarMenu.findItem(R.id.map_action_start_track).setVisible(true);
             actionBarMenu.findItem(R.id.map_action_center_map).setVisible(true);

@@ -46,6 +46,7 @@ public class SplashActivity extends Activity {
         changeNotificationBar();
         context = this;
 
+        // Facebook Utils
         try {
             ParseFacebookUtils.initialize(this);
         } catch (Exception e){
@@ -53,16 +54,13 @@ public class SplashActivity extends Activity {
             Utils.logInfo(e.toString());
         }
 
-
+        // Parse
         try {
             Parse.enableLocalDatastore(this);
             Parse.initialize(this);
-
         } catch (Exception e){
             Utils.logInfo("Parse initialized");
         }
-
-
 
 
 
@@ -84,6 +82,7 @@ public class SplashActivity extends Activity {
                             launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                             startActivity(launchNextActivity);
+                            finish();
                         } else {
                             Utils.logInfo("Session: " + "No session");
                             Intent launchNextActivity;
@@ -92,6 +91,7 @@ public class SplashActivity extends Activity {
                             launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                             startActivity(launchNextActivity);
+                            finish();
                         }
                     } else {
                         Utils.logInfo("Session: " + "No session");
@@ -101,6 +101,7 @@ public class SplashActivity extends Activity {
                         launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                         startActivity(launchNextActivity);
+                        finish();
                     }
                 }
             });
@@ -118,6 +119,7 @@ public class SplashActivity extends Activity {
                 launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 launchNextActivity.putExtra("offline", "1");
                 startActivity(launchNextActivity);
+                finish();
             } catch (Exception e){
                 Utils.showMessage(SplashActivity.this, "Error!");
                 Utils.logError(e.toString());
@@ -198,7 +200,6 @@ public class SplashActivity extends Activity {
 
                 }
                 /// limpiar tracks offline
-                Gson gson = new Gson();
                 editor.putString("tracksOffline", "");
                 editor.commit();
                 Utils.logInfo("Tracks offline eliminados");
@@ -211,7 +212,6 @@ public class SplashActivity extends Activity {
             Utils.logError(e.toString());
 
             /// limpiar tracks offline
-            Gson gson = new Gson();
             editor.putString("tracksOffline", "");
             editor.commit();
             Utils.logInfo("Tracks offline eliminados");
