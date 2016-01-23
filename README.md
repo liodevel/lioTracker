@@ -1,36 +1,34 @@
-# lioTracker
 # My Tracks
 
 Versión actual en desarrollo
 1.6
 
-PROBAR
-Guardar tracks OffLine (Local datastore)?
+- PROBAR - Guardar tracks OffLine (Local datastore)?
 - Inicio Offline si no se puede guardar el Track, a partir de ahí, se ha de guardar un track, y todos los trackpoints en un array...
 Un Array de Tracks, y guardarlos en el sharedpreferences, y comprobar cuando se arranca la app si hay conexión, y enviar los tracks a Parse.
 
-Vigilar si se entra en una lista cuando se está registrando, puede que estropee el track actual al intentar repararlo
+- Vigilar si se entra en una lista cuando se está registrando, puede que estropee el track actual al intentar repararlo
 
-App ERROR al cerrar la app desde trackView
+- App ERROR al cerrar la app desde trackView
 
-Botón seleccionar medio de transporte en MapActivity
+- Botón seleccionar medio de transporte en MapActivity
 
-Añadir puntos en ruta, con botón cerca
+- Añadir puntos en ruta, con botón cerca
 
-Coger datos de los login por facebook
+- Coger datos de los login por facebook
 
-"Password olvidado" Botón en pantalla de login, cambio de password, envío de email
+- "Password olvidado" Botón en pantalla de login, cambio de password, envío de email
 
-Añadir int.proveedor en track
+- Añadir int.proveedor en track
 
-Para tracks muy largos, resumir la cantidad de trackpoints a mostrar.
+- Para tracks muy largos, resumir la cantidad de trackpoints a mostrar.
 Query por tiempo, o trackpoints a intervalos. No he encontrado la solución.
 
-Añadir en opciones, Exportar KML con velocidades o en negro, avisando de que en colores ocupa mucho más.
+- Añadir en opciones, Exportar KML con velocidades o en negro, avisando de que en colores ocupa mucho más.
 
-Añadir tags a las rutas, para filtrarlas en la lista
+- Añadir tags a las rutas, para filtrarlas en la lista
 
-Simplificar confifuración
+- Simplificar confifuración, sólo una pantalla
 
 
 
