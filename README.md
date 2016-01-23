@@ -21,15 +21,18 @@ Un Array de Tracks, y guardarlos en el sharedpreferences, y comprobar cuando se 
 
 - Añadir int.proveedor en track
 
-- Para tracks muy largos, resumir la cantidad de trackpoints a mostrar.
-Query por tiempo, o trackpoints a intervalos. No he encontrado la solución.
 
-- Añadir en opciones, Exportar KML con velocidades o en negro, avisando de que en colores ocupa mucho más.
 
 - Añadir tags a las rutas, para filtrarlas en la lista
 
 - Simplificar confifuración, sólo una pantalla
 
+# Siguentes versiones
+
+- Para tracks muy largos, resumir la cantidad de trackpoints a mostrar.
+Query por tiempo, o trackpoints a intervalos. No he encontrado la solución.
+
+- Añadir en opciones, Exportar KML con velocidades o en negro, avisando de que en colores ocupa mucho más.
 
 
 # Temas cerrados
