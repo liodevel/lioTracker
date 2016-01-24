@@ -97,7 +97,7 @@
 
     <string name="pref_title_vibrate" translatable="false">Vibrate</string>
     <string name="getting_location">Getting location, wait please...</string>
-    <string name="ready">Ready\nPush to track</string>
+    <string name="ready">START</string>
     <string name="tracking">Tracking</string>
     <string name="track_saved">Track saved</string>
     <string name="error_saving_track">Sorry, error saving track ;(</string>
@@ -132,7 +132,7 @@
     <string name="new_password">New password</string>
     <string name="change">Change</string>
     <string name="password_changed">Password changed</string>
-    <string name="push_to_stop">Push to stop</string>
+    <string name="push_to_stop">STOP</string>
     <string name="send_to">Send to</string>
     <string name="stop_tracking">Stop tracking to exit</string>
     <string name="pref_save_frequency">Tracking frequency</string>
@@ -146,6 +146,6 @@
     <string name="friday">Friday</string>
     <string name="saturday">Saturday</string>
     <string name="my_favorite_tracks">My favorite tracks</string>
-    <string name="distance">Distance</string>
+    <string name="distance">0.0 m</string>
     <string name="time">Time</string>
 </resources>

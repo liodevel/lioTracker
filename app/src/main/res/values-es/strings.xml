@@ -27,7 +27,7 @@
     <string name="title_activity_my_tracks">Mis rutas</string>
     <string name="title_activity_settings">Configuración</string>
     <string name="getting_location">Esperando servicios de localización...</string>
-    <string name="ready">Preparado\nPulsa para comenzar</string>
+    <string name="ready">INICIAR</string>
     <string name="tracking">Registrando</string>
     <string name="track_saved">Ruta guardada</string>
     <string name="title_activity_map">My Tracker</string>
@@ -92,7 +92,7 @@
     <string name="old_password">Antigua contraseña</string>
     <string name="change">Cambiar</string>
     <string name="password_changed">Contraseña cambiada</string>
-    <string name="push_to_stop">Pulsa para parar</string>
+    <string name="push_to_stop">PARAR</string>
     <string name="send_to">Enviar a</string>
     <string name="stop_tracking">Para de registrar para salir</string>
     <string name="pref_save_frequency">Frecuencia de registro</string>
@@ -106,7 +106,7 @@
     <string name="friday">Viernes</string>
     <string name="saturday">Sábado</string>
     <string name="my_favorite_tracks">Mis rutas favoritas</string>
-    <string name="distance">Distancia</string>
+    <string name="distance">0.0 m</string>
     <string name="time">Tiempo</string>
 
 </resources>

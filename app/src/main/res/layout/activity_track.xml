@@ -13,49 +13,8 @@
         android:background="@color/liodevel_white"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar">
-
-        <TextView
-            android:id="@+id/text_track_distance_track_info"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignWithParentIfMissing="true"
-            android:text="DISTANCE TRACK"
-            android:gravity="center_vertical|left"
-            android:textColor="@color/liodevel_dark_grey"
-            android:textSize="16sp"
-            android:paddingRight="16dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
-
-        <TextView
-            android:id="@+id/text_track_duration_track_info"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignWithParentIfMissing="true"
-            android:text="DURATION TRACK"
-            android:gravity="center_vertical|right"
-            android:textColor="@color/liodevel_dark_grey"
-            android:textSize="16sp"
-            android:paddingRight="16dp"
-            android:layout_below="@+id/text_track_distance_track_info"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
-
-        <TextView
-            android:id="@+id/text_track_average_speed_track_info"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignWithParentIfMissing="true"
-            android:text="SPEED TRACK"
-            android:gravity="center_vertical|right"
-            android:textColor="@color/liodevel_dark_grey"
-            android:textSize="16sp"
-            android:paddingRight="16dp"
-            android:layout_below="@+id/text_track_duration_track_info"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        android:elevation="4dp">
 
         <TextView
             android:id="@+id/text_track_date"
@@ -70,12 +29,7 @@
             android:onClick="toggleVisibilityInfo"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignBottom="@+id/text_track_duration_track_info"
-            android:layout_toLeftOf="@+id/text_track_duration_track_info"
-            android:layout_toStartOf="@+id/text_track_duration_track_info" />
-
-
+            android:layout_alignParentStart="true" />
     </RelativeLayout>
 
 
@@ -87,7 +41,8 @@
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         android:layout_below="@+id/linearLayout"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        android:elevation="4dp">
 
         <TextView
             android:id="@+id/text_track_info"
@@ -127,19 +82,20 @@
 
     </RelativeLayout>
 
+
     <fragment
         android:id="@+id/mapTrack"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/relativeLayout" />
+        android:layout_below="@+id/linearLayout6" />
 
     <!-- GRAFICA COLORES -->
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="20dp"
+        android:layout_height="10dp"
         android:id="@+id/linearLayout2"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
@@ -193,7 +149,6 @@
 
 
     </LinearLayout>
-
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -280,37 +235,63 @@
 
     </LinearLayout>
 
-    <RelativeLayout
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="4dp"
-        android:id="@+id/borde"
-        android:background="@color/liodevel_dark_green"
+        android:layout_height="wrap_content"
+        android:background="@color/liodevel_white"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        android:layout_alignTop="@+id/mapTrack"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
+        android:elevation="4dp"
+        android:layout_below="@+id/relativeLayout"
+        android:layout_alignParentStart="true"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="6dp"
+        android:paddingTop="2dp"
+        android:id="@+id/linearLayout6">
 
-    </RelativeLayout>
+        <TextView
+            android:id="@+id/text_track_distance_track_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.3"
+            android:layout_alignWithParentIfMissing="true"
+            android:text="DISTANCE TRACK"
+            android:gravity="center"
+            android:textColor="@color/liodevel_dark_grey"
+            android:textSize="12sp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="4dp"
-        android:id="@+id/relativeLayout2"
-        android:background="@color/liodevel_dark_green"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        android:layout_above="@+id/linearLayout4"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        <TextView
+            android:id="@+id/text_track_duration_track_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.3"
+            android:layout_alignWithParentIfMissing="true"
+            android:text="DURATION TRACK"
+            android:gravity="center"
+            android:textColor="@color/liodevel_dark_grey"
+            android:textSize="12sp"
+            android:layout_below="@+id/text_track_distance_track_info"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="4dp"
-        android:id="@+id/relativeLayout5"
-        android:background="@color/liodevel_dark_green"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        <TextView
+            android:id="@+id/text_track_average_speed_track_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.3"
+            android:layout_alignWithParentIfMissing="true"
+            android:text="SPEED TRACK"
+            android:gravity="center"
+            android:textColor="@color/liodevel_dark_grey"
+            android:textSize="12sp"
+            android:layout_below="@+id/text_track_duration_track_info"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+    </LinearLayout>
 
 
 </RelativeLayout>

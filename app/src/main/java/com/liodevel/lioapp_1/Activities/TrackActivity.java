@@ -95,6 +95,7 @@ public class TrackActivity extends AppCompatActivity {
         changeNotificationBar();
 
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.liodevel_white)));
+        getSupportActionBar().setElevation(0);
 
         ArrayList<TrackPoint> trackPoints = new ArrayList<>();
 

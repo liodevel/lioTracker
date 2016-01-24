@@ -493,6 +493,7 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
                             marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_green));
                             startButton.setBackgroundColor(ContextCompat.getColor(context, R.color.liodevel_red));
                             startButton.setText(getResources().getString(R.string.ready));
+                            startButton.setTextSize(26);
 
                         }
 
@@ -544,7 +545,7 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
                 startButton.setBackgroundColor(ContextCompat.getColor(this, R.color.liodevel_red));
                 setInfosStart(true);
 
-                startButton.setText(getResources().getString(R.string.tracking) + "\n" + getResources().getString(R.string.push_to_stop));
+                startButton.setText(getResources().getString(R.string.push_to_stop));
                 tracking = true;
                 chronoTrack.setBase(SystemClock.elapsedRealtime());
                 chronoTrack.start();
@@ -641,6 +642,7 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
                             Utils.logInfo("OFFLINE MODE FALSE!");
                             startButton.setBackgroundColor(ContextCompat.getColor(context, R.color.liodevel_red));
                             startButton.setText(getResources().getString(R.string.ready));
+                            startButton.setTextSize(26);
                             setInfosStart(false);
                             tracking = false;
 
@@ -951,6 +953,8 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
             startButton.setBackgroundColor(ContextCompat.getColor(this, R.color.liodevel_red));
             setInfosStart(false);
             startButton.setText(getResources().getString(R.string.ready));
+            startButton.setTextSize(26);
+
             if (actionBarMenu != null) {
                // actionBarMenu.findItem(R.id.map_action_start_track).setVisible(false);
                 actionBarMenu.findItem(R.id.map_action_center_map).setVisible(true);
@@ -959,7 +963,7 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
         if (tracking){
             startButton.setBackgroundColor(ContextCompat.getColor(this, R.color.liodevel_red));
             setInfosStart(true);
-            startButton.setText(getResources().getString(R.string.tracking) + "\n" + getResources().getString(R.string.push_to_stop));
+            startButton.setText(getResources().getString(R.string.push_to_stop));
             //actionBarMenu.findItem(R.id.map_action_start_track).setVisible(true);
             actionBarMenu.findItem(R.id.map_action_center_map).setVisible(true);
         }
