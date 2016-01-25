@@ -1,4 +1,4 @@
-# My Tracks
+# My Tracker
 
 Versión actual en desarrollo
 1.6
