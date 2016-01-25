@@ -33,14 +33,22 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.facebook.AccessToken;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
 import com.google.gson.Gson;
 import com.liodevel.lioapp_1.R;
 import com.liodevel.lioapp_1.Utils.Utils;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
+import com.parse.ParseInstallation;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -160,6 +168,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 public void done(ParseUser user, ParseException e) {
                     if (user != null && user.isAuthenticated()) {
                         Utils.logInfo("Login: OK");
+                        updateInstallation();
 
                         Intent launchNextActivity;
                         launchNextActivity = new Intent(LoginActivity.this, MapActivity2.class);
@@ -167,6 +176,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                         startActivity(launchNextActivity);
+                        finish();
                     } else {
                         showProgress(false);
                         Utils.showMessage(getApplicationContext(), "Incorrect eMail or password");
@@ -235,6 +245,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                             public void done(ParseUser user, ParseException e) {
                                 if (user != null && user.isAuthenticated()) {
                                     Log.i("LIOTRACK", "Login: OK");
+                                    updateInstallation();
 
                                     Intent launchNextActivity;
                                     launchNextActivity = new Intent(LoginActivity.this, MapActivity2.class);
@@ -242,6 +253,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                     launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                     launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                                     startActivity(launchNextActivity);
+                                    finish();
                                 } else {
                                     showProgress(false);
                                     Utils.logInfo("LOGIN ERROR: " + e.toString());
@@ -362,6 +374,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     public void facebookLogin(View v){
         ArrayList<String> permissions = new ArrayList();
+        permissions.add("email");
 
         ParseFacebookUtils.logInWithReadPermissionsInBackground(this, permissions, new LogInCallback() {
             @Override
@@ -370,7 +383,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     Utils.logInfo("Uh oh. The user cancelled the Facebook login.");
                 } else if (user.isNew()) {
                     Utils.logInfo("User signed up and logged in through Facebook!");
+                    getUserDetailsFromFB();
                     Utils.showMessage(LoginActivity.this, "Hi, " + ParseUser.getCurrentUser().getUsername() + "!");
+
+                    updateInstallation();
 
                     Intent launchNextActivity;
                     launchNextActivity = new Intent(LoginActivity.this, MapActivity2.class);
@@ -378,9 +394,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                     startActivity(launchNextActivity);
+                    finish();
                 } else {
                     Utils.logInfo("User logged in through Facebook!");
                     Utils.logInfo("User signed up and logged in through Facebook!");
+                    getUserDetailsFromFB();
+                    updateInstallation();
 
                     Utils.showMessage(LoginActivity.this, "Hi, " + ParseUser.getCurrentUser().getUsername() + "!");
                     Intent launchNextActivity;
@@ -389,6 +408,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     launchNextActivity.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                     startActivity(launchNextActivity);
+                    finish();
+
                 }
             }
         });
@@ -407,6 +428,49 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         } else {
             Utils.logInfo("Ap");
         }
+    }
+
+    private void updateInstallation(){
+        try {
+            ParseInstallation.getCurrentInstallation().put("user", ParseUser.getCurrentUser());
+            ParseInstallation.getCurrentInstallation().saveInBackground();
+        } catch (Exception e){
+            Utils.logError("Installation: " + e.toString());
+        }
+
+    }
+
+    private void getUserDetailsFromFB() {
+
+        Bundle parameters = new Bundle();
+        parameters.putString("fields", "email,name");
+        new GraphRequest(
+                AccessToken.getCurrentAccessToken(),
+                "/me",
+                parameters,
+                HttpMethod.GET,
+                new GraphRequest.Callback() {
+                    public void onCompleted(GraphResponse response) {
+                        /* handle the result */
+                        try {
+                            Utils.logInfo("----- " + response);
+                            try {
+                                ParseUser.getCurrentUser().setEmail(response.getJSONObject().getString("email"));
+                            } catch (Exception ex){
+                                ParseUser.getCurrentUser().setEmail("noEmail");
+                            }
+                            try {
+                                ParseUser.getCurrentUser().setUsername(response.getJSONObject().getString("name"));
+                            } catch (Exception ex){
+                                ParseUser.getCurrentUser().setUsername("noName");
+                            }
+                            ParseUser.getCurrentUser().saveInBackground();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+        ).executeAsync();
     }
 }
 

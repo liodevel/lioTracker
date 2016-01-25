@@ -77,6 +77,7 @@
             android:name=".Activities.SettingsActivity"
             android:label="@string/title_activity_settings"
             android:screenOrientation="portrait"
+            android:parentActivityName=".Activities.MapActivity2"
             android:theme="@style/Theme.AppCompat.Light" />
         <activity
             android:name="com.facebook.FacebookActivity"

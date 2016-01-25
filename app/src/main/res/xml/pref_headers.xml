@@ -1,13 +1,9 @@
 <preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <header
-        android:fragment="com.liodevel.lioapp_1.Activities.SettingsActivity$GeneralPreferenceFragment"
-        android:title="@string/pref_header_general" />
+    <FrameLayout
+        android:id="@+id/content_frame"
+        android:layout_below="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
-    <!--
-    <header
-        android:fragment="com.liodevel.lioapp_1.Activities.SettingsActivity$NotificationPreferenceFragment"
-        android:icon="@drawable/ic_account_box_black_36dp"
-        android:title="@string/pref_header_notifications" />
-    -->
 </preference-headers>

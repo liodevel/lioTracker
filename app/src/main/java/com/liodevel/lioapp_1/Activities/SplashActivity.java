@@ -22,6 +22,7 @@ import com.parse.GetCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
+import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParseSession;
 import com.parse.ParseUser;
@@ -58,8 +59,17 @@ public class SplashActivity extends Activity {
         try {
             Parse.enableLocalDatastore(this);
             Parse.initialize(this);
+
         } catch (Exception e){
             Utils.logInfo("Parse initialized");
+        }
+
+        try {
+            ParseInstallation.getCurrentInstallation().put("user", ParseUser.getCurrentUser());
+            ParseInstallation.getCurrentInstallation().saveInBackground();
+            Utils.logInfo("Installation updated");
+        } catch (Exception e){
+            Utils.logError("Installation: " + e.toString());
         }
 
 

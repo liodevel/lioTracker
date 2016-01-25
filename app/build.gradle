@@ -8,8 +8,8 @@ android {
         applicationId "com.liodevel.lioapp_1"
         minSdkVersion 19
         targetSdkVersion 21
-        versionCode 5
-        versionName "1.5"
+        versionCode 16
+        versionName "1.6"
         multiDexEnabled true
 
     }
@@ -28,6 +28,8 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
 
+
+
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.google.android.gms:play-services:8.4.0'
     compile 'com.parse.bolts:bolts-android:1.3.0'
@@ -42,6 +44,4 @@ dependencies {
     compile 'com.android.support:design:23.1.1'
     compile 'com.android.support:multidex:1.0.1'
     compile 'com.google.code.gson:gson:2.3'
-
-
 }
