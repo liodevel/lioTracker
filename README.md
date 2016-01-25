@@ -15,7 +15,7 @@ OK - Simplificar confifuración, sólo una pantalla
 
 OK - Coger datos de los login por facebook
 
-- Gráfica de colores dinámica en MapActivity
+- Gráfica de colores dinámica en MapActivity, los cuadros de colores se irán agrandando dependiendo de la velocidad registrada.
 
 - App ERROR al cerrar la app desde trackView
 
@@ -25,21 +25,23 @@ OK - Coger datos de los login por facebook
 
 
 
-- Añadir puntos en ruta, con botón cerca
+# Siguentes versiones
+# 2.0
+
 
 - "Password olvidado" Botón en pantalla de login, cambio de password, envío de email. En caso de no ser login por facebook.
 
-- Añadir int.proveedor en track
-
-
-
 - Añadir tags a las rutas, para filtrarlas en la lista
 
+- Añadir puntos en ruta, Foto, grabación de voz, o texto...
 
-# Siguentes versiones
+- Añadir int.proveedor en track
 
-- Para tracks muy largos, resumir la cantidad de trackpoints a mostrar.
-Query por tiempo, o trackpoints a intervalos. No he encontrado la solución.
+- Para tracks muy largos, resumir la cantidad de trackpoints a mostrar. 
+  Query por tiempo, o trackpoints a intervalos. No he encontrado la solución.
+
+
+# Más adelante
 
 - Añadir en opciones, Exportar KML con velocidades o en negro, avisando de que en colores ocupa mucho más.
 
