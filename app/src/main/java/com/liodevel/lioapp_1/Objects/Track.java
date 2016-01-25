@@ -1,5 +1,6 @@
 package com.liodevel.lioapp_1.Objects;
 
+import com.liodevel.lioapp_1.Utils.Utils;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
 
@@ -35,7 +36,11 @@ public class Track {
 
     public Track() {
         objectId = "";
-        user = new ParseUser();
+        try {
+            user = new ParseUser();
+        } catch (Exception e){
+            Utils.logError("ParseUser: " + e.toString());
+        }
         date = new Date();
         dateEnd = new Date();
         distance = 0;

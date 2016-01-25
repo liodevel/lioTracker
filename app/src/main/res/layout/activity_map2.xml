@@ -39,6 +39,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
+        <!-- BOTÓN START/STOP -->
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
@@ -64,7 +65,6 @@
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
                 android:onClick="clickStart" />
-
         </LinearLayout>
 
         <!-- MAPA -->
@@ -219,6 +219,8 @@
                 android:text="> 120"/>
         </LinearLayout>
 
+
+        <!-- INFO PROVEEDOR, TIEMPO, VELOCIDAD -->
         <LinearLayout
             android:id="@+id/map_layout_info"
             android:orientation="horizontal"
@@ -246,7 +248,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0.5"
                 android:padding="4dp"
-                android:textSize="14sp"
+                android:textSize="20sp"
                 android:gravity="center"
                 android:textColor="@color/liodevel_white"
                 android:background="@color/liodevel_dark_grey"/>
@@ -260,7 +262,7 @@
                 android:gravity="center"
                 android:text="@string/distance"
                 android:padding="4dp"
-                android:textSize="14sp"
+                android:textSize="20sp"
                 android:textColor="@color/liodevel_white"
                 android:background="@color/liodevel_dark_grey" />
 
