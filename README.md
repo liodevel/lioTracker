@@ -13,20 +13,23 @@ OK - Linkar Instalación con usuario
 
 OK - Simplificar confifuración, sólo una pantalla
 
+OK - Coger datos de los login por facebook
+
+- Gráfica de colores dinámica en MapActivity
+
 - App ERROR al cerrar la app desde trackView
 
-- Led cuando está registrando
+- Led cuando está registrando (Valorar)
 
-- Botón seleccionar medio de transporte en MapActivity
+- Botón seleccionar medio de transporte en MapActivity, Spinner de imágenes?
+
+
 
 - Añadir puntos en ruta, con botón cerca
 
-- Coger datos de los login por facebook
-
-- "Password olvidado" Botón en pantalla de login, cambio de password, envío de email
+- "Password olvidado" Botón en pantalla de login, cambio de password, envío de email. En caso de no ser login por facebook.
 
 - Añadir int.proveedor en track
-
 
 
 
