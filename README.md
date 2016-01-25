@@ -7,7 +7,7 @@ Versión actual en desarrollo
 - Inicio Offline si no se puede guardar el Track, a partir de ahí, se ha de guardar un track, y todos los trackpoints en un array...
 Un Array de Tracks, y guardarlos en el sharedpreferences, y comprobar cuando se arranca la app si hay conexión, y enviar los tracks a Parse.
 
-- Vigilar si se entra en una lista cuando se está registrando, puede que estropee el track actual al intentar repararlo
+OK - Vigilar si se entra en una lista cuando se está registrando, puede que estropee el track actual al intentar repararlo
 
 - App ERROR al cerrar la app desde trackView
 
@@ -20,6 +20,8 @@ Un Array de Tracks, y guardarlos en el sharedpreferences, y comprobar cuando se 
 - "Password olvidado" Botón en pantalla de login, cambio de password, envío de email
 
 - Añadir int.proveedor en track
+
+- Linkar Instalación con usuario
 
 
 
