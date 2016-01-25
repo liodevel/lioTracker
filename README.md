@@ -11,6 +11,8 @@ OK - Vigilar si se entra en una lista cuando se está registrando, puede que est
 
 - App ERROR al cerrar la app desde trackView
 
+- Led cuando está registrando
+
 - Botón seleccionar medio de transporte en MapActivity
 
 - Añadir puntos en ruta, con botón cerca
