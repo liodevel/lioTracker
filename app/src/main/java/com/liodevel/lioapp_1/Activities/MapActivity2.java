@@ -33,6 +33,7 @@ import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.ScaleAnimation;
 import android.widget.Chronometer;
 import android.widget.TextView;
@@ -73,6 +74,8 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
     private Menu actionBarMenu;
     private Context context;
     private Chronometer chronoTrack;
+
+    private TextView chartBlack, chartRed, chartOrange, chartYellow, chartGreen, chartDarkGreen, chartBlue, chartCyan, chartMagenta;
 
     // MAPS
     private GoogleMap mMap;
@@ -198,6 +201,17 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
 
         startButton.setText(getResources().getString(R.string.getting_location));
         startButton.setTextSize(14);
+
+        // Velocidades
+        chartBlack = (TextView) findViewById((R.id.speed_black));
+        chartRed = (TextView) findViewById((R.id.speed_red));
+        chartOrange = (TextView) findViewById((R.id.speed_orange));
+        chartYellow = (TextView) findViewById((R.id.speed_yellow));
+        chartGreen = (TextView) findViewById((R.id.speed_green));
+        chartDarkGreen = (TextView) findViewById((R.id.speed_dark_green));
+        chartBlue = (TextView) findViewById((R.id.speed_blue));
+        chartCyan = (TextView) findViewById((R.id.speed_cyan));
+        chartMagenta = (TextView) findViewById((R.id.speed_magenta));
 
         updateGpsProviders();
     }
@@ -711,6 +725,9 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
                         }
                         Utils.logInfo("TimerTrack: " + counterTask);
                         Utils.logInfo("TimerTrack: " + chronoTrack.getText());
+
+
+                        // Actualizar Notificación
                         DecimalFormat df = new DecimalFormat();
                         df.setMaximumFractionDigits(2);
                         String notifDistance = "0.0 m";
@@ -723,6 +740,7 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
                                 Utils.secondsToHour((System.currentTimeMillis() - startTimemillis) / 1000)
                                         + " (" + notifDistance + ")");
                         mNotificationManager.notify(1, mBuilder.build());
+
                         counterTask++;
                         secondsTracking++;
                     }
@@ -863,8 +881,10 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
                             new LatLng(prevLocation.getLatitude(), prevLocation.getLongitude()),
                             new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()),
                             speed, 1);
-
                     previousTr = tr;
+
+                    //updateSpeedChart(speed);
+
 
                 } else {
                     Utils.logInfo("SendTrackPoint Skipped: " + trackPointDistance + "m");
@@ -1061,16 +1081,66 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
     }
 
 
-    public void scaleView(View v, float startScale, float endScale) {
-        Animation anim = new ScaleAnimation(
-                startScale, endScale, // Start and end values for the X axis scaling
-                1f, 1f, // Start and end values for the Y axis scaling
-                Animation.RELATIVE_TO_SELF, 0f, // Pivot point of X scaling
-                Animation.RELATIVE_TO_SELF, 1f); // Pivot point of Y scaling
-        anim.setFillAfter(true); // Needed to keep the result of the animation
-        v.startAnimation(anim);
+    public void scaleViewUp(View v) {
+        Animation scale = AnimationUtils.loadAnimation(this, R.anim.speed_animation_up);
+        scale.setStartOffset(5000);
+        scale.setFillAfter(true);
+        v.clearAnimation();
+        v.setAnimation(scale);
     }
 
+    public void scaleViewDown(View v) {
+        Animation scale = AnimationUtils.loadAnimation(this, R.anim.speed_animation_down);
+        scale.setStartOffset(5000);
+        scale.setFillAfter(true);
+        v.clearAnimation();
+        v.setAnimation(scale);
+    }
+
+
+    public void updateSpeedChart(double speed){
+
+        Utils.logInfo("updateSpeedChart()");
+        /*
+        scaleView(chartBlack, 1.5f, 1.0f);
+        scaleView(chartRed, 1.5f, 1.0f);
+        scaleView(chartOrange, 1.5f, 1.0f);
+        scaleView(chartYellow, 1.5f, 1.0f);
+        scaleView(chartGreen, 1.5f, 1.0f);
+        scaleView(chartDarkGreen, 1.5f, 1.0f);
+        scaleView(chartBlue, 1.5f, 1.0f);
+        scaleView(chartCyan, 1.5f, 1.0f);
+        scaleView(chartMagenta, 1.5f, 1.0f);
+*/
+        if (speed < 10) {
+            chartBlack.bringToFront();
+            scaleViewUp(chartBlack);
+        } else if (speed < 20) {
+            chartRed.bringToFront();
+            scaleViewUp(chartRed);
+        } else if (speed < 30) {
+            chartOrange.bringToFront();
+            scaleViewUp(chartOrange);
+        } else if (speed < 40) {
+            chartYellow.bringToFront();
+            scaleViewUp(chartYellow);
+        } else if (speed < 50) {
+            chartGreen.bringToFront();
+            scaleViewUp(chartGreen);
+        } else if (speed < 70) {
+            chartDarkGreen.bringToFront();
+            scaleViewUp(chartDarkGreen);
+        } else if (speed < 90) {
+            chartBlue.bringToFront();
+            scaleViewUp(chartBlue);
+        } else if (speed < 120) {
+            chartCyan.bringToFront();
+            scaleViewUp(chartCyan);
+        } else {
+            chartMagenta.bringToFront();
+            scaleViewUp(chartMagenta);
+        }
+    }
 
     private void setInfosStart(boolean start){
         if (start) {

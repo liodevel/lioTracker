@@ -73,8 +73,8 @@
             android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/map_toolbar"
-            android:layout_above="@+id/linearLayout4" />
+            android:layout_above="@+id/linearLayout3"
+            android:layout_below="@+id/map_layout_info" />
 
 
         <!-- GRAFICA COLORES -->
@@ -83,11 +83,12 @@
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="20dp"
+            android:layout_height="30dp"
             android:background="@color/liodevel_dark_green"
             android:id="@+id/linearLayout3"
-            android:layout_above="@+id/linearLayout2"
-            android:layout_alignParentStart="true">
+            android:layout_alignParentStart="true"
+            android:layout_above="@+id/linearLayout4"
+            android:paddingBottom="10dp">
 
             <TextView
                 android:layout_width="match_parent"
@@ -223,46 +224,55 @@
             android:layout_alignParentStart="true">
 
             <TextView
+                android:id="@+id/speed_black"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="0.1"
                 android:background="@color/liodevel_chart_black"/>
             <TextView
+                android:id="@+id/speed_red"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="0.1"
                 android:background="@color/liodevel_chart_red"/>
             <TextView
+                android:id="@+id/speed_orange"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="0.1"
                 android:background="@color/liodevel_chart_orange"/>
             <TextView
+                android:id="@+id/speed_yellow"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="0.1"
                 android:background="@color/liodevel_chart_yellow"/>
             <TextView
+                android:id="@+id/speed_green"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="0.1"
                 android:background="@color/liodevel_chart_green"/>
             <TextView
+                android:id="@+id/speed_dark_green"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="0.1"
                 android:background="@color/liodevel_chart_dark_green"/>
             <TextView
+                android:id="@+id/speed_blue"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="0.1"
                 android:background="@color/liodevel_chart_blue"/>
             <TextView
+                android:id="@+id/speed_cyan"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="0.1"
                 android:background="@color/liodevel_chart_cyan"/>
             <TextView
+                android:id="@+id/speed_magenta"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="0.1"
