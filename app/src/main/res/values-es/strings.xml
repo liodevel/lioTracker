@@ -108,5 +108,15 @@
     <string name="my_favorite_tracks">Mis rutas favoritas</string>
     <string name="distance">0.0 m</string>
     <string name="time">Tiempo</string>
+    <string name="vehicle">Vehículo</string>
+    <string name="activity_type">Tipo de actividad</string>
 
+
+    <string-array name="spinner_vehicle">
+        <item >Coche</item>
+        <item >Moto</item>
+        <item >Bicicleta</item>
+        <item >Corriendo</item>
+        <item >Andando</item>
+    </string-array>
 </resources>

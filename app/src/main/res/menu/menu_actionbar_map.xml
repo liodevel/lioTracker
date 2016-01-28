@@ -1,14 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!--
-    <item
-        android:id="@+id/map_action_start_track"
-        android:icon="@drawable/ic_marker_black"
-        app:showAsAction="always"
-        android:title="Track"
-        android:visible="false"/>
--->
+
     <item
         android:id="@+id/map_action_center_map"
         android:icon="@drawable/ic_action_center_ok"
@@ -23,5 +16,10 @@
         android:title="Type"/>
 
 
+    <item
+        android:id="@+id/map_action_vehicle"
+        android:icon="@drawable/ic_directions_car_black_36dp"
+        app:showAsAction="always"
+        android:title="Type"/>
 
 </menu>

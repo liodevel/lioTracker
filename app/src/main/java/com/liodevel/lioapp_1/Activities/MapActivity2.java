@@ -34,7 +34,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.ScaleAnimation;
 import android.widget.Chronometer;
 import android.widget.TextView;
 
@@ -74,6 +73,7 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
     private Menu actionBarMenu;
     private Context context;
     private Chronometer chronoTrack;
+    private MenuItem vehicleSpinner;
 
     private TextView chartBlack, chartRed, chartOrange, chartYellow, chartGreen, chartDarkGreen, chartBlue, chartCyan, chartMagenta;
 
@@ -94,6 +94,7 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
     private LocationListener locationListener;
     private Date lastTrackPointDate = new Date();
     TrackPoint previousTr = new TrackPoint();
+    private int vehicle = 1;
 
     //OFFLINE
     private ArrayList<Track> tracksOffline = new ArrayList();
@@ -428,6 +429,11 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
                 toggleMapType();
                 return true;
 
+            // TIPO MAPA
+            case R.id.map_action_vehicle:
+                toggleVehicle();
+                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
 
@@ -440,6 +446,7 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
         getMenuInflater().inflate(R.menu.menu_actionbar_map, menu);
         //actionBarMenu.findItem(R.id.map_action_start_track).setVisible(false);
         actionBarMenu.findItem(R.id.map_action_center_map).setVisible(false);
+
 
         return true;
     }
@@ -798,6 +805,7 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
             final ParseObject dataObject = new ParseObject("track");
             dataObject.put("date", new Date(System.currentTimeMillis()));
             dataObject.put("user", ParseUser.getCurrentUser());
+            dataObject.put("vehicle", vehicle);
             dataObject.saveInBackground(new SaveCallback() {
                 @Override
                 public void done(com.parse.ParseException e) {
@@ -1003,6 +1011,41 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
             mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         } else {
             mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+        }
+    }
+
+
+    /**
+     * Cambiar tipo de Actividad / Vehículo
+     * cambiar variable vehicle
+     * icono en actionbar
+     * adaptar gráfica de velocidades
+     */
+    private void toggleVehicle(){
+        if (vehicle == 1){
+            Utils.logInfo("Vehicle -> 2");
+            vehicle = 2;
+            actionBarMenu.findItem(R.id.map_action_vehicle).setIcon(R.drawable.ic_motorcycle_black_36dp);
+        } else if(vehicle == 2){
+            Utils.logInfo("Vehicle -> 3");
+            vehicle = 3;
+            actionBarMenu.findItem(R.id.map_action_vehicle).setIcon(R.drawable.ic_directions_bike_black_36dp);
+
+        } else if(vehicle == 3){
+            Utils.logInfo("Vehicle -> 4");
+            vehicle = 4;
+            actionBarMenu.findItem(R.id.map_action_vehicle).setIcon(R.drawable.ic_directions_walk_black_36dp);
+
+        } else if(vehicle == 4){
+            Utils.logInfo("Vehicle -> 5");
+            vehicle = 5;
+            actionBarMenu.findItem(R.id.map_action_vehicle).setIcon(R.drawable.ic_directions_run_black_36dp);
+
+        } else if(vehicle == 5){
+            Utils.logInfo("Vehicle -> 1");
+            vehicle = 1;
+            actionBarMenu.findItem(R.id.map_action_vehicle).setIcon(R.drawable.ic_directions_car_black_36dp);
+
         }
     }
 

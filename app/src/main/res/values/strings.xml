@@ -148,5 +148,19 @@
     <string name="my_favorite_tracks">My favorite tracks</string>
     <string name="distance">0.0 m</string>
     <string name="time">Time</string>
+    <string name="vehicle">Vehicle</string>
+    <string name="activity_type">Activity type</string>
+
+
+
+    <string-array name="spinner_vehicle">
+        <item >Car</item>
+        <item >Motorcycle</item>
+        <item >Bicycle</item>
+        <item >Running</item>
+        <item >Walking</item>
+    </string-array>
+
+
 
 </resources>
