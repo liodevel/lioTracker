@@ -251,6 +251,10 @@ public class MyTracksActivity extends AppCompatActivity {
                 track.setInfo((String) parseObject.get("info"));
                 track.setFavorite(parseObject.getBoolean("favorite"));
                 track.setClosed(parseObject.getBoolean("closed"));
+                track.setVehicle(parseObject.getInt("vehicle"));
+                if (track.getVehicle() == 0){
+                    track.setVehicle(1);
+                }
                 Utils.logInfo("Track: " + track.getDate());
                 if (!track.isClosed()) {
                     Utils.logInfo("Track Incomplete");

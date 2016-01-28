@@ -46,6 +46,7 @@ public class MyTracksListAdapter extends ArrayAdapter<Track> {
         TextView info = (TextView) convertView.findViewById(R.id.text_track_info_item);
         TextView averageSpeed = (TextView) convertView.findViewById(R.id.text_track_average_speed_item);
         ImageView favorite = (ImageView) convertView.findViewById(R.id.favorite_icon_item);
+        ImageView vehicleIcon = (ImageView) convertView.findViewById(R.id.item_vehicle_icon);
         TextView speedBar = (TextView) convertView.findViewById(R.id.speed_bar_item);
 
         if (track.isChecked()){
@@ -122,6 +123,19 @@ public class MyTracksListAdapter extends ArrayAdapter<Track> {
             favorite.setBackground(getContext().getResources().getDrawable(R.drawable.ic_action_action_favorite));
         } else {
             favorite.setBackground(getContext().getResources().getDrawable(R.drawable.ic_action_action_favorite_outline));
+        }
+
+        // Vehiculo
+        if (track.getVehicle() == 1){
+            vehicleIcon.setBackground(getContext().getResources().getDrawable(R.drawable.ic_directions_car_black_36dp));
+        } else if (track.getVehicle() == 2){
+            vehicleIcon.setBackground(getContext().getResources().getDrawable(R.drawable.ic_motorcycle_black_36dp));
+        } else if (track.getVehicle() == 3){
+            vehicleIcon.setBackground(getContext().getResources().getDrawable(R.drawable.ic_directions_bike_black_36dp));
+        } else if (track.getVehicle() == 4){
+            vehicleIcon.setBackground(getContext().getResources().getDrawable(R.drawable.ic_directions_walk_black_36dp));
+        } else if (track.getVehicle() == 5){
+            vehicleIcon.setBackground(getContext().getResources().getDrawable(R.drawable.ic_directions_run_black_36dp));
         }
 
         double speed = averageSpeedFloat;

@@ -29,7 +29,17 @@
             android:onClick="toggleVisibilityInfo"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true"
+            android:layout_toStartOf="@+id/track_vehicle_icon" />
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:id="@+id/track_vehicle_icon"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="16dp"
+            android:layout_alignBottom="@+id/text_track_date" />
     </RelativeLayout>
 
 
@@ -92,72 +102,17 @@
 
     <!-- GRAFICA COLORES -->
 
+
+    <!-- LEYENDA VELOCIDADES -->
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="10dp"
-        android:id="@+id/linearLayout2"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="0.1"
-            android:background="@color/liodevel_chart_black"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="0.1"
-            android:background="@color/liodevel_chart_red"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="0.1"
-            android:background="@color/liodevel_chart_orange"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="0.1"
-            android:background="@color/liodevel_chart_yellow"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="0.1"
-            android:background="@color/liodevel_chart_green"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="0.1"
-            android:background="@color/liodevel_chart_dark_green"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="0.1"
-            android:background="@color/liodevel_chart_blue"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="0.1"
-            android:background="@color/liodevel_chart_cyan"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="0.1"
-            android:background="@color/liodevel_chart_magenta"/>
-
-
-    </LinearLayout>
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="20dp"
+        android:layout_height="30dp"
         android:background="@color/liodevel_dark_green"
-        android:layout_above="@+id/linearLayout2"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:id="@+id/linearLayout4">
+        android:id="@+id/track_leyenda_1"
+        android:paddingBottom="10dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true">
 
         <TextView
             android:layout_width="match_parent"
@@ -223,6 +178,96 @@
             android:textColor="@color/liodevel_white"
             android:gravity="center"
             android:text="90-120"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:textSize="10sp"
+            android:textColor="@color/liodevel_white"
+            android:gravity="center"
+            android:text="> 120"
+            android:layout_below="@+id/map_layout_info"
+            android:layout_alignParentEnd="true" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:background="@color/liodevel_dark_green"
+        android:id="@+id/track_leyenda_2"
+        android:paddingBottom="10dp"
+        android:layout_weight="1"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:textSize="10sp"
+            android:textColor="@color/liodevel_white"
+            android:gravity="center"
+            android:text="0-10"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:textSize="10sp"
+            android:textColor="@color/liodevel_white"
+            android:gravity="center"
+            android:text="10-20"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:textSize="10sp"
+            android:textColor="@color/liodevel_white"
+            android:gravity="center"
+            android:text="20-30"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:textSize="10sp"
+            android:textColor="@color/liodevel_white"
+            android:gravity="center"
+            android:text="30-40"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:textSize="10sp"
+            android:textColor="@color/liodevel_white"
+            android:gravity="center"
+            android:text="40-50"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:textSize="10sp"
+            android:textColor="@color/liodevel_white"
+            android:gravity="center"
+            android:text="50-70"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:textSize="10sp"
+            android:textColor="@color/liodevel_white"
+            android:gravity="center"
+            android:text="70-90"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:textSize="10sp"
+            android:textColor="@color/liodevel_white"
+            android:gravity="center"
+            android:text="90-120"/>
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -231,9 +276,323 @@
             android:textColor="@color/liodevel_white"
             android:gravity="center"
             android:text="> 120"/>
-
-
     </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:background="@color/liodevel_dark_green"
+        android:id="@+id/track_leyenda_3"
+        android:paddingBottom="10dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:textSize="10sp"
+            android:textColor="@color/liodevel_white"
+            android:gravity="center"
+            android:text="0-5"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:textSize="10sp"
+            android:textColor="@color/liodevel_white"
+            android:gravity="center"
+            android:text="5-10"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:textSize="10sp"
+            android:textColor="@color/liodevel_white"
+            android:gravity="center"
+            android:text="10-15"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:textSize="10sp"
+            android:textColor="@color/liodevel_white"
+            android:gravity="center"
+            android:text="15-20"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:textSize="10sp"
+            android:textColor="@color/liodevel_white"
+            android:gravity="center"
+            android:text="20-25"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:textSize="10sp"
+            android:textColor="@color/liodevel_white"
+            android:gravity="center"
+            android:text="25-35"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:textSize="10sp"
+            android:textColor="@color/liodevel_white"
+            android:gravity="center"
+            android:text="35-45"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:textSize="10sp"
+            android:textColor="@color/liodevel_white"
+            android:gravity="center"
+            android:text="45-55"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:textSize="10sp"
+            android:textColor="@color/liodevel_white"
+            android:gravity="center"
+            android:text="> 55"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:background="@color/liodevel_dark_green"
+        android:id="@+id/track_leyenda_4"
+        android:paddingBottom="10dp"
+        android:layout_weight="1"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:textSize="10sp"
+            android:textColor="@color/liodevel_white"
+            android:gravity="center"
+            android:text="0-2"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:textSize="10sp"
+            android:textColor="@color/liodevel_white"
+            android:gravity="center"
+            android:text="2-4"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:textSize="10sp"
+            android:textColor="@color/liodevel_white"
+            android:gravity="center"
+            android:text="4-6"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:textSize="10sp"
+            android:textColor="@color/liodevel_white"
+            android:gravity="center"
+            android:text="6-8"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:textSize="10sp"
+            android:textColor="@color/liodevel_white"
+            android:gravity="center"
+            android:text="8-10"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:textSize="10sp"
+            android:textColor="@color/liodevel_white"
+            android:gravity="center"
+            android:text="10-12"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:textSize="10sp"
+            android:textColor="@color/liodevel_white"
+            android:gravity="center"
+            android:text="12-14"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:textSize="10sp"
+            android:textColor="@color/liodevel_white"
+            android:gravity="center"
+            android:text="14-16"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:textSize="10sp"
+            android:textColor="@color/liodevel_white"
+            android:gravity="center"
+            android:text="> 16"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:background="@color/liodevel_dark_green"
+        android:id="@+id/track_leyenda_5"
+        android:paddingBottom="10dp"
+        android:layout_weight="1"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:textSize="10sp"
+            android:textColor="@color/liodevel_white"
+            android:gravity="center"
+            android:text="0-5"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:textSize="10sp"
+            android:textColor="@color/liodevel_white"
+            android:gravity="center"
+            android:text="5-10"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:textSize="10sp"
+            android:textColor="@color/liodevel_white"
+            android:gravity="center"
+            android:text="10-15"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:textSize="10sp"
+            android:textColor="@color/liodevel_white"
+            android:gravity="center"
+            android:text="15-20"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:textSize="10sp"
+            android:textColor="@color/liodevel_white"
+            android:gravity="center"
+            android:text="20-25"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:textSize="10sp"
+            android:textColor="@color/liodevel_white"
+            android:gravity="center"
+            android:text="25-30"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:textSize="10sp"
+            android:textColor="@color/liodevel_white"
+            android:gravity="center"
+            android:text="30-35"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:textSize="10sp"
+            android:textColor="@color/liodevel_white"
+            android:gravity="center"
+            android:text="35-40"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:textSize="10sp"
+            android:textColor="@color/liodevel_white"
+            android:gravity="center"
+            android:text="> 40"/>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:id="@+id/track_leyenda_colores"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:background="@color/liodevel_chart_black"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:background="@color/liodevel_chart_red"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:background="@color/liodevel_chart_orange"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:background="@color/liodevel_chart_yellow"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:background="@color/liodevel_chart_green"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:background="@color/liodevel_chart_dark_green"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:background="@color/liodevel_chart_blue"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:background="@color/liodevel_chart_cyan"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:background="@color/liodevel_chart_magenta"/>
+    </LinearLayout>
+
+
 
     <LinearLayout
         android:orientation="horizontal"

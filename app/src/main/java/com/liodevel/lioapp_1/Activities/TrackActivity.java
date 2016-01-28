@@ -25,8 +25,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -87,6 +90,10 @@ public class TrackActivity extends AppCompatActivity {
 
     ArrayList<TrackPoint> trackPoints = new ArrayList<>();
 
+    private ImageView vehicleIcon;
+    private LinearLayout leyenda1, leyenda2, leyenda3, leyenda4, leyenda5, leyendaColores;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,6 +114,14 @@ public class TrackActivity extends AppCompatActivity {
         averageSpeed = (TextView) findViewById(R.id.text_track_average_speed_track_info);
         getSupportActionBar().setTitle("");
 
+        leyenda1 = (LinearLayout) findViewById(R.id.track_leyenda_1);
+        leyenda2 = (LinearLayout) findViewById(R.id.track_leyenda_2);
+        leyenda3 = (LinearLayout) findViewById(R.id.track_leyenda_3);
+        leyenda4 = (LinearLayout) findViewById(R.id.track_leyenda_4);
+        leyenda5 = (LinearLayout) findViewById(R.id.track_leyenda_5);
+        leyendaColores = (LinearLayout) findViewById(R.id.track_leyenda_colores);
+        vehicleIcon = (ImageView) findViewById(R.id.track_vehicle_icon);
+
 
         //progressDialog.show(this, "Track", "Downloading track", true);
         Bundle extras = getIntent().getExtras();
@@ -126,6 +141,7 @@ public class TrackActivity extends AppCompatActivity {
 
         getTrackByObjectId(trackObjectId);
         updateTrackInfo();
+        toggleVehicle(currentTrack.getVehicle());
     }
 
 
@@ -232,6 +248,11 @@ public class TrackActivity extends AppCompatActivity {
             currentTrack.setDistance((float) parseQueriesTrackObject.get(0).getDouble("distance"));
             currentTrack.setInfo((String) parseQueriesTrackObject.get(0).get("info"));
             currentTrack.setFavorite(parseQueriesTrackObject.get(0).getBoolean("favorite"));
+            currentTrack.setVehicle(parseQueriesTrackObject.get(0).getInt("vehicle"));
+            if (currentTrack.getVehicle() == 0){
+                currentTrack.setVehicle(1);
+            }
+            Utils.logInfo("Track Vehicle: " + currentTrack.getVehicle());
             Utils.logInfo("Track ID: " + trackObject.getObjectId());
             ret = true;
         } catch (ParseException e) {
@@ -267,7 +288,7 @@ public class TrackActivity extends AppCompatActivity {
                     //trackPoint.setAccuracy((float) parseObject.getDouble("accuracy"));
                     //trackPoint.setProvider(parseObject.getString("provider"));
                     //Utils.logInfo(trackPoint.getProvider());
-                    Utils.logInfo("DATE TR: " + parseObject.get("date"));
+                    //Utils.logInfo("DATE TR: " + parseObject.get("date"));
                     //trackPoints.add(trackPoint);
                     actualPos = new LatLng(trackPoint.getPosition().getLatitude(), trackPoint.getPosition().getLongitude());
                     if (prevPos != null) {
@@ -482,7 +503,7 @@ public class TrackActivity extends AppCompatActivity {
      * @param start Coordenadas inicio
      * @param end Coordenadas final
      * @param speed velocidad en KM/H
-     * @param vehicle 1-Coche; 2-Moto; 3-Bici; 4-Patinete; 5-Andando
+     * @param vehicle 1-Coche; 2-Moto; 3-Bici; 4-Andando; 5-Corriendo
      */
     private void drawTrackPoint(LatLng start, LatLng end, double speed, int vehicle) {
         int colorTrack;
@@ -817,6 +838,43 @@ public class TrackActivity extends AppCompatActivity {
 
         return ret;
     }
+
+
+
+    private void toggleVehicle(int vehicle){
+
+        if (vehicle == 2){
+            Utils.logInfo("Vehicle -> 2");
+           vehicleIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_motorcycle_black_36dp));
+            leyenda2.bringToFront();
+            leyendaColores.bringToFront();
+        } else if(vehicle == 3){
+            Utils.logInfo("Vehicle -> 3");
+            vehicleIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_directions_bike_black_36dp));
+            leyenda3.bringToFront();
+            leyendaColores.bringToFront();
+
+        } else if(vehicle == 4){
+            Utils.logInfo("Vehicle -> 4");
+            vehicleIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_directions_walk_black_36dp));
+            leyenda4.bringToFront();
+            leyendaColores.bringToFront();
+
+        } else if(vehicle == 5){
+            Utils.logInfo("Vehicle -> 5");
+            vehicleIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_directions_run_black_36dp));
+            leyenda5.bringToFront();
+            leyendaColores.bringToFront();
+
+        } else if(vehicle == 1){
+            Utils.logInfo("Vehicle -> 1");
+            vehicleIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_directions_car_black_36dp));
+            leyenda1.bringToFront();
+            leyendaColores.bringToFront();
+        }
+    }
+
+
 
     @TargetApi(21)
     private void changeNotificationBar() {

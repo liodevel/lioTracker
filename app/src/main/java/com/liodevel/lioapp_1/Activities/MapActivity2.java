@@ -194,7 +194,6 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         // Infos
         startButton = (TextView) findViewById(R.id.text_info);
         startButton.setBackgroundColor(ContextCompat.getColor(this, R.color.liodevel_dark_grey));
@@ -441,7 +440,22 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
 
             // TIPO MAPA
             case R.id.map_action_vehicle:
-                toggleVehicle();
+                if (vehicle == 1){
+                    toggleVehicle(2);
+                    vehicle = 2;
+                } else if (vehicle == 2){
+                    toggleVehicle(3);
+                    vehicle = 3;
+                } else if (vehicle == 3){
+                    toggleVehicle(4);
+                    vehicle = 4;
+                } else if (vehicle == 4){
+                    toggleVehicle(5);
+                    vehicle = 5;
+                } else if (vehicle == 5){
+                    toggleVehicle(1);
+                    vehicle = 1;
+                }
                 return true;
 
             default:
@@ -456,6 +470,7 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
         getMenuInflater().inflate(R.menu.menu_actionbar_map, menu);
         //actionBarMenu.findItem(R.id.map_action_start_track).setVisible(false);
         actionBarMenu.findItem(R.id.map_action_center_map).setVisible(false);
+        toggleVehicle(vehicle);
 
 
         return true;
@@ -898,7 +913,7 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
                     drawTrackPoint(
                             new LatLng(prevLocation.getLatitude(), prevLocation.getLongitude()),
                             new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()),
-                            speed, 1);
+                            speed, vehicle);
                     previousTr = tr;
 
                     //updateSpeedChart(speed);
@@ -1031,49 +1046,44 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
      * icono en actionbar
      * adaptar gráfica de velocidades
      */
-    private void toggleVehicle(){
+    private void toggleVehicle(int vehicle){
         Animation inFromRight = AnimationUtils.loadAnimation(this, R.anim.anim_in_from_right);
         Animation inFromLeft = AnimationUtils.loadAnimation(this, R.anim.anim_in_from_left);
         Animation outToRight = AnimationUtils.loadAnimation(this, R.anim.anim_out_to_right);
 
-        if (vehicle == 1){
+        if (vehicle == 2){
             Utils.logInfo("Vehicle -> 2");
-            vehicle = 2;
             actionBarMenu.findItem(R.id.map_action_vehicle).setIcon(R.drawable.ic_motorcycle_black_36dp);
             leyenda2.bringToFront();
             leyendaColores.bringToFront();
             leyenda2.startAnimation(inFromLeft);
             leyenda1.startAnimation(outToRight);
-        } else if(vehicle == 2){
+        } else if(vehicle == 3){
             Utils.logInfo("Vehicle -> 3");
-            vehicle = 3;
             actionBarMenu.findItem(R.id.map_action_vehicle).setIcon(R.drawable.ic_directions_bike_black_36dp);
             leyenda3.bringToFront();
             leyendaColores.bringToFront();
             leyenda3.startAnimation(inFromLeft);
             leyenda2.startAnimation(outToRight);
 
-        } else if(vehicle == 3){
+        } else if(vehicle == 4){
             Utils.logInfo("Vehicle -> 4");
-            vehicle = 4;
             actionBarMenu.findItem(R.id.map_action_vehicle).setIcon(R.drawable.ic_directions_walk_black_36dp);
             leyenda4.bringToFront();
             leyendaColores.bringToFront();
             leyenda4.startAnimation(inFromLeft);
             leyenda3.startAnimation(outToRight);
 
-        } else if(vehicle == 4){
+        } else if(vehicle == 5){
             Utils.logInfo("Vehicle -> 5");
-            vehicle = 5;
             actionBarMenu.findItem(R.id.map_action_vehicle).setIcon(R.drawable.ic_directions_run_black_36dp);
             leyenda5.bringToFront();
             leyendaColores.bringToFront();
             leyenda5.startAnimation(inFromLeft);
             leyenda4.startAnimation(outToRight);
 
-        } else if(vehicle == 5){
+        } else if(vehicle == 1){
             Utils.logInfo("Vehicle -> 1");
-            vehicle = 1;
             actionBarMenu.findItem(R.id.map_action_vehicle).setIcon(R.drawable.ic_directions_car_black_36dp);
             leyenda1.bringToFront();
             leyendaColores.bringToFront();
@@ -1088,7 +1098,7 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
      * @param start Coordenadas inicio
      * @param end Coordenadas final
      * @param speed velocidad en KM/H
-     * @param vehicle 1-Coche; 2-Moto; 3-Bici; 4-Patinete; 5-Andando
+     * @param vehicle 1-Coche; 2-Moto; 3-Bici; 4-Andando; 5-Corriendo
      */
     private void drawTrackPoint(LatLng start, LatLng end, double speed, int vehicle) {
         int colorTrack;
