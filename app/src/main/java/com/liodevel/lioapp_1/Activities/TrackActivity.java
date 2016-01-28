@@ -487,6 +487,7 @@ public class TrackActivity extends AppCompatActivity {
     private void drawTrackPoint(LatLng start, LatLng end, double speed, int vehicle) {
         int colorTrack;
 
+        // Coche o Moto
         if (vehicle == 1 || vehicle == 2) {
             if (speed < 10) {
                 colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_black);
@@ -507,22 +508,67 @@ public class TrackActivity extends AppCompatActivity {
             } else {
                 colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_magenta);
             }
-        } else {
-            if (speed < 10) {
+
+            // Bici
+        } else if (vehicle == 3) {
+            if (speed < 5) {
                 colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_black);
-            } else if (speed < 20) {
+            } else if (speed < 10) {
                 colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_red);
-            } else if (speed < 30) {
+            } else if (speed < 15) {
                 colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_orange);
-            } else if (speed < 40) {
+            } else if (speed < 20) {
                 colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_yellow);
-            } else if (speed < 50) {
+            } else if (speed < 25) {
                 colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_green);
-            } else if (speed < 70) {
+            } else if (speed < 35) {
                 colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_dark_green);
-            } else if (speed < 90) {
+            } else if (speed < 45) {
                 colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_blue);
-            } else if (speed < 120) {
+            } else if (speed < 55) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_cyan);
+            } else {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_magenta);
+            }
+            // Andando
+        } else if (vehicle == 4) {
+            if (speed < 2) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_black);
+            } else if (speed < 4) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_red);
+            } else if (speed < 6) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_orange);
+            } else if (speed < 8) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_yellow);
+            } else if (speed < 10) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_green);
+            } else if (speed < 12) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_dark_green);
+            } else if (speed < 14) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_blue);
+            } else if (speed < 16) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_cyan);
+            } else {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_magenta);
+            }
+
+            // Corriendo
+        } else {
+            if (speed < 5) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_black);
+            } else if (speed < 10) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_red);
+            } else if (speed < 15) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_orange);
+            } else if (speed < 20) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_yellow);
+            } else if (speed < 25) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_green);
+            } else if (speed < 30) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_dark_green);
+            } else if (speed < 35) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_blue);
+            } else if (speed < 40) {
                 colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_cyan);
             } else {
                 colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_magenta);
@@ -536,7 +582,6 @@ public class TrackActivity extends AppCompatActivity {
             mMap.addPolyline(line);
         }
     }
-
 
 
     private File exportKML() {

@@ -35,6 +35,7 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Chronometer;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -76,6 +77,8 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
     private MenuItem vehicleSpinner;
 
     private TextView chartBlack, chartRed, chartOrange, chartYellow, chartGreen, chartDarkGreen, chartBlue, chartCyan, chartMagenta;
+
+    private LinearLayout leyenda1, leyenda2, leyenda3, leyenda4, leyenda5, leyendaColores;
 
     // MAPS
     private GoogleMap mMap;
@@ -213,6 +216,13 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
         chartBlue = (TextView) findViewById((R.id.speed_blue));
         chartCyan = (TextView) findViewById((R.id.speed_cyan));
         chartMagenta = (TextView) findViewById((R.id.speed_magenta));
+
+        leyenda1 = (LinearLayout) findViewById(R.id.map_leyenda_1);
+        leyenda2 = (LinearLayout) findViewById(R.id.map_leyenda_2);
+        leyenda3 = (LinearLayout) findViewById(R.id.map_leyenda_3);
+        leyenda4 = (LinearLayout) findViewById(R.id.map_leyenda_4);
+        leyenda5 = (LinearLayout) findViewById(R.id.map_leyenda_5);
+        leyendaColores = (LinearLayout) findViewById(R.id.map_leyenda_colores);
 
         updateGpsProviders();
     }
@@ -1022,29 +1032,53 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
      * adaptar gráfica de velocidades
      */
     private void toggleVehicle(){
+        Animation inFromRight = AnimationUtils.loadAnimation(this, R.anim.anim_in_from_right);
+        Animation inFromLeft = AnimationUtils.loadAnimation(this, R.anim.anim_in_from_left);
+        Animation outToRight = AnimationUtils.loadAnimation(this, R.anim.anim_out_to_right);
+
         if (vehicle == 1){
             Utils.logInfo("Vehicle -> 2");
             vehicle = 2;
             actionBarMenu.findItem(R.id.map_action_vehicle).setIcon(R.drawable.ic_motorcycle_black_36dp);
+            leyenda2.bringToFront();
+            leyendaColores.bringToFront();
+            leyenda2.startAnimation(inFromLeft);
+            leyenda1.startAnimation(outToRight);
         } else if(vehicle == 2){
             Utils.logInfo("Vehicle -> 3");
             vehicle = 3;
             actionBarMenu.findItem(R.id.map_action_vehicle).setIcon(R.drawable.ic_directions_bike_black_36dp);
+            leyenda3.bringToFront();
+            leyendaColores.bringToFront();
+            leyenda3.startAnimation(inFromLeft);
+            leyenda2.startAnimation(outToRight);
 
         } else if(vehicle == 3){
             Utils.logInfo("Vehicle -> 4");
             vehicle = 4;
             actionBarMenu.findItem(R.id.map_action_vehicle).setIcon(R.drawable.ic_directions_walk_black_36dp);
+            leyenda4.bringToFront();
+            leyendaColores.bringToFront();
+            leyenda4.startAnimation(inFromLeft);
+            leyenda3.startAnimation(outToRight);
 
         } else if(vehicle == 4){
             Utils.logInfo("Vehicle -> 5");
             vehicle = 5;
             actionBarMenu.findItem(R.id.map_action_vehicle).setIcon(R.drawable.ic_directions_run_black_36dp);
+            leyenda5.bringToFront();
+            leyendaColores.bringToFront();
+            leyenda5.startAnimation(inFromLeft);
+            leyenda4.startAnimation(outToRight);
 
         } else if(vehicle == 5){
             Utils.logInfo("Vehicle -> 1");
             vehicle = 1;
             actionBarMenu.findItem(R.id.map_action_vehicle).setIcon(R.drawable.ic_directions_car_black_36dp);
+            leyenda1.bringToFront();
+            leyendaColores.bringToFront();
+            leyenda1.startAnimation(inFromLeft);
+            leyenda5.startAnimation(outToRight);
 
         }
     }
@@ -1059,6 +1093,7 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
     private void drawTrackPoint(LatLng start, LatLng end, double speed, int vehicle) {
         int colorTrack;
 
+        // Coche o Moto
         if (vehicle == 1 || vehicle == 2) {
             if (speed < 10) {
                 colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_black);
@@ -1079,22 +1114,67 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
             } else {
                 colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_magenta);
             }
-        } else {
-            if (speed < 10) {
+
+        // Bici
+        } else if (vehicle == 3) {
+            if (speed < 5) {
                 colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_black);
-            } else if (speed < 20) {
+            } else if (speed < 10) {
                 colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_red);
-            } else if (speed < 30) {
+            } else if (speed < 15) {
                 colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_orange);
-            } else if (speed < 40) {
+            } else if (speed < 20) {
                 colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_yellow);
-            } else if (speed < 50) {
+            } else if (speed < 25) {
                 colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_green);
-            } else if (speed < 70) {
+            } else if (speed < 35) {
                 colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_dark_green);
-            } else if (speed < 90) {
+            } else if (speed < 45) {
                 colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_blue);
-            } else if (speed < 120) {
+            } else if (speed < 55) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_cyan);
+            } else {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_magenta);
+            }
+        // Andando
+        } else if (vehicle == 4) {
+            if (speed < 2) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_black);
+            } else if (speed < 4) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_red);
+            } else if (speed < 6) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_orange);
+            } else if (speed < 8) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_yellow);
+            } else if (speed < 10) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_green);
+            } else if (speed < 12) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_dark_green);
+            } else if (speed < 14) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_blue);
+            } else if (speed < 16) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_cyan);
+            } else {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_magenta);
+            }
+
+        // Corriendo
+        } else {
+            if (speed < 5) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_black);
+            } else if (speed < 10) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_red);
+            } else if (speed < 15) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_orange);
+            } else if (speed < 20) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_yellow);
+            } else if (speed < 25) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_green);
+            } else if (speed < 30) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_dark_green);
+            } else if (speed < 35) {
+                colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_blue);
+            } else if (speed < 40) {
                 colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_cyan);
             } else {
                 colorTrack = ContextCompat.getColor(this, R.color.liodevel_chart_magenta);
@@ -1131,6 +1211,7 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
         v.clearAnimation();
         v.setAnimation(scale);
     }
+
 
     public void scaleViewDown(View v) {
         Animation scale = AnimationUtils.loadAnimation(this, R.anim.speed_animation_down);
@@ -1184,6 +1265,7 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
             scaleViewUp(chartMagenta);
         }
     }
+
 
     private void setInfosStart(boolean start){
         if (start) {
