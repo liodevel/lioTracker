@@ -1,9 +1,23 @@
 # My Tracker
 
 Versión actual en desarrollo
+1.7
+
+- Botón seleccionar medio de transporte en MapActivity, Spinner de imágenes?
+
+- Led cuando está registrando (Valorar)
+
+- App ERROR al cerrar la app desde trackView
+
+- Más social, compartir mapa, imagen, facebook
+
+- Refrescar bien la lista de rutas, cuando se repara una, no se actualiza hasta que se vuelve a cargar la lista.
+
+
+
 1.6
 
-- PROBAR - Guardar tracks OffLine (Local datastore)?
+OK - PROBAR - Guardar tracks OffLine (Local datastore)?
 - Inicio Offline si no se puede guardar el Track, a partir de ahí, se ha de guardar un track, y todos los trackpoints en un array...
 Un Array de Tracks, y guardarlos en el sharedpreferences, y comprobar cuando se arranca la app si hay conexión, y enviar los tracks a Parse.
 
@@ -17,11 +31,9 @@ OK - Coger datos de los login por facebook
 
 - Gráfica de colores dinámica en MapActivity, los cuadros de colores se irán agrandando dependiendo de la velocidad registrada.
 
-- App ERROR al cerrar la app desde trackView
 
-- Led cuando está registrando (Valorar)
 
-- Botón seleccionar medio de transporte en MapActivity, Spinner de imágenes?
+
 
 
 
