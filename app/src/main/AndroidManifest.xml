@@ -106,6 +106,9 @@
         </provider>
 
 
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="e15eb1d693749d3b7bbafe66455bfbf9bb7fdbc4" />
     </application>
 
 </manifest>

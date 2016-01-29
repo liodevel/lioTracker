@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.liodevel.lioapp_1.Objects.Track;
@@ -28,6 +29,7 @@ import com.parse.ParseSession;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import io.fabric.sdk.android.Fabric;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
@@ -43,6 +45,7 @@ public class SplashActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_splash);
         changeNotificationBar();
         context = this;

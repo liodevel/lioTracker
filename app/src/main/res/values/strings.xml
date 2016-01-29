@@ -163,4 +163,5 @@
 
 
 
+    <string name="com.mapbox.mapboxsdk.accessToken" translatable="false">pk.eyJ1IjoiY2lqemszMmc3MnI4OXdka2k1cWVnenN0aiIsImEiOiJjaWp6azM1bWsycjhkd2RraTVnZWZ6M3V3In0.BUb1oimHKrVdKcGBk3--lQ</string>
 </resources>

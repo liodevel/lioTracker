@@ -5,19 +5,14 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.ParcelFileDescriptor;
-import android.os.Parcelable;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.Xml;
 import android.view.Menu;
@@ -25,25 +20,23 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolylineOptions;
+
 import com.liodevel.lioapp_1.Objects.Track;
 import com.liodevel.lioapp_1.Objects.TrackPoint;
 import com.liodevel.lioapp_1.R;
 import com.liodevel.lioapp_1.Utils.Server;
 import com.liodevel.lioapp_1.Utils.Utils;
+import com.mapbox.mapboxsdk.annotations.PolylineOptions;
+import com.mapbox.mapboxsdk.camera.CameraPosition;
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
+import com.mapbox.mapboxsdk.constants.Style;
+import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.views.MapView;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
@@ -51,18 +44,13 @@ import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 
 
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
 import org.xmlpull.v1.XmlSerializer;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -71,7 +59,6 @@ import java.util.concurrent.TimeUnit;
 
 public class TrackActivity extends AppCompatActivity {
 
-    private GoogleMap mMap;
     private Menu actionBarMenu;
     private static Context context;
     private String trackObjectId = "";
@@ -79,6 +66,10 @@ public class TrackActivity extends AppCompatActivity {
     private static ProgressDialog progress;
     ParseObject trackObject = null;
     long trackPointsCount = 0;
+
+    private MapView mMap = null;
+    private String mapStyle = Style.MAPBOX_STREETS;
+
 
     //private Toolbar myToolbar;
     private TextView durationInfo;
@@ -122,6 +113,10 @@ public class TrackActivity extends AppCompatActivity {
         leyendaColores = (LinearLayout) findViewById(R.id.track_leyenda_colores);
         vehicleIcon = (ImageView) findViewById(R.id.track_vehicle_icon);
 
+        mMap = (MapView) findViewById(R.id.mapTrack);
+        mMap.setAccessToken(getString(R.string.com_mapbox_mapboxsdk_accessToken));
+        mMap.setStyle(Style.MAPBOX_STREETS);
+        mMap.onCreate(savedInstanceState);
 
         //progressDialog.show(this, "Track", "Downloading track", true);
         Bundle extras = getIntent().getExtras();
@@ -133,10 +128,7 @@ public class TrackActivity extends AppCompatActivity {
         }
 
         if (mMap == null) {
-            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapTrack)).getMap();
-            if (mMap == null) {
-                Utils.showMessage(getApplicationContext(), getResources().getString(R.string.unable_to_create_map));
-            }
+            Utils.showMessage(getApplicationContext(), getResources().getString(R.string.unable_to_create_map));
         }
 
         getTrackByObjectId(trackObjectId);
@@ -320,7 +312,19 @@ public class TrackActivity extends AppCompatActivity {
                     } else {
                         // Centrar en primera localización
                         if (mMap != null){
-                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(actualPos, 16));
+
+                            LatLng auxLatLng = new LatLng(actualPos);
+                            CameraPosition camPos= new CameraPosition.Builder()
+                                    .target(auxLatLng)
+                                    .zoom(6)
+                                    .tilt((float)mMap.getTilt())
+                                    .bearing((float)mMap.getBearing())
+                                    .build();
+
+                            if (mMap != null) {
+                               // mMap.animateCamera(CameraUpdateFactory.newCameraPosition(camPos));
+                            }
+
                         }
                     }
 
@@ -484,17 +488,34 @@ public class TrackActivity extends AppCompatActivity {
 
 
     /**
-     *
+     * Cambiar tipo de mapa
      */
-    public void toggleMapType(){
-        if (mMap.getMapType() == GoogleMap.MAP_TYPE_SATELLITE){
-            mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+    private void toggleMapType(){
+
+        if (mapStyle.equals(Style.MAPBOX_STREETS)){
+            mMap.setStyle(Style.DARK);
+            mapStyle = Style.DARK;
+
+        } else if (mapStyle.equals(Style.DARK)){
+            mMap.setStyle(Style.EMERALD);
+            mapStyle = Style.EMERALD;
+
+        } else if (mapStyle.equals(Style.EMERALD)){
+            mMap.setStyle(Style.LIGHT);
+            mapStyle = Style.LIGHT;
+
+        } else if (mapStyle.equals(Style.LIGHT)){
+            mMap.setStyle(Style.SATELLITE_STREETS);
+            mapStyle = Style.SATELLITE_STREETS;
+
         } else {
-            mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+            mMap.setStyle(Style.MAPBOX_STREETS);
+            mapStyle = Style.MAPBOX_STREETS;
         }
 
 
     }
+
 
 
 
@@ -599,7 +620,7 @@ public class TrackActivity extends AppCompatActivity {
         if (mMap != null) {
             PolylineOptions line =
                     new PolylineOptions().add(start, end)
-                            .width(12).color(colorTrack);
+                            .width(8).color(colorTrack);
             mMap.addPolyline(line);
         }
     }

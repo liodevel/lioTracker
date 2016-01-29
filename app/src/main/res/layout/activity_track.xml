@@ -93,12 +93,12 @@
     </RelativeLayout>
 
 
-    <fragment
+    <com.mapbox.mapboxsdk.views.MapView
         android:id="@+id/mapTrack"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/linearLayout6" />
+        android:layout_below="@+id/linearLayout6"
+        android:layout_above="@+id/track_leyenda_1" />
 
     <!-- GRAFICA COLORES -->
 

@@ -38,14 +38,6 @@ import android.widget.Chronometer;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.liodevel.lioapp_1.Objects.Track;
@@ -53,6 +45,15 @@ import com.liodevel.lioapp_1.Objects.TrackPoint;
 import com.liodevel.lioapp_1.R;
 import com.liodevel.lioapp_1.Utils.Server;
 import com.liodevel.lioapp_1.Utils.Utils;
+import com.mapbox.mapboxsdk.annotations.Marker;
+import com.mapbox.mapboxsdk.annotations.MarkerOptions;
+import com.mapbox.mapboxsdk.annotations.PolylineOptions;
+import com.mapbox.mapboxsdk.camera.CameraPosition;
+import com.mapbox.mapboxsdk.camera.CameraUpdate;
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
+import com.mapbox.mapboxsdk.constants.Style;
+import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.views.MapView;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
@@ -68,6 +69,7 @@ import java.util.TimerTask;
 public class MapActivity2 extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private Boolean exit = false;
+    SharedPreferences prefs;
 
     // VIEW
     private TextView startButton, textProviderInfo, textDistanceInfo, userName;
@@ -81,10 +83,12 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
     private LinearLayout leyenda1, leyenda2, leyenda3, leyenda4, leyenda5, leyendaColores;
 
     // MAPS
-    private GoogleMap mMap;
-    private Marker marker;
-    private MarkerOptions markerOptions;
     private boolean centerMap = true;
+
+    private MapView mapView = null;
+    private MarkerOptions markerOptions;
+    private Marker marker;
+    private String mapStyle = Style.MAPBOX_STREETS;
 
     // TRACKING
     private String currentTrackObjectId = "";
@@ -169,8 +173,19 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
         userName.setText(ParseUser.getCurrentUser().getUsername());
 
         // Shared Preferences
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        onlyGPS = prefs.getBoolean("only_gps", true);
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        try {
+            onlyGPS = prefs.getBoolean("only_gps", true);
+            vehicle = prefs.getInt("vehicle", 1);
+            mapStyle = prefs.getString("map_style", Style.MAPBOX_STREETS);
+
+            Utils.logInfo("-PREFS- vehicle : " + vehicle);
+            Utils.logInfo("-PREFS- mapStyle: " + mapStyle);
+
+        }catch (Exception e){
+            Utils.logError(e.toString());
+        }
 
         try {
             int tempSaveFrequency = Integer.parseInt(prefs.getString("save_frequency", "5"));
@@ -189,11 +204,20 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
         Utils.logInfo("Pref_save_frequency: " + saveFrequency);
 
         // Inicializar mapa
+
+
+        mapView = (MapView) findViewById(R.id.map);
+        mapView.setAccessToken(getString(R.string.com_mapbox_mapboxsdk_accessToken));
+        mapView.setStyle(Style.MAPBOX_STREETS);
+        mapView.onCreate(savedInstanceState);
+
+
         try {
-            initMap();
+            initMapBox();
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         // Infos
         startButton = (TextView) findViewById(R.id.text_info);
         startButton.setBackgroundColor(ContextCompat.getColor(this, R.color.liodevel_dark_grey));
@@ -503,16 +527,17 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
     }
 
 
+
     /**
      * Inicializar Mapa
      */
-    private void initMap() {
-        if (mMap == null) {
-            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
-            if (mMap == null) {
-                Utils.showMessage(getApplicationContext(), getResources().getString(R.string.unable_to_create_map));
-            }
+    private void initMapBox() {
+
+        if (mapView == null) {
+            Utils.showMessage(getApplicationContext(), getResources().getString(R.string.unable_to_create_map));
         }
+
+        mapView.setStyle(mapStyle);
 
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
@@ -521,36 +546,67 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
 
                 if (lastLocation != null) {
                     trackerReady = true;
+
+                    if (centerMap) {
+                        LatLng auxLatLng = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
+                        CameraPosition camPos= new CameraPosition.Builder()
+                                .target(auxLatLng)
+                                .zoom(16)
+                                .tilt((float)mapView.getTilt())
+                                .bearing((float)mapView.getBearing())
+                                .build();
+
+                        if (mapView != null) {
+                            mapView.animateCamera(CameraUpdateFactory.newCameraPosition(camPos));
+                        }
+
+                    }
+
                     actionBarMenu.findItem(R.id.map_action_center_map).setVisible(true);
-                    if (mMap != null) {
+                    if (mapView != null) {
 
                         if (marker == null) {
                             markerOptions = new MarkerOptions()
                                     .position(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()))
-                                    .title("Hi!")
-                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_green));
-                            marker = mMap.addMarker(markerOptions);
+                                    .title("Hi!");
+                                    //.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_green));
+                            marker = mapView.addMarker(markerOptions);
                         } else {
-                            marker.setPosition(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()));
+                            marker.remove();
+                            markerOptions = new MarkerOptions()
+                                    .position(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()))
+                                    .title("Hi!");
+                            //.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_green));
+                            marker = mapView.addMarker(markerOptions);
+
                         }
 
                         if (tracking) {
-                            marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_red));
 
                         } else {
-                            marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_green));
                             startButton.setBackgroundColor(ContextCompat.getColor(context, R.color.liodevel_red));
                             startButton.setText(getResources().getString(R.string.ready));
                             startButton.setTextSize(30);
 
                         }
 
+
                         if (centerMap) {
-                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                                            new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()),
-                                            mMap.getCameraPosition().zoom)
-                            );
+                            LatLng auxLatLng = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
+                            CameraPosition camPos= new CameraPosition.Builder()
+                                    .target(auxLatLng)
+                                    .zoom((float)mapView.getZoom())
+                                    .tilt((float)mapView.getTilt())
+                                    .bearing((float) mapView.getBearing())
+                                    .build();
+
+                            if (mapView != null) {
+                                mapView.animateCamera(CameraUpdateFactory.newCameraPosition(camPos));
+                            }
+
                         }
+
+
                     }
                 }
             }
@@ -569,12 +625,19 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
      * Centrar Mapa
      */
     private void centerMap(){
-        if (mMap != null) {
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                            new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()),
-                            mMap.getCameraPosition().zoom)
-            );
+        LatLng auxLatLng = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
+        CameraPosition camPos= new CameraPosition.Builder()
+                .target(auxLatLng)
+                .zoom((float) mapView.getZoom())
+                .tilt((float) mapView.getTilt())
+                .bearing((float) mapView.getBearing())
+                .build();
+
+        if (mapView != null) {
+            mapView.animateCamera(CameraUpdateFactory.newCameraPosition(camPos));
         }
+
+
     }
 
 
@@ -601,11 +664,12 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
                 currentTrackDistance = 0;
                 textDistanceInfo.setText("0 m");
 
+                /*
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
                                 new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()),
                                 18)
                 );
-
+*/
             } else {
                 // GPS no preparado
                 Utils.logInfo("NO GPS Ready");
@@ -815,16 +879,16 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
 
         Utils.logInfo("SEND startTrack()");
         int ret = -1;
-        mMap.clear();
+        mapView.removeAllAnnotations();
         currentTrackDistance = 0;
         markerOptions = new MarkerOptions()
                 .position(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()))
-                .title("Hi!")
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_red)
-                );
+                .title("Hi!");
+                //.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_red)
+                //);
 
-        if (mMap != null) {
-            marker = mMap.addMarker(markerOptions);
+        if (mapView != null) {
+            marker = mapView.addMarker(markerOptions);
         }
         if (Utils.checkConn(context)) {
             final ParseObject dataObject = new ParseObject("track");
@@ -969,6 +1033,7 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
             network_enabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
         } catch(Exception ex) {}
 
+
         if(!gps_enabled && !network_enabled) {
             // notify user
             AlertDialog.Builder dialog = new AlertDialog.Builder(context);
@@ -989,6 +1054,7 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
             });
             dialog.show();
         }
+
 
     }
 
@@ -1032,11 +1098,33 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
      * Cambiar tipo de mapa
      */
     private void toggleMapType(){
-        if (mMap.getMapType() == GoogleMap.MAP_TYPE_SATELLITE){
-            mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
+        if (mapStyle.equals(Style.MAPBOX_STREETS)){
+            mapView.setStyle(Style.DARK);
+            mapStyle = Style.DARK;
+
+        } else if (mapStyle.equals(Style.DARK)){
+            mapView.setStyle(Style.EMERALD);
+            mapStyle = Style.EMERALD;
+
+        } else if (mapStyle.equals(Style.EMERALD)){
+            mapView.setStyle(Style.LIGHT);
+            mapStyle = Style.LIGHT;
+
+        } else if (mapStyle.equals(Style.LIGHT)){
+            mapView.setStyle(Style.SATELLITE_STREETS);
+            mapStyle = Style.SATELLITE_STREETS;
+
         } else {
-            mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+            mapView.setStyle(Style.MAPBOX_STREETS);
+            mapStyle = Style.MAPBOX_STREETS;
         }
+
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("map_style", mapStyle);
+        Utils.logInfo("---map_style: " + mapStyle);
+        editor.apply();
+
     }
 
 
@@ -1089,8 +1177,12 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
             leyendaColores.bringToFront();
             leyenda1.startAnimation(inFromLeft);
             leyenda5.startAnimation(outToRight);
-
         }
+
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt("vehicle", vehicle);
+        editor.apply();
+
     }
 
     /**
@@ -1191,11 +1283,11 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
             }
         }
 
-        if (mMap != null) {
+        if (mapView != null) {
             PolylineOptions line =
                     new PolylineOptions().add(start, end)
-                            .width(12).color(colorTrack);
-            mMap.addPolyline(line);
+                            .width(8).color(colorTrack);
+            mapView.addPolyline(line);
         }
     }
 
