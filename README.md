@@ -3,9 +3,14 @@
 Versión actual en desarrollo
 1.7
 
-- Botón seleccionar medio de transporte en MapActivity, Spinner de imágenes?
+OK - Botón seleccionar medio de transporte en MapActivity, Spinner de imágenes?
 
-- Led cuando está registrando (Valorar)
+OK . Fabric y crashlytics
+
+OK - MapView con MapBox (OpenStreetMaps)
+
+ - TrackView con MapBox (OpenStreetMaps)
+    Presentación guapa 
 
 - App ERROR al cerrar la app desde trackView
 
@@ -40,6 +45,7 @@ OK - Coger datos de los login por facebook
 # Siguentes versiones
 # 2.0
 
+- de momento no- Led cuando está registrando (Valorar)
 
 - "Password olvidado" Botón en pantalla de login, cambio de password, envío de email. En caso de no ser login por facebook.
 
