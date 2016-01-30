@@ -66,6 +66,8 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import okhttp3.internal.Util;
+
 public class MapActivity2 extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private Boolean exit = false;
@@ -357,6 +359,8 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
         super.onResume();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         onlyGPS = prefs.getBoolean("only_gps", true);
+        mapStyle = prefs.getString("map_style", Style.MAPBOX_STREETS);
+        mapView.setStyle(mapStyle);
         try {
             int tempSaveFrequency = Integer.parseInt(prefs.getString("save_frequency", "5"));
             if (tempSaveFrequency < 5){
@@ -593,6 +597,7 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
 
                         if (centerMap) {
                             LatLng auxLatLng = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
+                            Utils.logInfo("-------" + auxLatLng.getLatitude() + ", " + auxLatLng.getLongitude());
                             CameraPosition camPos= new CameraPosition.Builder()
                                     .target(auxLatLng)
                                     .zoom((float)mapView.getZoom())

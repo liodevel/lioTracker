@@ -5,11 +5,13 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -58,6 +60,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class TrackActivity extends AppCompatActivity {
+
+    SharedPreferences prefs;
 
     private Menu actionBarMenu;
     private static Context context;
@@ -113,10 +117,20 @@ public class TrackActivity extends AppCompatActivity {
         leyendaColores = (LinearLayout) findViewById(R.id.track_leyenda_colores);
         vehicleIcon = (ImageView) findViewById(R.id.track_vehicle_icon);
 
-        mMap = (MapView) findViewById(R.id.mapTrack);
+        mMap = (MapView) findViewById(R.id.mapbox_track);
         mMap.setAccessToken(getString(R.string.com_mapbox_mapboxsdk_accessToken));
         mMap.setStyle(Style.MAPBOX_STREETS);
         mMap.onCreate(savedInstanceState);
+
+        // Shared Preferences
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        try {
+            mapStyle = prefs.getString("map_style", Style.MAPBOX_STREETS);
+            Utils.logInfo("-PREFS- mapStyle: " + mapStyle);
+
+        }catch (Exception e){
+            Utils.logError(e.toString());
+        }
 
         //progressDialog.show(this, "Track", "Downloading track", true);
         Bundle extras = getIntent().getExtras();
@@ -134,6 +148,7 @@ public class TrackActivity extends AppCompatActivity {
         getTrackByObjectId(trackObjectId);
         updateTrackInfo();
         toggleVehicle(currentTrack.getVehicle());
+        mMap.setStyle(mapStyle);
     }
 
 
@@ -226,10 +241,8 @@ public class TrackActivity extends AppCompatActivity {
         LatLng actualPos = null;
         TrackPoint previousTrackPoint = new TrackPoint();
 
-
         ParseQuery<ParseObject> queryTrackObject = ParseQuery.getQuery("track");
         queryTrackObject.whereEqualTo("objectId", objectId);
-
 
         try {
             List<ParseObject> parseQueriesTrackObject = queryTrackObject.find();
@@ -283,10 +296,11 @@ public class TrackActivity extends AppCompatActivity {
                     //Utils.logInfo("DATE TR: " + parseObject.get("date"));
                     //trackPoints.add(trackPoint);
                     actualPos = new LatLng(trackPoint.getPosition().getLatitude(), trackPoint.getPosition().getLongitude());
+                    Utils.logInfo("---LATLNG: " + actualPos.getLatitude() + ", " + actualPos.getLongitude());
                     if (prevPos != null) {
                         if(previousTrackPoint != null) {
 
-                            Location selected_location=new Location("locationA");
+                            Location selected_location = new Location("locationA");
                             selected_location.setLatitude(trackPoint.getPosition().getLatitude());
                             selected_location.setLongitude( trackPoint.getPosition().getLongitude());
                             Location near_locations=new Location("locationA");
@@ -306,24 +320,16 @@ public class TrackActivity extends AppCompatActivity {
 
                             trackPoint.setSpeed(speed);
                             drawTrackPoint(prevPos, actualPos, speed, currentTrack.getVehicle());
-
-
                         }
                     } else {
                         // Centrar en primera localización
                         if (mMap != null){
+                            Utils.logInfo("---LATLNG: " + actualPos.getLatitude() + ", " + actualPos.getLongitude());
 
-                            LatLng auxLatLng = new LatLng(actualPos);
-                            CameraPosition camPos= new CameraPosition.Builder()
-                                    .target(auxLatLng)
-                                    .zoom(6)
-                                    .tilt((float)mMap.getTilt())
-                                    .bearing((float)mMap.getBearing())
-                                    .build();
+                            mMap.setCenterCoordinate(actualPos);
+                            mMap.setZoom(12);
+                            mMap.setTilt(75.0, (long) 4000);
 
-                            if (mMap != null) {
-                               // mMap.animateCamera(CameraUpdateFactory.newCameraPosition(camPos));
-                            }
 
                         }
                     }
@@ -415,10 +421,6 @@ public class TrackActivity extends AppCompatActivity {
         averageSpeedFloat = (currentTrack.getDistance() / 1000.0f) / (durationDouble / 60.0);
 
         averageSpeed.setText(df.format(averageSpeedFloat) + " km/h");
-
-
-
-
 
     }
 
@@ -513,10 +515,12 @@ public class TrackActivity extends AppCompatActivity {
             mapStyle = Style.MAPBOX_STREETS;
         }
 
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("map_style", mapStyle);
+        Utils.logInfo("---map_style: " + mapStyle);
+        editor.apply();
 
     }
-
-
 
 
     /**
