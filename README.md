@@ -1,21 +1,22 @@
 # My Tracker
 
-Versión actual en desarrollo
-1.7
+Versión actual en desarrollo, grandes cambios, posiblemente aplicación nueva o versión 2.0
+1.8
 
-- Botón seleccionar medio de transporte en MapActivity, Spinner de imágenes?
-
-- Led cuando está registrando (Valorar)
-
+- OK - Botón seleccionar medio de transporte en MapActivity.
+- Dejar googleMaps -> MapBox
+  - Diseñar estilos nuevos
+  - Vista MapActivity
+    - Animar movimiento de cámara
+  
+- Guardar tracks localmente en SQLite Android. Completamente Offline
+- Ofrecer Opción de subirlo a la nube? o a GDrive
 - App ERROR al cerrar la app desde trackView
-
 - Más social, compartir mapa, imagen, facebook
-
 - Refrescar bien la lista de rutas, cuando se repara una, no se actualiza hasta que se vuelve a cargar la lista.
 
 
-
-1.6
+1.6 OK
 
 OK - PROBAR - Guardar tracks OffLine (Local datastore)?
 - Inicio Offline si no se puede guardar el Track, a partir de ahí, se ha de guardar un track, y todos los trackpoints en un array...
