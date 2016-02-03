@@ -1,19 +1,24 @@
 # My Tracker
 
 Versión actual en desarrollo, grandes cambios, posiblemente aplicación nueva o versión 2.0
+1.9
+  - Diseñar estilo mapa con líneas topográficas
+  - Animar movimiento de cámara
+  - Guardar tracks localmente en SQLite Android. Completamente Offline
+  - Ofrecer Opción de subirlo a la nube? o a GDrive
+  - App ERROR al cerrar la app desde trackView
+  - Más social, compartir mapa, imagen, facebook
+  - Refrescar bien la lista de rutas, cuando se repara una, no se actualiza hasta que se vuelve a cargar la lista.
+
+
+
 1.8
 
 - OK - Botón seleccionar medio de transporte en MapActivity.
-- Dejar googleMaps -> MapBox
-  - Diseñar estilos nuevos
+- OK - Dejar googleMaps -> MapBox
   - Vista MapActivity
-    - Animar movimiento de cámara
-  
-- Guardar tracks localmente en SQLite Android. Completamente Offline
-- Ofrecer Opción de subirlo a la nube? o a GDrive
-- App ERROR al cerrar la app desde trackView
-- Más social, compartir mapa, imagen, facebook
-- Refrescar bien la lista de rutas, cuando se repara una, no se actualiza hasta que se vuelve a cargar la lista.
+- OK - Gráfica de colores dinámica en MapActivity, los cuadros de colores se irán agrandando dependiendo de la velocidad registrada.
+
 
 
 1.6 OK
@@ -29,8 +34,6 @@ OK - Linkar Instalación con usuario
 OK - Simplificar confifuración, sólo una pantalla
 
 OK - Coger datos de los login por facebook
-
-- Gráfica de colores dinámica en MapActivity, los cuadros de colores se irán agrandando dependiendo de la velocidad registrada.
 
 
 
