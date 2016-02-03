@@ -360,7 +360,11 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         onlyGPS = prefs.getBoolean("only_gps", true);
         mapStyle = prefs.getString("map_style", Style.MAPBOX_STREETS);
-        mapView.setStyle(mapStyle);
+        if (mapStyle.equals("MINIMAL")){
+            mapView.setStyleUrl("mapbox://styles/cijzk32g72r89wdki5qegzstj/cik6u7ln800g8b5m01lzvl7lt");
+        } else {
+            mapView.setStyle(mapStyle);
+        }
         try {
             int tempSaveFrequency = Integer.parseInt(prefs.getString("save_frequency", "5"));
             if (tempSaveFrequency < 5){
@@ -468,21 +472,23 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
 
             // TIPO MAPA
             case R.id.map_action_vehicle:
-                if (vehicle == 1){
-                    toggleVehicle(2);
-                    vehicle = 2;
-                } else if (vehicle == 2){
-                    toggleVehicle(3);
-                    vehicle = 3;
-                } else if (vehicle == 3){
-                    toggleVehicle(4);
-                    vehicle = 4;
-                } else if (vehicle == 4){
-                    toggleVehicle(5);
-                    vehicle = 5;
-                } else if (vehicle == 5){
-                    toggleVehicle(1);
-                    vehicle = 1;
+                if (!tracking) {
+                    if (vehicle == 1) {
+                        toggleVehicle(2);
+                        vehicle = 2;
+                    } else if (vehicle == 2) {
+                        toggleVehicle(3);
+                        vehicle = 3;
+                    } else if (vehicle == 3) {
+                        toggleVehicle(4);
+                        vehicle = 4;
+                    } else if (vehicle == 4) {
+                        toggleVehicle(5);
+                        vehicle = 5;
+                    } else if (vehicle == 5) {
+                        toggleVehicle(1);
+                        vehicle = 1;
+                    }
                 }
                 return true;
 
@@ -555,7 +561,7 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
                         LatLng auxLatLng = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
                         CameraPosition camPos= new CameraPosition.Builder()
                                 .target(auxLatLng)
-                                .zoom(16)
+                                .zoom(14)
                                 .tilt((float)mapView.getTilt())
                                 .bearing((float)mapView.getBearing())
                                 .build();
@@ -633,7 +639,7 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
         LatLng auxLatLng = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
         CameraPosition camPos= new CameraPosition.Builder()
                 .target(auxLatLng)
-                .zoom((float) mapView.getZoom())
+                .zoom(14)
                 .tilt((float) mapView.getTilt())
                 .bearing((float) mapView.getBearing())
                 .build();
@@ -660,6 +666,7 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
                 // Start track correcto
                 startButton.setBackgroundColor(ContextCompat.getColor(this, R.color.liodevel_red));
                 setInfosStart(true);
+                centerMap();
 
                 startButton.setText(getResources().getString(R.string.push_to_stop));
                 startButton.setTextSize(30);
@@ -1104,7 +1111,7 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
      */
     private void toggleMapType(){
 
-        if (mapStyle.equals(Style.MAPBOX_STREETS)){
+        if (mapStyle.equals("MINIMAL")){
             mapView.setStyle(Style.DARK);
             mapStyle = Style.DARK;
 
@@ -1120,9 +1127,13 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
             mapView.setStyle(Style.SATELLITE_STREETS);
             mapStyle = Style.SATELLITE_STREETS;
 
-        } else {
+        } else if (mapStyle.equals(Style.SATELLITE_STREETS)){
             mapView.setStyle(Style.MAPBOX_STREETS);
             mapStyle = Style.MAPBOX_STREETS;
+
+        } else {
+            mapView.setStyleUrl("mapbox://styles/cijzk32g72r89wdki5qegzstj/cik6u7ln800g8b5m01lzvl7lt");
+            mapStyle = "MINIMAL";
         }
 
         SharedPreferences.Editor editor = prefs.edit();
