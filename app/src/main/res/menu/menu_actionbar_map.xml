@@ -15,6 +15,11 @@
         app:showAsAction="always"
         android:title="Type"/>
 
+    <item
+        android:id="@+id/map_action_share_image"
+        android:icon="@drawable/ic_menu_share"
+        app:showAsAction="always"
+        android:title="Type"/>
 
     <item
         android:id="@+id/map_action_vehicle"

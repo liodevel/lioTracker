@@ -8,6 +8,12 @@
         android:title="Type"/>
 
     <item
+        android:id="@+id/track_action_share_image"
+        android:icon="@drawable/ic_menu_share"
+        app:showAsAction="always"
+        android:title="Type"/>
+
+    <item
         android:id="@+id/track_action_favorite"
         android:icon="@drawable/ic_action_action_favorite_outline"
         app:showAsAction="always"
@@ -15,15 +21,15 @@
 
     <item
         android:id="@+id/track_action_export_kml"
-        android:icon="@drawable/ic_menu_share"
-        app:showAsAction="always"
-        android:title="Type"/>
+        android:icon="@drawable/ic_action_editor_insert_chart"
+        app:showAsAction="never"
+        android:title="@string/export_kml"/>
 
     <item
         android:id="@+id/map_action_delete_track"
         android:icon="@drawable/ic_action_action_delete"
-        app:showAsAction="always"
-        android:title="Delete" />
+        app:showAsAction="never"
+        android:title="@string/delete"/>
 
 
 </menu>

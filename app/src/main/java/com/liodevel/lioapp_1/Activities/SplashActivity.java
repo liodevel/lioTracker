@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Window;
@@ -30,6 +31,8 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import io.fabric.sdk.android.Fabric;
+
+import java.io.File;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
@@ -74,6 +77,8 @@ public class SplashActivity extends Activity {
         } catch (Exception e){
             Utils.logError("Installation: " + e.toString());
         }
+
+
 
 
 

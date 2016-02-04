@@ -7,10 +7,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,6 +24,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.view.TextureView;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -36,6 +40,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Chronometer;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -43,6 +48,7 @@ import com.google.gson.reflect.TypeToken;
 import com.liodevel.lioapp_1.Objects.Track;
 import com.liodevel.lioapp_1.Objects.TrackPoint;
 import com.liodevel.lioapp_1.R;
+import com.liodevel.lioapp_1.Utils.ScreenshotUtil;
 import com.liodevel.lioapp_1.Utils.Server;
 import com.liodevel.lioapp_1.Utils.Utils;
 import com.mapbox.mapboxsdk.annotations.Marker;
@@ -59,10 +65,13 @@ import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.lang.reflect.Type;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -81,8 +90,8 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
     private MenuItem vehicleSpinner;
 
     private TextView chartBlack, chartRed, chartOrange, chartYellow, chartGreen, chartDarkGreen, chartBlue, chartCyan, chartMagenta;
-
     private LinearLayout leyenda1, leyenda2, leyenda3, leyenda4, leyenda5, leyendaColores;
+    private RelativeLayout layoutToShare;
 
     // MAPS
     private boolean centerMap = true;
@@ -171,8 +180,13 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
         navigationView.bringToFront();
         navigationView.requestLayout();
         navigationView.setNavigationItemSelectedListener(this);
-        userName = (TextView) navigationView.getHeaderView(0).findViewById(R.id.textViewUserName);
-        userName.setText(ParseUser.getCurrentUser().getUsername());
+        try {
+            userName = (TextView) navigationView.getHeaderView(0).findViewById(R.id.textViewUserName);
+            userName.setText(ParseUser.getCurrentUser().getUsername());
+        } catch (Exception e){
+
+        }
+
 
         // Shared Preferences
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -248,6 +262,8 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
         leyenda4 = (LinearLayout) findViewById(R.id.map_leyenda_4);
         leyenda5 = (LinearLayout) findViewById(R.id.map_leyenda_5);
         leyendaColores = (LinearLayout) findViewById(R.id.map_leyenda_colores);
+
+        layoutToShare = (RelativeLayout) findViewById((R.id.map_layout_to_share));
 
         updateGpsProviders();
     }
@@ -360,9 +376,12 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         onlyGPS = prefs.getBoolean("only_gps", true);
         mapStyle = prefs.getString("map_style", Style.MAPBOX_STREETS);
+
         if (mapStyle.equals("MINIMAL")){
             mapView.setStyleUrl("mapbox://styles/cijzk32g72r89wdki5qegzstj/cik6u7ln800g8b5m01lzvl7lt");
-        } else {
+        } else if (mapStyle.equals("HILLSHADES_SAT")) {
+            mapView.setStyleUrl("mapbox://styles/cijzk32g72r89wdki5qegzstj/cik6y8j9300h5b5m0jyc7o5oj");
+        }else {
             mapView.setStyle(mapStyle);
         }
         try {
@@ -470,7 +489,17 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
                 toggleMapType();
                 return true;
 
-            // TIPO MAPA
+            // COMPARTIR
+            case R.id.map_action_share_image:
+                try {
+                    shareImage(getBitmapFromView(layoutToShare));
+                } catch (Exception e){
+                    Utils.showMessage(getApplicationContext(), "Error");
+                }
+                return true;
+
+
+            // TIPO VEHÍCULO / ACTIVIDAD
             case R.id.map_action_vehicle:
                 if (!tracking) {
                     if (vehicle == 1) {
@@ -860,9 +889,6 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
 
 
 
-
-
-
     /**
      * Send startTrack
      */
@@ -1111,7 +1137,7 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
      */
     private void toggleMapType(){
 
-        if (mapStyle.equals("MINIMAL")){
+        if (mapStyle.equals("HILLSHADES_SAT")){
             mapView.setStyle(Style.DARK);
             mapStyle = Style.DARK;
 
@@ -1131,9 +1157,12 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
             mapView.setStyle(Style.MAPBOX_STREETS);
             mapStyle = Style.MAPBOX_STREETS;
 
-        } else {
+        } else if (mapStyle.equals(Style.MAPBOX_STREETS)){
             mapView.setStyleUrl("mapbox://styles/cijzk32g72r89wdki5qegzstj/cik6u7ln800g8b5m01lzvl7lt");
             mapStyle = "MINIMAL";
+        } else {
+            mapView.setStyleUrl("mapbox://styles/cijzk32g72r89wdki5qegzstj/cik6y8j9300h5b5m0jyc7o5oj");
+            mapStyle = "HILLSHADES_SAT";
         }
 
         SharedPreferences.Editor editor = prefs.edit();
@@ -1396,6 +1425,75 @@ public class MapActivity2 extends AppCompatActivity implements NavigationView.On
             chronoTrack.setBackground(getResources().getDrawable(R.color.liodevel_dark_grey));
         }
 
+    }
+
+
+    /**
+     * Share a map image
+     * @param file
+     */
+    private void shareImage(File file) {
+
+        try {
+
+            Intent shareIntent = new Intent();
+            shareIntent.setAction(Intent.ACTION_SEND);
+            //shareIntent.setType("application/xml");
+            shareIntent.setType("image/jpeg");
+            shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+            startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.send_to)));
+
+
+        } catch (Exception e){
+            Utils.showMessage(getApplicationContext(), "Error");
+            Utils.logError(e.toString());
+        }
+
+    }
+
+    /**
+     *
+     * @param view
+     * @return
+     */
+    public File getBitmapFromView(View view) {
+
+        view.setDrawingCacheEnabled(true);
+        Bitmap bitmap = Bitmap.createBitmap(view.getDrawingCache());
+        view.setDrawingCacheEnabled(false);
+
+        // Add the SurfaceView bit (see getAllTextureViews() below)
+        List<TextureView> tilingViews = ScreenshotUtil.getAllTextureViews(view);
+        if (tilingViews.size() > 0) {
+            Canvas canvas = new Canvas(bitmap);
+            for (TextureView TextureView : tilingViews) {
+                Bitmap b = TextureView.getBitmap(TextureView.getWidth(), TextureView.getHeight());
+                int[] location = new int[2];
+                TextureView.getLocationInWindow(location);
+                int[] location2 = new int[2];
+                TextureView.getLocationOnScreen(location2);
+                canvas.drawBitmap(b, location[0], Utils.dpToPx(40, context) , null);
+            }
+        }
+
+
+        Date date = new Date();
+
+        File file = new File(Utils.getAppFolder() + date.toString().replace(" ", "_").replace(":","_") + ".png");
+
+        try {
+            FileOutputStream outputStream = new FileOutputStream(file);
+            int quality = 100;
+            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
+            outputStream.flush();
+            outputStream.close();
+
+
+        } catch (Exception e){
+
+        }
+
+        return file;
     }
 
 

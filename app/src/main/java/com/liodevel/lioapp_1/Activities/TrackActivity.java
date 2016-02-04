@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.net.Uri;
@@ -19,23 +21,24 @@ import android.util.Log;
 import android.util.Xml;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.TextureView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
 import com.liodevel.lioapp_1.Objects.Track;
 import com.liodevel.lioapp_1.Objects.TrackPoint;
 import com.liodevel.lioapp_1.R;
+import com.liodevel.lioapp_1.Utils.ScreenshotUtil;
 import com.liodevel.lioapp_1.Utils.Server;
 import com.liodevel.lioapp_1.Utils.Utils;
 import com.mapbox.mapboxsdk.annotations.PolylineOptions;
-import com.mapbox.mapboxsdk.camera.CameraPosition;
-import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.constants.Style;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.views.MapView;
@@ -87,7 +90,7 @@ public class TrackActivity extends AppCompatActivity {
 
     private ImageView vehicleIcon;
     private LinearLayout leyenda1, leyenda2, leyenda3, leyenda4, leyenda5, leyendaColores;
-
+    private RelativeLayout layoutToShare;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,13 +120,11 @@ public class TrackActivity extends AppCompatActivity {
         leyendaColores = (LinearLayout) findViewById(R.id.track_leyenda_colores);
         vehicleIcon = (ImageView) findViewById(R.id.track_vehicle_icon);
 
+        layoutToShare = (RelativeLayout) findViewById(R.id.layout_to_share);
+
         mapView = (MapView) findViewById(R.id.mapbox_track);
         mapView.setAccessToken(getString(R.string.com_mapbox_mapboxsdk_accessToken));
-        if (mapStyle.equals("MINIMAL")){
-            mapView.setStyleUrl("mapbox://styles/cijzk32g72r89wdki5qegzstj/cik6u7ln800g8b5m01lzvl7lt");
-        } else {
-            mapView.setStyle(mapStyle);
-        }
+
         mapView.onCreate(savedInstanceState);
 
         // Shared Preferences
@@ -134,6 +135,13 @@ public class TrackActivity extends AppCompatActivity {
 
         }catch (Exception e){
             Utils.logError(e.toString());
+        }
+        if (mapStyle.equals("MINIMAL")){
+            mapView.setStyleUrl("mapbox://styles/cijzk32g72r89wdki5qegzstj/cik6u7ln800g8b5m01lzvl7lt");
+        } else if (mapStyle.equals("HILLSHADES_SAT")) {
+            mapView.setStyleUrl("mapbox://styles/cijzk32g72r89wdki5qegzstj/cik6y8j9300h5b5m0jyc7o5oj");
+        }else {
+            mapView.setStyle(mapStyle);
         }
 
         //progressDialog.show(this, "Track", "Downloading track", true);
@@ -152,7 +160,6 @@ public class TrackActivity extends AppCompatActivity {
         getTrackByObjectId(trackObjectId);
         updateTrackInfo();
         toggleVehicle(currentTrack.getVehicle());
-        mapView.setStyle(mapStyle);
     }
 
 
@@ -215,6 +222,15 @@ public class TrackActivity extends AppCompatActivity {
             case R.id.track_action_export_kml:
                 try {
                     shareKML(exportKML());
+                } catch (Exception e){
+                    Utils.showMessage(getApplicationContext(), "Error");
+                }
+                return true;
+
+            // COMPARTIR
+            case R.id.track_action_share_image:
+                try {
+                    shareImage(getBitmapFromView(layoutToShare));
                 } catch (Exception e){
                     Utils.showMessage(getApplicationContext(), "Error");
                 }
@@ -498,7 +514,7 @@ public class TrackActivity extends AppCompatActivity {
      */
     private void toggleMapType(){
 
-        if (mapStyle.equals("MINIMAL")){
+        if (mapStyle.equals("HILLSHADES_SAT")){
             mapView.setStyle(Style.DARK);
             mapStyle = Style.DARK;
 
@@ -518,9 +534,12 @@ public class TrackActivity extends AppCompatActivity {
             mapView.setStyle(Style.MAPBOX_STREETS);
             mapStyle = Style.MAPBOX_STREETS;
 
-        } else {
+        } else if (mapStyle.equals(Style.MAPBOX_STREETS)){
             mapView.setStyleUrl("mapbox://styles/cijzk32g72r89wdki5qegzstj/cik6u7ln800g8b5m01lzvl7lt");
             mapStyle = "MINIMAL";
+        } else {
+            mapView.setStyleUrl("mapbox://styles/cijzk32g72r89wdki5qegzstj/cik6y8j9300h5b5m0jyc7o5oj");
+            mapStyle = "HILLSHADES_SAT";
         }
 
         SharedPreferences.Editor editor = prefs.edit();
@@ -645,7 +664,7 @@ public class TrackActivity extends AppCompatActivity {
         XmlSerializer xmlSerializer;
 
         //File newxmlfile = new File("/sdcard/new.kml");
-        File newxmlfile = new File("/sdcard/Android/data/com.liodevel.lioapp_1/" + currentTrack.getDate().toString().replace(" ", "_").replace(":","_") + ".kml");
+        File newxmlfile = new File(Utils.getAppFolder() + currentTrack.getDate().toString().replace(" ", "_").replace(":","_") + ".kml");
         //Utils.logInfo("PATH: " + getApplicationInfo().dataDir + "/new.xml");
 
         try{
@@ -849,6 +868,78 @@ public class TrackActivity extends AppCompatActivity {
 
 
     }
+
+
+    /**
+     * Share a map image
+     * @param file
+     */
+    private void shareImage(File file) {
+
+        try {
+
+            Intent shareIntent = new Intent();
+            shareIntent.setAction(Intent.ACTION_SEND);
+            //shareIntent.setType("application/xml");
+            shareIntent.setType("image/jpeg");
+            shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+            startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.send_to)));
+
+
+        } catch (Exception e){
+            Utils.showMessage(getApplicationContext(), "Error");
+            Utils.logError(e.toString());
+        }
+
+
+    }
+
+    /**
+     *
+     * @param view
+     * @return
+     */
+    public File getBitmapFromView(View view) {
+
+        view.setDrawingCacheEnabled(true);
+        Bitmap bitmap = Bitmap.createBitmap(view.getDrawingCache());
+        view.setDrawingCacheEnabled(false);
+
+        // Add the SurfaceView bit (see getAllTextureViews() below)
+        List<TextureView> tilingViews = ScreenshotUtil.getAllTextureViews(view);
+        if (tilingViews.size() > 0) {
+            Canvas canvas = new Canvas(bitmap);
+            for (TextureView TextureView : tilingViews) {
+                Bitmap b = TextureView.getBitmap(TextureView.getWidth(), TextureView.getHeight());
+                int[] location = new int[2];
+                TextureView.getLocationInWindow(location);
+                int[] location2 = new int[2];
+                TextureView.getLocationOnScreen(location2);
+                canvas.drawBitmap(b, location[0], 0, null);
+            }
+        }
+
+
+
+
+        File file = new File(Utils.getAppFolder() + currentTrack.getDate().toString().replace(" ", "_").replace(":","_") + ".png");
+
+        try {
+            FileOutputStream outputStream = new FileOutputStream(file);
+            int quality = 100;
+            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
+            outputStream.flush();
+            outputStream.close();
+
+
+        } catch (Exception e){
+
+        }
+
+        return file;
+    }
+
+
 
 
     private String getStyle(double speed){

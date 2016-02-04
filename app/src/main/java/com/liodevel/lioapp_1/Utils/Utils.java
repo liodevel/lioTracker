@@ -3,12 +3,16 @@ package com.liodevel.lioapp_1.Utils;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Environment;
 import android.support.design.widget.Snackbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.parse.ParseUser;
+
+import java.io.File;
 
 /**
  * Created by emilio on 29/12/15.
@@ -117,5 +121,30 @@ public class Utils {
     }
 
 
+    public static String getAppFolder() {
+        File folder = new File(Environment.getExternalStorageDirectory() +
+                File.separator + "MyTracker");
+        boolean success = true;
+        if (!folder.exists()) {
+            success = folder.mkdir();
+        } else {
+            Utils.logInfo("Folder exists");
+        }
+        if (success) {
+            Utils.logInfo("Folder created");
+            Utils.logInfo(folder.toString());
+        } else {
+            Utils.logInfo("Error creating folder");
+        }
+
+        return folder.toString() + File.separator;
+    }
+
+
+    public static int dpToPx(int dp, Context context) {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+        return px;
+    }
 
 }

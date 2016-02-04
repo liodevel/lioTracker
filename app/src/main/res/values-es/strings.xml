@@ -119,4 +119,6 @@
         <item >Corriendo</item>
         <item >Andando</item>
     </string-array>
+    <string name="export_kml">Exportar KML</string>
+    <string name="delete">Borrar</string>
 </resources>
