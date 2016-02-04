@@ -11,29 +11,29 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="87dp"
+        android:layout_height="146dp"
         android:gravity="center_horizontal"
         android:orientation="horizontal"
-        android:layout_marginTop="15dp"
         android:layout_marginBottom="30dp"
-        android:background="@mipmap/background1">
+        android:background="@mipmap/background1"
+        android:layout_gravity="center_vertical">
 
         <ImageView
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:id="@+id/logoLiodevelSplash"
-            android:background="@mipmap/ic_launcher" />
+            android:background="@mipmap/ic_launcher"
+            android:layout_gravity="center_vertical" />
 
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="75dp"
+            android:layout_height="match_parent"
             android:text="@string/app_name"
             android:textColor="@android:color/white"
             android:id="@+id/textView"
             android:textSize="42sp"
             android:gravity="center"
-            android:layout_marginBottom="20dp"
-            android:layout_weight="0.5"/>
+            android:layout_gravity="center_vertical" />
 
     </LinearLayout>
 
@@ -49,7 +49,7 @@
         android:id="@+id/login_form"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/liodevel_dark_green">
+        android:background="@color/liodevel_white">
 
         <LinearLayout
             android:id="@+id/email_login_form"
@@ -64,9 +64,9 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/prompt_email"
                 android:inputType="textEmailAddress"
-                android:textColor="@color/liodevel_white"
+                android:textColor="@color/liodevel_dark_green"
                 android:maxLines="1"
-                android:textColorHint="@color/liodevel_white"
+                android:textColorHint="@color/liodevel_dark_green"
                 android:singleLine="true" />
 
             <EditText
@@ -78,10 +78,10 @@
                 android:imeActionLabel="@string/action_sign_in_short"
                 android:imeOptions="actionUnspecified"
                 android:inputType="textPassword"
-                android:textColor="@color/liodevel_white"
+                android:textColor="@color/liodevel_dark_green"
                 android:maxLines="1"
-                android:textColorHint="@color/liodevel_white"
-                android:textColorHighlight="@color/liodevel_white"
+                android:textColorHint="@color/liodevel_dark_green"
+                android:textColorHighlight="@color/liodevel_dark_green"
                 android:singleLine="true" />
 
             <Button
@@ -92,7 +92,7 @@
                 android:layout_marginTop="16dp"
                 android:text="@string/action_sign_in"
                 android:background="@color/liodevel_light_green"
-                android:textColor="@color/liodevel_white"
+                android:textColor="@color/liodevel_dark_green"
                 android:layout_gravity="center_horizontal" />
 
             <Button
@@ -102,7 +102,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="@string/action_facebook_sign_in"
-                android:textColor="@color/liodevel_white"
+                android:textColor="@color/com_facebook_blue"
                 android:onClick="facebookLogin"
                 android:background="@color/liodevel_light_green"
                 android:layout_gravity="center_horizontal" />
@@ -114,7 +114,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="26dp"
                 android:text="@string/action_register"
-                android:textColor="@color/liodevel_white"
+                android:textColor="@color/liodevel_dark_green"
                 android:background="@color/liodevel_light_green"
                 android:layout_gravity="center_horizontal" />
 

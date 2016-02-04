@@ -71,7 +71,7 @@ public class TrackActivity extends AppCompatActivity {
     ParseObject trackObject = null;
     long trackPointsCount = 0;
 
-    private MapView mMap = null;
+    private MapView mapView = null;
     private String mapStyle = Style.MAPBOX_STREETS;
 
 
@@ -117,10 +117,14 @@ public class TrackActivity extends AppCompatActivity {
         leyendaColores = (LinearLayout) findViewById(R.id.track_leyenda_colores);
         vehicleIcon = (ImageView) findViewById(R.id.track_vehicle_icon);
 
-        mMap = (MapView) findViewById(R.id.mapbox_track);
-        mMap.setAccessToken(getString(R.string.com_mapbox_mapboxsdk_accessToken));
-        mMap.setStyle(Style.MAPBOX_STREETS);
-        mMap.onCreate(savedInstanceState);
+        mapView = (MapView) findViewById(R.id.mapbox_track);
+        mapView.setAccessToken(getString(R.string.com_mapbox_mapboxsdk_accessToken));
+        if (mapStyle.equals("MINIMAL")){
+            mapView.setStyleUrl("mapbox://styles/cijzk32g72r89wdki5qegzstj/cik6u7ln800g8b5m01lzvl7lt");
+        } else {
+            mapView.setStyle(mapStyle);
+        }
+        mapView.onCreate(savedInstanceState);
 
         // Shared Preferences
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -141,14 +145,14 @@ public class TrackActivity extends AppCompatActivity {
             Utils.logInfo("ObjectId Track: " + trackObjectId);
         }
 
-        if (mMap == null) {
+        if (mapView == null) {
             Utils.showMessage(getApplicationContext(), getResources().getString(R.string.unable_to_create_map));
         }
 
         getTrackByObjectId(trackObjectId);
         updateTrackInfo();
         toggleVehicle(currentTrack.getVehicle());
-        mMap.setStyle(mapStyle);
+        mapView.setStyle(mapStyle);
     }
 
 
@@ -323,12 +327,12 @@ public class TrackActivity extends AppCompatActivity {
                         }
                     } else {
                         // Centrar en primera localización
-                        if (mMap != null){
+                        if (mapView != null){
                             Utils.logInfo("---LATLNG: " + actualPos.getLatitude() + ", " + actualPos.getLongitude());
 
-                            mMap.setCenterCoordinate(actualPos);
-                            mMap.setZoom(12);
-                            mMap.setTilt(75.0, (long) 4000);
+                            mapView.setCenterCoordinate(actualPos);
+                            mapView.setZoom(12);
+                            mapView.setTilt(75.0, (long) 4000);
 
 
                         }
@@ -494,25 +498,29 @@ public class TrackActivity extends AppCompatActivity {
      */
     private void toggleMapType(){
 
-        if (mapStyle.equals(Style.MAPBOX_STREETS)){
-            mMap.setStyle(Style.DARK);
+        if (mapStyle.equals("MINIMAL")){
+            mapView.setStyle(Style.DARK);
             mapStyle = Style.DARK;
 
         } else if (mapStyle.equals(Style.DARK)){
-            mMap.setStyle(Style.EMERALD);
+            mapView.setStyle(Style.EMERALD);
             mapStyle = Style.EMERALD;
 
         } else if (mapStyle.equals(Style.EMERALD)){
-            mMap.setStyle(Style.LIGHT);
+            mapView.setStyle(Style.LIGHT);
             mapStyle = Style.LIGHT;
 
         } else if (mapStyle.equals(Style.LIGHT)){
-            mMap.setStyle(Style.SATELLITE_STREETS);
+            mapView.setStyle(Style.SATELLITE_STREETS);
             mapStyle = Style.SATELLITE_STREETS;
 
-        } else {
-            mMap.setStyle(Style.MAPBOX_STREETS);
+        } else if (mapStyle.equals(Style.SATELLITE_STREETS)){
+            mapView.setStyle(Style.MAPBOX_STREETS);
             mapStyle = Style.MAPBOX_STREETS;
+
+        } else {
+            mapView.setStyleUrl("mapbox://styles/cijzk32g72r89wdki5qegzstj/cik6u7ln800g8b5m01lzvl7lt");
+            mapStyle = "MINIMAL";
         }
 
         SharedPreferences.Editor editor = prefs.edit();
@@ -521,6 +529,7 @@ public class TrackActivity extends AppCompatActivity {
         editor.apply();
 
     }
+
 
 
     /**
@@ -621,11 +630,11 @@ public class TrackActivity extends AppCompatActivity {
             }
         }
 
-        if (mMap != null) {
+        if (mapView != null) {
             PolylineOptions line =
                     new PolylineOptions().add(start, end)
                             .width(8).color(colorTrack);
-            mMap.addPolyline(line);
+            mapView.addPolyline(line);
         }
     }
 
